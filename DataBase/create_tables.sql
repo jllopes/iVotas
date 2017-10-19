@@ -1,3 +1,7 @@
+create database iVotas;
+
+use iVotas;
+
 create table faculdade
 	(id int(4) not null auto_increment, 
     nome varchar(25),
@@ -6,6 +10,7 @@ create table faculdade
 
 create table departamento
 	( id int(4) not null auto_increment,
+    id_faculdade int(4) not null,
     nome varchar(25),
     primary key(id),
 	foreign key(id_faculdade) references faculdade(id)
@@ -14,6 +19,7 @@ create table departamento
 create table mesa_de_voto
 	( id int(4) not null auto_increment,
     nome varchar(25),
+    id_departamento int(4) not null,
     primary key(id),
     foreign key(id_departamento) references departamento(id)
     );
@@ -24,6 +30,8 @@ create table pessoa
     username varchar(16) not null,
     password varchar(16) not null,
     tipo int(1) not null,
+	id_faculdade int(4) not null,
+    id_departamento int(4),
     primary key (id),
     foreign key(id_faculdade) references faculdade(id),
     foreign key(id_departamento) references departamento(id),
@@ -38,6 +46,8 @@ create table dados_pessoa
     telefone int(9),
     mes_cc int(2),
     ano_cc int(4),
+	id_pessoa int(4) not null,
+    primary key(id),
     foreign key(id_pessoa) references pessoa(id),
     constraint ano_valido check (ano_cc > 1970 and ano_cc < 2050),
     constraint mes_valido check (mes_cc > 0 and mes_cc < 13)
@@ -59,12 +69,15 @@ create table lista
 	(
     id int(4) not null auto_increment,
     nome varchar(10) not null,
+	id_eleicao int(4) not null,
     primary key(id),
-    foreign key(id_eleicao) references leilao(id)
+    foreign key(id_eleicao) references eleicao(id)
     );
 
 create table pessoa_da_lista
 	(
+  	id_lista int(4) not null,
+	id_pessoa int(4) not null,
     foreign key(id_lista) references lista(id),
     foreign key(id_pessoa) references pessoa(id)
     );
@@ -72,12 +85,17 @@ create table pessoa_da_lista
 create table lista_eleicao
 	(
 	totalvotos int(4) default 0,
+    id_lista int(4) not null,
 	foreign key(id_lista) references lista(id)
     );
     
 create table voto
 	(
     id int(4) not null auto_increment,
+	id_eleicao int(4) not null,
+	id_mesa int(4) not null,
+	id_pessoa int(4) not null,
+    primary key(id),
     foreign key(id_eleicao) references eleicao(id),
     foreign key(id_mesa) references mesa_de_voto(id),
     foreign key(id_pessoa) references pessoa(id)

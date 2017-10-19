@@ -2,17 +2,24 @@ import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.*;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Properties;
-
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.io.*;
+import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP{
 	private int port;
 	private String ip;
+	private int databasePort;
+	private String databaseIP;
+	private String databasePass;
+	private String databaseUser;
+	
+	
 	private static final long serialVersionUID = 1L;
 
 	RMI_Server() throws RemoteException{
@@ -31,6 +38,11 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			// get the property value and print it out
 			port = Integer.parseInt(prop.getProperty("rmi_port"));
 			ip = prop.getProperty("rmi_ip");
+			databasePort = Integer.parseInt(prop.getProperty("database_port"));
+			databaseIP = prop.getProperty("database_IP");
+			databasePass = prop.getProperty("database_Pass");
+			databaseUser = prop.getProperty("database_User");
+			
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -116,9 +128,33 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		 */
 		
 		try {
-
 			RMI_Server h = new RMI_Server();
+
+			/*
 			LocateRegistry.createRegistry(h.port).rebind("IVotas", h);
+			*/
+			//database
+			try { 
+				Connection conn = DriverManager.getConnection("jdbc:mysql://"+h.databaseIP+":"+h.databasePort +"/ivotas",h.databaseUser, h.databasePass);
+				System.out.println("Connection success");
+				String sql = "SELECT * FROM PESSOA";
+				PreparedStatement prepStatement = conn.prepareStatement(sql);
+				ResultSet rs = prepStatement.executeQuery();
+				while(rs.next()) {
+					String username = rs.getString("username");
+					String password = rs.getString("password");
+					int tipo = rs.getInt("tipo");
+					
+					System.out.println(username + " " + password+" "+ tipo);
+					
+				}
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+
 
 			System.out.println("IVotas ready.");
 			// main server
@@ -128,3 +164,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			return;
 		}
 	}
+
+
+}
