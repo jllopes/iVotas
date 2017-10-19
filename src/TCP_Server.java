@@ -158,7 +158,7 @@ public class TCPServer {
 
 class Connection extends Thread {
     DataInputStream in;
-    DataOutputStream out;
+    PrintWriter out;
     Socket clientSocket;
     int id;
 
@@ -167,7 +167,7 @@ class Connection extends Thread {
         try{
             clientSocket = aClientSocket;
             in = new DataInputStream(clientSocket.getInputStream());
-            out = new DataOutputStream(clientSocket.getOutputStream());
+            out = new PrintWriter(clientSocket.getOutputStream());
             this.start();
         }catch(IOException e){System.out.println("Connection:" + e.getMessage());}
     }
@@ -180,6 +180,10 @@ class Connection extends Thread {
             }
         }catch(EOFException e){System.out.println("EOF:" + e);
         }catch(IOException e){System.out.println("IO:" + e);}
+    }
+
+    public void unlockTerminal(String usr) {
+        this.out.write("type | unlock; username | " + usr);
     }
 
     public static boolean getStatus() {

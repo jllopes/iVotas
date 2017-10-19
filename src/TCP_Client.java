@@ -52,7 +52,7 @@ class TCPClient {
       // the main thread loops reading from the server and writing to System.out
       String messageFromServer;
       while((messageFromServer = this.inFromServer.readLine()) != null)
-        parseMessage();
+        //parseMessage();
         System.out.println(messageFromServer);
     } catch (IOException e) {
       if(this.inFromServer == null)
@@ -78,5 +78,4 @@ class TCPClient {
     this.status = 0;
     vote();
   }*/
-}
 }

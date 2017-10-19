@@ -2,7 +2,6 @@ import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.*;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -117,6 +116,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		 */
 		
 		try {
+
 			RMI_Server h = new RMI_Server();
 			LocateRegistry.createRegistry(h.port).rebind("IVotas", h);
 
@@ -128,6 +128,3 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			return;
 		}
 	}
-
-
-}
