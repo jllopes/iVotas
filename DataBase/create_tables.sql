@@ -2,101 +2,105 @@ create database iVotas;
 
 use iVotas;
 
-create table faculdade
+create table faculty
 	(id int(4) not null auto_increment, 
-    nome varchar(25),
+    name varchar(25),
 	primary key (id)
     );
 
-create table departamento
+create table departement
 	( id int(4) not null auto_increment,
-    id_faculdade int(4) not null,
-    nome varchar(25),
+    id_faculty int(4) not null,
+    name varchar(25),
     primary key(id),
-	foreign key(id_faculdade) references faculdade(id)
+	foreign key(id_faculty) references faculty(id)
 	);	
 
-create table mesa_de_voto
-	( id int(4) not null auto_increment,
-    nome varchar(25),
-    id_departamento int(4) not null,
+create table vote_table
+	(id int(4) not null auto_increment,
+    name varchar(25),
+    id_departement int(4) not null,
     primary key(id),
-    foreign key(id_departamento) references departamento(id)
+    foreign key(id_departement) references departement(id),
+	UNIQUE(id_departement)
     );
 
 
-create table pessoa
+create table person
 	(id int(4) not null auto_increment,
     username varchar(16) not null,
     password varchar(16) not null,
-    tipo int(1) not null,
-	id_faculdade int(4) not null,
-    id_departamento int(4),
+    type int(1) not null,
+	id_faculty int(4) not null,
+    id_departement int(4),
     primary key (id),
-    foreign key(id_faculdade) references faculdade(id),
-    foreign key(id_departamento) references departamento(id),
-    constraint tipo_check_1_0 check (tipo is not null or tipo=1 or tipo=2 or tipo=3)
+    foreign key(id_faculty) references faculty(id),
+    foreign key(id_departement) references departement(id),
+    UNIQUE(username),
+    constraint type_check_1_0 check (type is not null or type=1 or type=2 or type=3)
     );
     
-create table dados_pessoa
+create table data_person
 	(
     id int(4) not null auto_increment,
-    nome varchar(40),
-    morada varchar(100),
-    telefone int(9),
-    mes_cc int(2),
-    ano_cc int(4),
-	id_pessoa int(4) not null,
+    name varchar(40),
+    address varchar(100),
+    cc_number int(9),
+    cc_month int(2),
+    cc_year int(4),
+	id_person int(4) not null,
     primary key(id),
-    foreign key(id_pessoa) references pessoa(id),
-    constraint ano_valido check (ano_cc > 1970 and ano_cc < 2050),
-    constraint mes_valido check (mes_cc > 0 and mes_cc < 13)
+    foreign key(id_person) references person(id),
+    constraint valid_year check (cc_year > 1970 and cc_year < 2050),
+    constraint valid_month check (cc_month > 0 and cc_month < 13)
     );
     
 
-create table eleicao
+create table election
 	(
     id int(4) not null auto_increment,
-    data_inicio datetime default current_timestamp,
-    data_fim datetime not null,
-    titulo varchar(50) not null,
-    descricao varchar(100),
+	name varchar(50) not null,
+    description varchar(100),
+    start_date datetime default current_timestamp,
+    end_date datetime not null,
+    departement_number int(4), #numero departement
     primary key(id),
-    constraint after_date check (data_inicio < data_fim and data_inicio >= current_timestamp)
+    constraint after_date check (start_date < end_date and start_date >= current_timestamp)
 	);
     
-create table lista
+create table list_election
 	(
     id int(4) not null auto_increment,
-    nome varchar(10) not null,
-	id_eleicao int(4) not null,
+    name varchar(10) not null,
+	id_election int(4) not null,
+    type int(1) not null,
+   	votes int(4) default 0,
     primary key(id),
-    foreign key(id_eleicao) references eleicao(id)
+    foreign key(id_election) references election(id),
+	constraint type_check_1_0 check (type is not null or type=1 or type=2 or type=3)
     );
 
-create table pessoa_da_lista
+create table person_list
 	(
-  	id_lista int(4) not null,
-	id_pessoa int(4) not null,
-    foreign key(id_lista) references lista(id),
-    foreign key(id_pessoa) references pessoa(id)
+	id int(4) not null auto_increment,
+	id_person int(4) not null,
+    id_list int(4) not null,
+    primary key(id),
+	foreign key(id_list) references list_election(id),
+	foreign key(id_person) references person(id)
     );
+
     
-create table lista_eleicao
-	(
-	totalvotos int(4) default 0,
-    id_lista int(4) not null,
-	foreign key(id_lista) references lista(id)
-    );
-    
-create table voto
+create table vote
 	(
     id int(4) not null auto_increment,
-	id_eleicao int(4) not null,
-	id_mesa int(4) not null,
-	id_pessoa int(4) not null,
+	id_election int(4) not null,
+	id_table int(4) not null,
+	id_person int(4) not null,
     primary key(id),
-    foreign key(id_eleicao) references eleicao(id),
-    foreign key(id_mesa) references mesa_de_voto(id),
-    foreign key(id_pessoa) references pessoa(id)
+    foreign key(id_election) references election(id),
+    foreign key(id_table) references vote_table(id),
+    foreign key(id_person) references person(id)
     );
+
+create index index_election on vote(id_election);
