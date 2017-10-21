@@ -129,32 +129,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		
 		try {
 			RMI_Server h = new RMI_Server();
-
-			/*
 			LocateRegistry.createRegistry(h.port).rebind("IVotas", h);
-			*/
-			//database
-			try { 
-				Connection conn = DriverManager.getConnection("jdbc:mysql://"+h.databaseIP+":"+h.databasePort +"/ivotas",h.databaseUser, h.databasePass);
-				System.out.println("Connection success");
-				String sql = "SELECT * FROM PESSOA";
-				PreparedStatement prepStatement = conn.prepareStatement(sql);
-				ResultSet rs = prepStatement.executeQuery();
-				while(rs.next()) {
-					String username = rs.getString("username");
-					String password = rs.getString("password");
-					int tipo = rs.getInt("tipo");
-					
-					System.out.println(username + " " + password+" "+ tipo);
-					
-				}
-				
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-
 
 			System.out.println("IVotas ready.");
 			// main server
@@ -167,3 +142,28 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 
 
 }
+
+
+/*
+
+			//database
+			try { 
+				Connection conn = DriverManager.getConnection("jdbc:mysql://"+h.databaseIP+":"+h.databasePort +"/ivotas",h.databaseUser, h.databasePass);
+				System.out.println("Connection success");
+				String sql = "SELECT * FROM PERSON";
+				PreparedStatement prepStatement = conn.prepareStatement(sql);
+				ResultSet rs = prepStatement.executeQuery();
+				while(rs.next()) {
+					String username = rs.getString("username");
+					String password = rs.getString("password");
+					int tipo = rs.getInt("type");
+					
+					System.out.println(username + " " + password+" "+ tipo);
+					
+				}
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+*/
