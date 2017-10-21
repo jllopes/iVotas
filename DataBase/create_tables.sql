@@ -51,6 +51,7 @@ create table data_person
 	id_person int(4) not null,
     primary key(id),
     foreign key(id_person) references person(id),
+    UNIQUE(id_person),
     constraint valid_year check (cc_year > 1970 and cc_year < 2050),
     constraint valid_month check (cc_month > 0 and cc_month < 13)
     );
@@ -74,7 +75,7 @@ create table list_election
     name varchar(10) not null,
 	id_election int(4) not null,
     type int(1) not null,
-   	votes int(4) default 0,
+   	vote int(4) default 0,
     primary key(id),
     foreign key(id_election) references election(id),
 	constraint type_check_1_0 check (type is not null or type=1 or type=2 or type=3)
