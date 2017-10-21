@@ -13,7 +13,7 @@ public interface RMI_Interface_Admin {
     public String whereUserVoted(int electionId, int userId);
     //CALLBACK MESAS DE VOTO -- estado mesas de voto
     //CALLBACK MESAS DE VOTO -- número eleitores que votaram em cada mesa de voto até ao momento
-    public void endElection()
+    public void endElection();
 
 
 

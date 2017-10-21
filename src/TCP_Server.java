@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class TCPServer {
+public class TCP_Server {
     public static void main(String[] args) {
         int numero=0;
         Scanner input;
@@ -20,7 +20,7 @@ public class TCPServer {
                             Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
                             numero++;
                             conns.add(clientSocket);
-                            new Connection(clientSocket, numero);
+                            new Connection(clientSocket, numero, conns);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -32,25 +32,29 @@ public class TCPServer {
                 int num;
                 printInfoOptions(); // 1 - Nome, 2 - Id, 3 - Username
                 while (true) { // Read From Keyboard
-                    int num = input.nextInt();
-                    switch (num) {
-                        case 1: System.out.println("Insert name");
-                                String name = input.nextLine();
-                                //checkUserByName(name);
-                                System.out.println("checkUserByUsername");
-                                break;
-                        case 2: System.out.println("Insert name");
-                                int id = input.nextInt();
-                                //checkUserById(id);
-                                System.out.println("checkUserByUsername");
-                                break;
-                        case 2: System.out.println("Insert name");
-                                String username = input.nextLine();
-                                //checkUserByUsername(username);
-                                System.out.println("checkUserByUsername");
-                                break;
+                    int opt = input.nextInt();
+                    switch (opt) {
+                        case 1:
+                            System.out.println("Insert name");
+                            String name = input.nextLine();
+                            //checkUserByName(name);
+                            System.out.println("checkUserByUsername");
+                            break;
+                        case 2:
+                            System.out.println("Insert name");
+                            int id = input.nextInt();
+                            //checkUserById(id);
+                            System.out.println("checkUserByUsername");
+                            break;
+                        case 3:
+                            System.out.println("Insert name");
+                            String username = input.nextLine();
+                            //checkUserByUsername(username);
+                            System.out.println("checkUserByUsername");
+                            break;
+                    }
                 }
-            } catch (IOException e) {
+            }catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -115,11 +119,10 @@ public class TCPServer {
         }
     }
 
-    public boolean void verifyPassword(User usr, String pw) {
+    public static boolean verifyPassword(User usr, String pw) {
         if (usr.password == pw)
             return true;
-    }
-    return false;
+        return false;
     }
 
     public static void printInfoOptions() {
@@ -129,7 +132,7 @@ public class TCPServer {
         System.out.println("<3> Username");
     }
     public static void unlockTerminal(Socket socket, PrintWriter outToClient, String usr){
-        outToClient.println("type | unlock; username |" + usr)
+        outToClient.println("type | unlock; username |" + usr);
     }
 
     public static void checkNumber(int number) {
@@ -157,10 +160,11 @@ public class TCPServer {
 }
 
 class Connection extends Thread {
-    DataInputStream in;
+    Scanner in = new Scanner(System.in);
     PrintWriter out;
     Socket clientSocket;
     int id;
+    int status;
 
     public Connection (Socket aClientSocket, int numero, ArrayList<Socket> connections) {
         id = numero;
@@ -174,16 +178,11 @@ class Connection extends Thread {
     //=============================
     public void run(){
         try{
-            while(true){
-                String data = in.readLine();
-            }
+            while(true) {
+                String data = in.nextLine();
             }
         }catch(EOFException e){System.out.println("EOF:" + e);
         }catch(IOException e){System.out.println("IO:" + e);}
-    }
-
-    public void unlockTerminal(String usr) {
-        this.out.write("type | unlock; username | " + usr);
     }
 
     public static boolean getStatus() {
