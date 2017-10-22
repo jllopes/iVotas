@@ -1,22 +1,8 @@
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Admin_Console {
-    public boolean register(String name, String username, String password, int type, String address, int num_id, int month_id, int year_id);
-    public void addDeparment(String name, int id);
-    public void addFaculty(String name);
-    public void changeDepartment(String newName, int id);
-    public void changeFaculty(String newName, int id);
-    public void deleteDepartment(int id);
-    public void deleteFaculty(int id);
-    public void createElection(String startDate, String endDate, String name, String desc, int type);
-    public void changeElectionLists(ElectionList list);
-    public void changeElectionProperties(String startDate, String endDate, String name, String desc, int id);
-    public void addVotingTable(int ip, int port, int depId);
-    public String whereUserVoted(int electionId, int userId);
-    //CALLBACK MESAS DE VOTO -- estado mesas de voto
-    //CALLBACK MESAS DE VOTO -- número eleitores que votaram em cada mesa de voto até ao momento
-    public void endElection();
-
     /*--------Main Menu---------*/
     public void mainMenu(){
         Scanner in = new Scanner(System.in);
@@ -25,9 +11,9 @@ public class Admin_Console {
         chooseMainMenu(opt);
     }
     public void printMainMenu(){
-        System.out.println("<1> Register User"); //TODO
+        System.out.println("<1> Register User");
         System.out.println("<2> Manage Departments");
-        System.out.println("<3> Manage Colleges");
+        System.out.println("<3> Manage Faculties");
         System.out.println("<4> Create Election");
         System.out.println("<5> Manage Election");
         System.out.println("<6> Consult Past Elections");
@@ -38,7 +24,7 @@ public class Admin_Console {
                     break;
             case 2: manageDepartments();
                     break;
-            case 3: manageColleges();
+            case 3: manageFaculties();
                     break;
             case 4: newElection();
                     break;
@@ -49,9 +35,80 @@ public class Admin_Console {
         }
     }
 
+    public void newElection(){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Choose the type of election you want to create:"); //1-student, 2-general
+        printElectionTypeMenu();
+        int type = in.nextInt();
+        int department;
+        if(type == 1){
+            System.out.println("Insert the department where the election is happening:");
+            //listDepartments();
+            department = in.nextInt();
+        }
+        else
+            department = 0;
+        System.out.println("Insert the start date of the election (Format: dd/mm/yy hh:mm):");
+        Date startDate = getDate();
+        System.out.println("Insert the end date of the election (Format: dd/mm/yy hh:mm):");
+        Date endDate = getDate();
+        System.out.println("Insert a title for the election:");
+        String title = in.nextLine();
+        System.out.println("Insert a description for the election:");
+        String description = in.nextLine();
+        createElection(startDate, endDate, title, description, type, department);
+    }
+
+    public Date getDate() {
+        Scanner in = new Scanner(System.in);
+        String dateString = in.nextLine();
+        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        try {
+            return date.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void newUser(){
         Scanner in = new Scanner(System.in);
+        System.out.println("Insert the user's name");
+        String name = in.nextLine();
+        System.out.println("Insert an username up to 16 characters:");
+        String username = in.nextLine();
+        System.out.println("Insert a password up to 16 characters:");
+        String password = in.nextLine();
+        System.out.println("Choose the type of user:");
+        printUserTypeMenu();
+        int type = in.nextInt();
+        System.out.println("Choose the faculty of the user:");
+        //printFacultyList();
+        int facultyId = in.nextInt();
+        System.out.println("Choose the department of the user:");
+        //printDepartmentList(int facultyId);
+        int departmentId = in.nextInt();
+        System.out.println("Insert the ID number of the user:");
+        int id = in.nextInt();
+        System.out.println("Insert the validity month of the ID:");
+        int idMonth = in.nextInt();
+        System.out.println("Insert the validity year of the ID:");
+        int idYear = in.nextInt();
+        System.out.println("Insert the address of the user:");
+        String address = in.nextLine();
+        System.out.println("Insert the contact number of the user:");
+        String phoneNumber = in.nextLine();
+        register(name,username,password,type,facultyId,departmentId,address,id,idMonth,idYear,phoneNumber);
+    }
 
+    public void printElectionTypeMenu(){
+        System.out.println("<1> Student Association");
+        System.out.println("<1> General Council");
+    }
+
+    public void printUserTypeMenu(){
+        System.out.println("<1> Student");
+        System.out.println("<2> Professor");
+        System.out.println("<3> Employee");
     }
     /*--------Departments Menu---------*/
     public void manageDepartments(){
@@ -75,25 +132,25 @@ public class Admin_Console {
                     break;
         }
     }
-    /*--------Colleges Menu---------*/
-    public void manageColleges(){
+    /*--------Faculties Menu---------*/
+    public void manageFaculties(){
         Scanner in = new Scanner(System.in);
-        printCollegesMenu();
+        printFacultiesMenu();
         int opt = in.nextInt();
-        chooseCollegesMenu(opt);
+        chooseFacultiesMenu(opt);
     }
-    public void printCollegesMenu(){
-        System.out.println("<1> Add College");
-        System.out.println("<1> Change College");
-        System.out.println("<1> Delete College");
+    public void printFacultiesMenu(){
+        System.out.println("<1> Add Faculty");
+        System.out.println("<1> Change Faculty");
+        System.out.println("<1> Delete Faculty");
     }
-    public void chooseCollegesMenu(int opt){
+    public void chooseFacultiesMenu(int opt){
         switch(opt){
-            case 1: newCollege();
+            case 1: newFaculty();
                 break;
-            case 2: alterCollege();
+            case 2: alterFaculty();
                 break;
-            case 3: removeCollege();
+            case 3: removeFaculty();
                 break;
         }
     }
