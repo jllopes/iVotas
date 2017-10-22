@@ -35,6 +35,15 @@ public class Admin_Console {
         }
     }
 
+    public void consultPastElections(){
+        Scanner in = new Scanner(System.in);
+        //listPastElections();
+        System.out.println("Insert the id of which election you want to consult:");
+        int id = in.nextInt();
+        System.out.println("The results of the election were the following:");
+        //printElectionResults(id);
+    }
+
     public void newElection(){
         Scanner in = new Scanner(System.in);
         System.out.println("Choose the type of election you want to create:"); //1-student, 2-general
@@ -132,6 +141,26 @@ public class Admin_Console {
                     break;
         }
     }
+
+    public void newDepartment(){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Insert the name of the new department:");
+        String name = in.nextLine();
+        //printFaculties();
+        System.out.println("Insert the faculty id of the department:");
+        int faculty = in.nextInt();
+        addDepartment(name,faculty);
+    }
+
+    public void alterDepartment(){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Choose the id of the department:");
+        //printDepartments();
+        int department = in.nextInt();
+        System.out.println("Insert the new name of the department:");
+        String newName = in.nextLine();
+    }
+    
     /*--------Faculties Menu---------*/
     public void manageFaculties(){
         Scanner in = new Scanner(System.in);
