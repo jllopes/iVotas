@@ -1,15 +1,19 @@
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Admin_Console {
+
     /*--------Main Menu---------*/
+
     public void mainMenu(){
         Scanner in = new Scanner(System.in);
         printMainMenu();
         int opt = in.nextInt();
         chooseMainMenu(opt);
     }
+
     public void printMainMenu(){
         System.out.println("<1> Register User");
         System.out.println("<2> Manage Departments");
@@ -18,6 +22,7 @@ public class Admin_Console {
         System.out.println("<5> Manage Election");
         System.out.println("<6> Consult Past Elections");
     }
+
     public void chooseMainMenu(int opt){
         switch(opt){
             case 1: newUser();
@@ -111,7 +116,7 @@ public class Admin_Console {
 
     public void printElectionTypeMenu(){
         System.out.println("<1> Student Association");
-        System.out.println("<1> General Council");
+        System.out.println("<2> General Council");
     }
 
     public void printUserTypeMenu(){
@@ -119,18 +124,22 @@ public class Admin_Console {
         System.out.println("<2> Professor");
         System.out.println("<3> Employee");
     }
+
     /*--------Departments Menu---------*/
+
     public void manageDepartments(){
         Scanner in = new Scanner(System.in);
         printDepartmentsMenu();
         int opt = in.nextInt();
         chooseDepartmentsMenu(opt);
     }
+
     public void printDepartmentsMenu(){
         System.out.println("<1> Add Department");
-        System.out.println("<1> Change Department");
-        System.out.println("<1> Delete Department");
+        System.out.println("<2> Change Department");
+        System.out.println("<3> Delete Department");
     }
+
     public void chooseDepartmentsMenu(int opt){
         switch(opt){
             case 1: newDepartment();
@@ -157,22 +166,42 @@ public class Admin_Console {
         System.out.println("Choose the id of the department:");
         //printDepartments();
         int department = in.nextInt();
+        while(!checkDepartment(department)){
+            System.out.println("There is no faculty with that id, please insert a valid id:");
+            department = in.nextInt();
+        }
         System.out.println("Insert the new name of the department:");
         String newName = in.nextLine();
+        changeDepartment(newName,department);
     }
-    
+
+    public void removeDepartment(){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Choose the id of the department:");
+        //printDepartments();
+        int department = in.nextInt();
+        while(!checkDepartment(department)){
+            System.out.println("There is no faculty with that id, please insert a valid id:");
+            department = in.nextInt();
+        }
+        deleteDepartment(department);
+    }
+
     /*--------Faculties Menu---------*/
+
     public void manageFaculties(){
         Scanner in = new Scanner(System.in);
         printFacultiesMenu();
         int opt = in.nextInt();
         chooseFacultiesMenu(opt);
     }
+
     public void printFacultiesMenu(){
         System.out.println("<1> Add Faculty");
-        System.out.println("<1> Change Faculty");
-        System.out.println("<1> Delete Faculty");
+        System.out.println("<2> Change Faculty");
+        System.out.println("<3> Delete Faculty");
     }
+
     public void chooseFacultiesMenu(int opt){
         switch(opt){
             case 1: newFaculty();
@@ -183,19 +212,56 @@ public class Admin_Console {
                 break;
         }
     }
+
+    public void newFaculty(){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Insert the name of the new faculty:");
+        String name = in.nextLine();
+        addFaculty(name);
+    }
+
+    public void alterFaculty(){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Choose the id of the faculty:");
+        //printFaculties();
+        int faculty = in.nextInt();
+        while(!checkFaculty(faculty)){
+            System.out.println("There is no faculty with that id, please insert a valid id:");
+            faculty = in.nextInt();
+        }
+        System.out.println("Insert the new name of the faculty:");
+        String newName = in.nextLine();
+        changeFaculty(newName,faculty);
+    }
+
+    public void removeFaculty(){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Choose the id of the faculty:");
+        //printFaculties();
+        int faculty = in.nextInt();
+        while(!checkFaculty(faculty)){
+            System.out.println("There is no faculty with that id, please insert a valid id:");
+            faculty = in.nextInt();
+        }
+        deleteDepartment(faculty);
+    }
+
     /*--------Election Menu---------*/
+    
     public void manageElections(){
         Scanner in = new Scanner(System.in);
         printElectionsMenu();
         int opt = in.nextInt();
         chooseElectionsMenu(opt);
     }
+
     public void printElectionsMenu(){
         System.out.println("<1> Add Candidates");
-        System.out.println("<1> Remove Candidates");
-        System.out.println("<1> Add Voting Table");
-        System.out.println("<1> Remove Voting Table");
+        System.out.println("<2> Remove Candidates");
+        System.out.println("<3> Add Voting Table");
+        System.out.println("<4> Remove Voting Table");
     }
+
     public void chooseElectionsMenu(int opt){
         switch(opt){
             case 1: addCandidates();
@@ -209,11 +275,80 @@ public class Admin_Console {
         }
     }
 
+    public ArrayList<String> addCandidates(int electionType, int election){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Insert a name for the candidates list:");
+        String name = in.nextLine();
+        int type;
+        if(electionType == 2){
+            System.out.println("Choose the type of list you want to create:");
+            printUserTypeMenu();
+            type = in.nextInt();
+        }
+        System.out.println("Insert the list of usernames who are going to be candidates of " + name + " and end it with an empty line:");
+        String username;
+        ArrayList<String> students = new ArrayList<String>();
+        ArrayList<String> professors = new ArrayList<String>();
+        ArrayList<String> employees = new ArrayList<String>();
+        while((username = in.nextLine()) != null){
+            int check = checkUserType(username);
+            if(electionType == 2){
+                if(check == 1 && type == 1){ // Student
+                    students.add(username);
+                }
+                else if(check == 2 && type == 2){ // Professors
+                    professors.add(username);
+                }
+                else if(check == 3 && type == 3){ // Professors
+                    employees.add(username);
+                }
+                else{
+                    System.out.println("There is no user with such a username, or the user does not match the type you chose, please insert a valid username:");
+                }
+            }
+            else {
+                if (check == 1) { // Student
+                    students.add(username);
+                }
+                else{
+                    System.out.println("That username does not exist or the user is not a student, please insert a valid username:");
+                }
+            }
+        }
+        if(electionType == 2){
+            if(type == 1){ // Student
+                return students;
+            }
+            else if(type == 2){ // Professor
+                return professors;
+            }
+            else if(type == 3){ // Employee
+                return employees;
+            }
+        }
+    }
 
+    public void removeCandidates(int election){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Insert the name of the list you want to remove:");
+        //printElectionLists(int election);
+        String name = in.nextLine();
+        removeList(election, name);
+    }
 
-}
+    public void newVotingTable(int election){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Insert the id of the voting table you want to associate with the election:");
+        //listVotingTables();
+        int votingTable = in.nextInt();
+        //addVotingTable(election, votingTable);
+    }
 
-class Lista {
-    String[] candidates;
-    String name;
+    public void removeVotingTable(int election){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Insert the id of the voting table you want to remove from the election:");
+        //listElectionTables(election);
+        int votingTable = in.nextInt();
+        //deleteVotingTable(election, votingTable);
+    }
 }
