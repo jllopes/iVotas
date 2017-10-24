@@ -9,6 +9,7 @@ public class TCP_Server {
 	RMI_Interface_TCP rmi;
 	ArrayList<String> pedidos_espera;
 	ArrayList<Socket> list_socket;
+	ArrayList<Connection> conns;
 	String rmi_name;
 	String rmi_ip;
 	int rmi_port;
@@ -18,6 +19,7 @@ public class TCP_Server {
 		this.dc = 0;
 		pedidos_espera = new ArrayList<>();
 		list_socket = new ArrayList<>();
+		conns = new ArrayList<>();
 
 		//Properties https://www.mkyong.com/java/java-properties-file-examples/
 				Properties prop = new Properties();
@@ -53,7 +55,7 @@ public class TCP_Server {
 
 	public static void main(String args[])  {
 		TCP_Server tcp = new TCP_Server();
-
+		int count = 0;
 		try {
 
 			/* tirar antes de entregar */
@@ -70,18 +72,28 @@ public class TCP_Server {
 				e.printStackTrace();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
-			} 
-			
+			}
 
-			
+
+			new Thread(){
+				public void run() {
+					try {
+						while (true) {
+							Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
+							tcp.conns.add(new Connection(clientSocket, ++count, tcp.rmi));
+
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}.start();
 			while (true) {
 				Socket clientSocket = listenSocket.accept(); 
 				System.out.println("CLIENT_SOCKET (created at accept())=" + clientSocket);
-				String pedido = tcp.rmi.message();
-				System.out.println("Resposta" + pedido);
 				
 				synchronized (listenSocket) {
-					tcp.list_socket.add(clientSocket);
+					tcp.conns.add(new Connection(clientSocket, ++count,))
 				}
 				
 			}
@@ -111,7 +123,7 @@ public class TCP_Server {
 		//chosenType(parsedInput);
 	}
 
-	private void chosenType(LinkedHashMap<String, String> input){
+	private void chooseAction(LinkedHashMap<String, String> input){
 		String type = input.get("type");
 
 		switch(type){
@@ -127,9 +139,22 @@ public class TCP_Server {
 		}
 	}
 
-	private void login(LinkedHashMap<String, String> input){
+	private void login(LinkedHashMap<String, String> input, Connection client) throws RemoteException{
 		String username = input.get("username");
 		String password = input.get("password");
+		if(rmi.login(username, password)) {
+			client.write("type | status ; logged | on ; msg | Welcome to iVotas!");
+			int type = rmi.getUserType(username);
+			rmi.getElections()
+		}
+		else{
+			client.write("type | status ; logged | off ; msg | Incorrect identification!");
+		}
+	}
+
+	private void getElections(String username) throws RemoteException{
+		int type = rmi.getUserType(username);
+		LinkedHashMap<Integer, String> elections =
 	}
 
 	private void candidateList(LinkedHashMap<String, String> input){
@@ -141,6 +166,8 @@ public class TCP_Server {
 			names.add(name);
 		}
 	}
+
+	private void hide() {
 /*
 
     public static boolean checkUserByName(String str){
@@ -223,19 +250,24 @@ public class TCP_Server {
     //type | voter;
 
 }
+*/
+
+	}
 
 class Connection extends Thread {
-    DataInputStream in;
+    BufferedReader in;
     PrintWriter out;
     Socket clientSocket;
+    RMI_Interface_TCP rmi;
     int id;
 
-    public Connection (Socket aClientSocket, int numero, ArrayList<Socket> connections) {
+    public Connection (Socket aClientSocket, int numero, RMI_Interface_TCP rmi) {
         id = numero;
+        this.rmi = rmi;
         try{
             clientSocket = aClientSocket;
-            in = new DataInputStream(clientSocket.getInputStream());
-            out = new PrintWriter(clientSocket.getOutputStream());
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
             this.start();
         }catch(IOException e){System.out.println("Connection:" + e.getMessage());}
     }
@@ -243,20 +275,87 @@ class Connection extends Thread {
     public void run(){
         try{
             while(true){
-                String data = in.readLine();
-            }
+            	try {
+					String data = in.readLine();
+					parseInput(data);
+				} catch(IOException e){
+            		e.printStackTrace();
+				}
             }
         }catch(EOFException e){System.out.println("EOF:" + e);
         }catch(IOException e){System.out.println("IO:" + e);}
     }
 
+	private void parseInput(String input) throws RemoteException{
+
+		String[] aux;
+		LinkedHashMap<String, String> hashmap = new LinkedHashMap<String, String>();
+		aux = input.trim().split(";");
+		for (String field : aux) {
+			try {
+				String[] split = field.split("\\|"); // | representa a função OR por isso tem de ser \\|
+				String firstString = split[0].trim();
+				String secondString = split[1].trim();
+				hashmap.put(firstString, secondString);
+			}catch(ArrayIndexOutOfBoundsException e){
+				e.printStackTrace();
+			}
+		}
+		chooseAction(input);
+	}
+
+	private void chooseAction(LinkedHashMap<String, String> input) throws RemoteException {
+		String type = input.get("type");
+
+		switch(type){
+			case "login":
+				login(input);
+				break;
+			default:
+				run();
+				break;
+		}
+	}
+
+	private void login(LinkedHashMap<String, String> input) throws RemoteException{
+		String username = input.get("username");
+		String password = input.get("password");
+		if(rmi.login(username, password)) {
+			write("type | status ; logged | on ; msg | Welcome to iVotas!");
+			int type = rmi.getUserType(username);
+			rmi.getElections();
+		}
+		else{
+			write("type | status ; logged | off ; msg | Incorrect identification!");
+		}
+	}
+
+	private void getElections(String username) throws RemoteException{
+		int type = rmi.getUserType(username);
+		LinkedHashMap<Integer, String> elections = rmi.getElections(type);
+		write
+	}
+
+	private String createElectionString(LinkedHashMap<Integer, String> elections) throws RemoteException{
+    	String str = "type | election_list ; ";
+    	int i = 0;
+		elections.forEach((Integer key, String value) -> {
+			str += "election_" + i + "_id | " + key + " ; " + "election_" + i + "_name | " + value + " ; ";
+			i++;
+		});
+		return str;
+	}
+
+
+	private void write(String msg) {
+    	this.out.println(msg);
+	}
+
     public void unlockTerminal(String usr) {
         this.out.write("type | unlock; username | " + usr);
     }
 
-    public static boolean getStatus() {
+    public boolean getStatus() {
         return this.status;
     }
 }
-	
-	*/
