@@ -63,8 +63,11 @@ insert into vote(id_election, id_person, id_table) values (3,5,1);
 update list_election set list_election.vote = list_election.vote +1 where list_election.id = 5;
 update list_election set list_election.vote = list_election.vote +1 where list_election.id = 6;
 insert into department(id_faculty, name) values (1, "novo");
-Select vote.time_vote, person.username, election.name, department.name from vote, person,election, vote_table, department where vote.id_person = 1 and vote.id_election = 1 and vote.id_person = person.id and vote.id_election = election.id  and vote.id_table=vote_table.id and vote_table.id_department = department.id;
+#select vote.time_vote, person.username, election.name, department.name from vote, person,election, vote_table, department where vote.id_person = 1 and vote.id_election = 1 and vote.id_person = person.id and vote.id_election = election.id  and vote.id_table=vote_table.id and vote_table.id_department = department.id;
 
+
+select list_election.id , name from  list_election  where id_election =3 and type=1;
+select * from election;
 /*
 select * from election where start_date < current_timestamp() and end_date > current_timestamp();
 select * from list_election;

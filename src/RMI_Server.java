@@ -521,7 +521,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
     	
     }
 
-    public boolean addVotingTable( int depId){
+    public boolean addVotingTable( int depId) throws RemoteException {
     	try {
 	    	connection.setAutoCommit(false);
 	    	/* limit 1 vote_table per election ??
@@ -564,7 +564,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 
     }
 
-    public String whereUserVoted(int electionId, int userId){
+    public String whereUserVoted(int electionId, int userId) throws RemoteException{
     	try {
 	    	connection.setAutoCommit(false);
 	    	
@@ -601,8 +601,182 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
     	
     }
 
+	public int login(String username, String password )throws RemoteException {
+    	try {
+	    	connection.setAutoCommit(false);
+	    	
+	    	String sql1 = "Select type from people where username = ? and password = ? limit 1";
+	    	PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
+	    	prepStatement1.setString(1,username);
+	    	prepStatement1.setString(2,password);
+	    	ResultSet rs = prepStatement1.executeQuery();
+	    	if(rs.next()){
+	    		return rs.getInt("type");
+	    	}else{
+	    		rs.close();
+	    		return 0;
+	    	}
+	    	
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return 0;
+		
+	}
     
-    
+	public HashMap<Integer, String> getElections(int usertype) throws RemoteException{
+	    try {
+	    	connection.setAutoCommit(false);
+	    	
+	    	String sql1 = "select election.id , election.name from election, list_election  where (election.start_date < current_timestamp() and election.end_date > current_timestamp() and list_election.type= ? and list_election.id_election = election.id ) group by list_election.id_election";
+	    	PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
+	    	prepStatement1.setInt(1,usertype);
+	    	ResultSet rs = prepStatement1.executeQuery();
+	    	
+	    	if(rs.next()){ //theres is at least one election
+	    		
+	    		HashMap<Integer, String> elections = new HashMap<>(); 
+	    		elections.put(rs.getInt("election.id"),rs.getString("election.name"));
+	    		while(rs.next()){
+	        		elections.put(rs.getInt("election.id"),rs.getString("election.name"));
+	    		}
+	    		rs.close();
+	    		return elections;
+	    		
+	    	}else{
+	    		rs.close();
+	    		return null;
+	    		//return 0;
+	    		
+	    	}
+	    	
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return null;
+	}
+	
+	public HashMap<Integer, String> getListsElections(int usertype, int idElection) throws RemoteException {
+	    try {
+	    	connection.setAutoCommit(false);
+	    	HashMap<Integer, String> elections = getElections(usertype);
+	    	if( elections != null && elections.get(idElection) != null){ //valid election
+	    		
+		    	String sql1 = "select id , name from  list_election  where id_election=? and type=?";
+		    	PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
+		    	prepStatement1.setInt(1,idElection);
+		    	prepStatement1.setInt(2,usertype);
+		    	ResultSet rs = prepStatement1.executeQuery();
+	    		
+		    	HashMap<Integer, String> electionlists = new HashMap<>(); 
+	    		while(rs.next()){ //no need to verify if theres is lists, getElection does it 
+	        		electionlists.put(rs.getInt("id"),rs.getString("name"));
+	    		}
+	    		rs.close();
+	    		return electionlists;
+
+	    	} else
+	    		return null;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return null;
+	}	
+
+	public boolean vote(int userId, int usertype, int idElection, int idList) throws RemoteException{ //false se ja existir voto
+		 try {
+		    	connection.setAutoCommit(false);
+		    	HashMap<Integer, String> lists = getListsElections(usertype,idElection);
+		    	if( lists != null && lists.get(idList) != null){ //valid election
+		    		//search if theres is a vote already
+		    		String getvotes = "Select 1 from votes where id_election = ? and id_person = ?";
+		    		PreparedStatement prepStatement2 = connection.prepareStatement(getvotes);
+				    prepStatement2.setInt(1, idElection);
+				    prepStatement2.setInt(2, userId);
+		    		ResultSet rs = prepStatement2.executeQuery();
+		    		prepStatement2.close();
+		    		if(rs.next()){//already voted
+		    			rs.close();
+		    			return false;
+		    		}
+		    		
+				    String sql = "insert into vote(id_election, id_person, id_table) values (?,?,?)";
+				    PreparedStatement prepStatement = connection.prepareStatement(sql);
+				    prepStatement.setInt(1, idElection);
+				    prepStatement.setInt(2, userId);
+				    prepStatement.setInt(3, idList);
+
+				    prepStatement.executeUpdate();
+					prepStatement.close();
+					
+				    String sql1 = "update list_election set list_election.vote = list_election.vote +1 where list_election.id = ?";
+				    PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
+				    prepStatement1.setInt(1, idList);
+				    prepStatement1.executeUpdate();
+					prepStatement1.close();
+					
+					//something to tell theres a new vote ¯\_(¨)_/¯
+		    		return true;
+		    	} else
+		    		return false;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				try {
+					connection.rollback();
+				} catch (SQLException e1) {
+					System.out.println("DB: Connection lost...");
+				}
+			} finally {
+				try {
+					connection.setAutoCommit(true);
+				} catch (SQLException e) {
+					System.out.println("DB: Connection lost...");
+				}
+			}
+			return false;
+
+		
+		
+	}
+	
+	
 	public static void main(String args[]) {
 		
 		/*
@@ -622,5 +796,9 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			return;
 		}
 	}
+
+
+
+
 }
 
