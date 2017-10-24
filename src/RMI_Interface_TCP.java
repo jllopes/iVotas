@@ -8,5 +8,5 @@ public interface RMI_Interface_TCP extends Remote {
 	public HashMap<Integer, String> getListsElections(int usertype, int idElection) throws RemoteException;
 	public boolean vote(int userid ,int usertype, int idElection, int idList) throws RemoteException; //false se ja existir voto
 	//public void unlockTable() throws; <-- so do lado do tcp :)
-
+	public int getUserId(String username) throws RemoteException;
 }

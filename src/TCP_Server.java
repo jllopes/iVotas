@@ -59,6 +59,7 @@ public class TCP_Server {
 		try {
 
 			/* tirar antes de entregar */
+			@SuppressWarnings("resource")
 			ServerSocket listenSocket = new ServerSocket(tcp.tcp_port);
 			System.out.println("Listening to port: " + tcp.tcp_port);
 			
@@ -73,186 +74,22 @@ public class TCP_Server {
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
-
-
-			new Thread(){
-				public void run() {
-					try {
-						while (true) {
-							Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
-							tcp.conns.add(new Connection(clientSocket, ++count, tcp.rmi));
-
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}.start();
+			
 			while (true) {
 				Socket clientSocket = listenSocket.accept(); 
 				System.out.println("CLIENT_SOCKET (created at accept())=" + clientSocket);
 				
 				synchronized (listenSocket) {
-					tcp.conns.add(new Connection(clientSocket, ++count,))
+					tcp.conns.add(new Connection(clientSocket, ++count, tcp.rmi));
 				}
 				
 			}
-
 		} catch (IOException e) {
 			System.out.println("Listen:" + e.getMessage());
-		}
+		} 
 
 	}
 }
-
-	private static void parseInput(String input){
-
-		String[] aux;
-		LinkedHashMap<String, String> hashmap = new LinkedHashMap<String, String>();
-		aux = input.trim().split(";");
-		for (String field : aux) {
-			try {
-				String[] split = field.split("\\|"); // | representa a função OR por isso tem de ser \\|
-				String firstString = split[0].trim();
-				String secondString = split[1].trim();
-				hashmap.put(firstString, secondString);
-			}catch(ArrayIndexOutOfBoundsException e){
-				e.printStackTrace();
-			}
-		}
-		//chosenType(parsedInput);
-	}
-
-	private void chooseAction(LinkedHashMap<String, String> input){
-		String type = input.get("type");
-
-		switch(type){
-			case "login":
-				login(input);
-				break;
-			case "candidate_list":
-				candidateList();
-				break;
-			default:
-				run();
-				break;
-		}
-	}
-
-	private void login(LinkedHashMap<String, String> input, Connection client) throws RemoteException{
-		String username = input.get("username");
-		String password = input.get("password");
-		if(rmi.login(username, password)) {
-			client.write("type | status ; logged | on ; msg | Welcome to iVotas!");
-			int type = rmi.getUserType(username);
-			rmi.getElections()
-		}
-		else{
-			client.write("type | status ; logged | off ; msg | Incorrect identification!");
-		}
-	}
-
-	private void getElections(String username) throws RemoteException{
-		int type = rmi.getUserType(username);
-		LinkedHashMap<Integer, String> elections =
-	}
-
-	private void candidateList(LinkedHashMap<String, String> input){
-		int count = Integer.parseInt(input.get("item_count"));
-		ArrayList<String> names = new ArrayList<String>();
-		String name;
-		for(int i=0; i<count; i++){
-			name = input.get("candidate_" + i + "_name");
-			names.add(name);
-		}
-	}
-
-	private void hide() {
-/*
-
-    public static boolean checkUserByName(String str){
-        //for(voter:voters)
-        //if(voter.name = str)
-        //return true
-        //return false
-    }
-
-    public static boolean checkUserById(int num){
-        //for(voter:voters)
-        //if(voter.id = num)
-        //return true
-        //return false
-    }
-
-    public static boolean checkUserByUsername(String str){
-        //for(voter:voters)
-        //if(voter.username = str)
-        //return true
-        //return false
-    }
-
-    public static User getUser(String usr) {
-        User aux;
-        for(User user: users) {
-            if(user.username == usr) {
-                aux = user;
-            }
-        }
-        return aux;
-    }
-
-    public static void login(String usr, Scanner keyboardScanner) {
-        System.out.println("Please insert your password");
-        String pw = keyboardScanner.nextLine();
-        User aux = getUser(usr);
-        while(!verifyPassword(aux, pw)) {
-            System.out.println("Password is incorrect, please try again.");
-        }
-    }
-
-    public boolean void verifyPassword(User usr, String pw) {
-        if (usr.password == pw)
-            return true;
-    }
-    return false;
-    }
-
-    public static void printInfoOptions() {
-        System.out.println("Please choose what information you want to identify the voter by:");
-        System.out.println("<1> Name");
-        System.out.println("<2> Id Number");
-        System.out.println("<3> Username");
-    }
-    public static void unlockTerminal(Socket socket, PrintWriter outToClient, String usr){
-        outToClient.println("type | unlock; username |" + usr)
-    }
-
-    public static void checkNumber(int number) {
-        //Verificar número de eleitor e retornar detalhes
-        //for ... eleitores
-        // if eleitor.num = number
-        // eleitor.toString()
-    }
-
-    public static void printElections() {
-        //getElections()
-        //System.out.println("Choose an election")
-        //read choice
-    }
-
-    public static void getElections() {
-    }
-
-    //type | login; username | pierre ; password | omidyar
-    //type | status; logged | on; msg | Welcome to iVotas
-    //type | unlock --  //type | lock
-    //type | vote; option | x; election | y
-    //type | voter;
-
-}
-*/
-
-	}
 
 class Connection extends Thread {
     BufferedReader in;
@@ -260,6 +97,10 @@ class Connection extends Thread {
     Socket clientSocket;
     RMI_Interface_TCP rmi;
     int id;
+    String currentUser = new String();
+    int userType = 0;
+    boolean status = false;
+    
 
     public Connection (Socket aClientSocket, int numero, RMI_Interface_TCP rmi) {
         id = numero;
@@ -273,24 +114,21 @@ class Connection extends Thread {
     }
     //=============================
     public void run(){
-        try{
-            while(true){
-            	try {
-					String data = in.readLine();
-					parseInput(data);
-				} catch(IOException e){
-            		e.printStackTrace();
-				}
-            }
-        }catch(EOFException e){System.out.println("EOF:" + e);
-        }catch(IOException e){System.out.println("IO:" + e);}
+        while(true){
+			try {
+				String data = in.readLine();
+				chooseAction(parseInput(data));
+			} catch(IOException e){
+				e.printStackTrace();
+			}
+		}
     }
 
-	private void parseInput(String input) throws RemoteException{
+	private LinkedHashMap<String, String> parseInput(String input) throws RemoteException{
 
 		String[] aux;
 		LinkedHashMap<String, String> hashmap = new LinkedHashMap<String, String>();
-		aux = input.trim().split(";");
+		aux = input.split(";");
 		for (String field : aux) {
 			try {
 				String[] split = field.split("\\|"); // | representa a função OR por isso tem de ser \\|
@@ -301,48 +139,20 @@ class Connection extends Thread {
 				e.printStackTrace();
 			}
 		}
-		chooseAction(input);
+		return hashmap;
 	}
-
-	private void chooseAction(LinkedHashMap<String, String> input) throws RemoteException {
-		String type = input.get("type");
-
-		switch(type){
-			case "login":
-				login(input);
-				break;
-			default:
-				run();
-				break;
-		}
-	}
-
-	private void login(LinkedHashMap<String, String> input) throws RemoteException{
-		String username = input.get("username");
-		String password = input.get("password");
-		if(rmi.login(username, password)) {
-			write("type | status ; logged | on ; msg | Welcome to iVotas!");
-			int type = rmi.getUserType(username);
-			rmi.getElections();
-		}
-		else{
-			write("type | status ; logged | off ; msg | Incorrect identification!");
-		}
-	}
-
-	private void getElections(String username) throws RemoteException{
-		int type = rmi.getUserType(username);
-		LinkedHashMap<Integer, String> elections = rmi.getElections(type);
-		write
-	}
-
-	private String createElectionString(LinkedHashMap<Integer, String> elections) throws RemoteException{
-    	String str = "type | election_list ; ";
-    	int i = 0;
-		elections.forEach((Integer key, String value) -> {
-			str += "election_" + i + "_id | " + key + " ; " + "election_" + i + "_name | " + value + " ; ";
-			i++;
-		});
+	
+	@SuppressWarnings({ "rawtypes" })
+	public String HashmapToStringProtocol(String name, HashMap<Integer,String> hashmap){
+	    Iterator it = hashmap.entrySet().iterator();
+	    int i = 0;
+    	String str = "type | "+name+"_list; "+name+"_count: "+hashmap.size()+"; ";
+	    while (it.hasNext()) {
+	        Map.Entry pair = (Map.Entry)it.next();
+			str += name+"_" + i + "_id | " + pair.getKey() + "; " + name+"_" + i  + "_name | " + pair.getValue() + "; ";
+	        it.remove(); // avoids a ConcurrentModificationException
+	    }
+	    System.out.println(str);
 		return str;
 	}
 
@@ -358,4 +168,101 @@ class Connection extends Thread {
     public boolean getStatus() {
         return this.status;
     }
+    
+
+
+	private void chooseAction(LinkedHashMap<String, String> input){
+		String type = input.get("type");
+		if(!input.containsKey("type")){
+			write("type | error ; msg | login missing! ");
+			return;
+		}
+		
+		if(!status){
+			switch(type){
+				case "login":
+					if(input.containsKey("username") || input.containsKey("username")){
+						login(input);
+					}else
+						write("type | error ; msg | parameters missing! ");
+					break;
+				default:
+					write("type | " +type +"; msg | login missing! ");
+					break;
+			}
+		}else {
+			switch(type){
+				case "login":
+					login(input); //should be reviewed
+					break;
+				case "lists":
+					
+					if(input.containsKey("election")){
+						getLists(input);
+					}else
+						write("type | error ; msg | parameters missing! ");
+					break;
+				case "election":
+					getElections();
+				default:
+					//run(); ?? lul
+					write("type | error ; msg | unkown type! ");
+					break;
+			}
+		}
+		return ;
+	}
+
+	private void login(LinkedHashMap<String, String> input){
+		String username = input.get("username");
+		String password = input.get("password");
+
+		int type;
+		try {
+			type = rmi.login(username, password);
+			if(type != 0) {
+				write("type | status ; logged | on ; mswg | Welcome to iVotas " + username+ " !");
+				this.currentUser = username;
+				this.userType = type;
+				int userId = rmi.getUserId(username);
+				if(userId == 0){ //should not happen{
+					write("type | status ; logged | off ; msg | Incorrect identification!");
+				}
+				HashMap<Integer, String> elections = rmi.getElections(type);
+				if(elections != null){
+					write(HashmapToStringProtocol("election", elections));
+				}else
+					write("type | election ; msg | No elections occuring at the moment!");
+					
+			}
+			else{
+				write("type | status ; logged | off ; msg | Incorrect identification!");
+			}
+			return;
+		} catch (RemoteException e) { //colocar em algum sitio
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	private void getElections() {
+		HashMap<Integer, String> elections;
+		try {
+			elections = rmi.getElections(this.userType);
+			if(elections != null){
+				write(HashmapToStringProtocol("election", elections));
+			}else
+				write("type | election ; msg | No elections occuring at the moment!");
+		
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+}
+
+	private void getLists(LinkedHashMap<String, String> input) {
+		
+	}
+    
 }

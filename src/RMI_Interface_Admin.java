@@ -8,7 +8,7 @@ public interface RMI_Interface_Admin {
     public boolean deleteDepartment(int id);
     public boolean deleteFaculty(int id);
     public void createElection(Date startDate, Date endDate, String name, String desc, int id_department);
-    public void changeElectionLists(ElectionList list);
+    public void changeElectionLists(ArrayList<String> list);
     public void changeElectionProperties(Date startDate, Date endDate, String name, String desc, int id);
     public boolean addVotingTable( int depId);
     public String whereUserVoted(int electionId, int userId);

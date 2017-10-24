@@ -776,6 +776,37 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		
 	}
 	
+	public int getUserId(String username) throws RemoteException {
+		try{
+			String sql = "select id from person where username = ? limit 1";
+			PreparedStatement prepStatement = connection.prepareStatement(sql);
+			prepStatement.setString(1,username);
+			ResultSet rs = prepStatement.executeQuery();
+			if(rs.next()){
+				int id = rs.getInt("id");
+				prepStatement.close();
+				rs.close();
+				return id;
+			}
+			
+			return 0;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return 0;
+	}
 	
 	public static void main(String args[]) {
 		
@@ -796,9 +827,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			return;
 		}
 	}
-
-
-
 
 }
 
