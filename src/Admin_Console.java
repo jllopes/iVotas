@@ -247,7 +247,7 @@ public class Admin_Console {
     }
 
     /*--------Election Menu---------*/
-    
+
     public void manageElections(){
         Scanner in = new Scanner(System.in);
         printElectionsMenu();

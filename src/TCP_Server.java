@@ -92,6 +92,55 @@ public class TCP_Server {
 
 	}
 }
+
+	private static void parseInput(String input){
+
+		String[] aux;
+		LinkedHashMap<String, String> hashmap = new LinkedHashMap<String, String>();
+		aux = input.trim().split(";");
+		for (String field : aux) {
+			try {
+				String[] split = field.split("\\|"); // | representa a função OR por isso tem de ser \\|
+				String firstString = split[0].trim();
+				String secondString = split[1].trim();
+				hashmap.put(firstString, secondString);
+			}catch(ArrayIndexOutOfBoundsException e){
+				e.printStackTrace();
+			}
+		}
+		//chosenType(parsedInput);
+	}
+
+	private void chosenType(LinkedHashMap<String, String> input){
+		String type = input.get("type");
+
+		switch(type){
+			case "login":
+				login(input);
+				break;
+			case "candidate_list":
+				candidateList();
+				break;
+			default:
+				run();
+				break;
+		}
+	}
+
+	private void login(LinkedHashMap<String, String> input){
+		String username = input.get("username");
+		String password = input.get("password");
+	}
+
+	private void candidateList(LinkedHashMap<String, String> input){
+		int count = Integer.parseInt(input.get("item_count"));
+		ArrayList<String> names = new ArrayList<String>();
+		String name;
+		for(int i=0; i<count; i++){
+			name = input.get("candidate_" + i + "_name");
+			names.add(name);
+		}
+	}
 /*
 
     public static boolean checkUserByName(String str){
