@@ -8,7 +8,7 @@ create table faculty
 	primary key (id)
     );
 
-create table departement
+create table department
 	( id int(4) not null auto_increment,
     id_faculty int(4) not null,
     name varchar(25),
@@ -18,11 +18,10 @@ create table departement
 
 create table vote_table
 	(id int(4) not null auto_increment,
-    name varchar(25),
-    id_departement int(4) not null,
+    id_department int(4) not null,
     primary key(id),
-    foreign key(id_departement) references departement(id),
-	UNIQUE(id_departement)
+    foreign key(id_department) references department(id)
+	#UNIQUE(id_department)
     );
 
 
@@ -32,10 +31,10 @@ create table person
     password varchar(16) not null,
     type int(1) not null,
 	id_faculty int(4) not null,
-    id_departement int(4),
+    id_department int(4),
     primary key (id),
     foreign key(id_faculty) references faculty(id),
-    foreign key(id_departement) references departement(id),
+    foreign key(id_department) references department(id),
     UNIQUE(username),
     constraint type_check_1_0 check (type is not null or type=1 or type=2 or type=3)
     );
@@ -49,6 +48,7 @@ create table data_person
     cc_month int(2),
     cc_year int(4),
 	id_person int(4) not null,
+    phoneNumber varchar(13) not null,
     primary key(id),
     foreign key(id_person) references person(id),
     UNIQUE(id_person),
@@ -64,7 +64,7 @@ create table election
     description varchar(100),
     start_date datetime default current_timestamp,
     end_date datetime not null,
-    departement_number int(4), #numero departement
+    department_number int(4), #numero department
     primary key(id),
     constraint after_date check (start_date < end_date and start_date >= current_timestamp)
 	);
@@ -98,6 +98,7 @@ create table vote
 	id_election int(4) not null,
 	id_table int(4) not null,
 	id_person int(4) not null,
+    time_vote TIMESTAMP default current_timestamp,
     primary key(id),
     foreign key(id_election) references election(id),
     foreign key(id_table) references vote_table(id),
