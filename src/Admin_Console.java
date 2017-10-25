@@ -1,9 +1,62 @@
+import java.io.*;
 import java.lang.reflect.Array;
+import java.net.MalformedURLException;
+import java.rmi.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Admin_Console {
+    RMI_Interface_Admin rmi;
+    String rmi_name;
+    String rmi_ip;
+    int rmi_port;
+
+    public Admin_Console(){
+        //Properties https://www.mkyong.com/java/java-properties-file-examples/
+        Properties prop = new Properties();
+        InputStream input = null;
+
+        try {
+            input = new FileInputStream("../tcpserverconfig.properties");
+
+            // load a properties file
+            prop.load(input);
+
+            // get the property value and print it out
+            rmi_port = Integer.parseInt(prop.getProperty("rmi_port"));
+            rmi_ip = prop.getProperty("rmi_ip");
+            rmi_name = prop.getProperty("rmi_name");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    public void main(String args[]) {
+        Admin_Console admin = new Admin_Console();
+        /*rmi*/
+        try {
+            admin.rmi = (RMI_Interface_Admin) Naming.lookup("rmi://" + admin.rmi_ip+ ":" + admin.rmi_port+ "/" + admin.rmi_name);
+            System.out.println("RMIFound");
+            mainMenu();
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
 
     /*--------Main Menu---------*/
 
@@ -21,6 +74,7 @@ public class Admin_Console {
         System.out.println("<4> Create Election");
         System.out.println("<5> Manage Election");
         System.out.println("<6> Consult Past Elections");
+        System.out.println("<7> Where User Voted");
     }
 
     public void chooseMainMenu(int opt){
@@ -37,8 +91,32 @@ public class Admin_Console {
                     break;
             case 6: consultPastElections();
                     break;
+            /*case 7: whereVoted();
+                    break;*/
+            default:
+                break;
         }
     }
+
+    //TODO
+    /*public void whereVoted(){
+        Scanner in = new Scanner(System.in);
+        //printUsers();
+        System.out.println("Insert the id of the user:");
+        int user = in.nextInt();
+        //ArrayList<Election> votes = getUserVotes(user);
+        for(Vote vote : votes){
+            System.out.println("Election Name: " + vote.name + " , Election Id: " + vote.id);
+        }
+        System.out.println("Insert the id of the election:");
+        int election = in.nextInt();
+        for(Vote vote : votes){
+            if(vote.id == election){
+                System.out.println("Date: " + vote.date.toString() + " , Table:" + vote.table);
+                break;
+            }
+        }
+    }*/
 
     public void consultPastElections(){
         Scanner in = new Scanner(System.in);
@@ -51,29 +129,32 @@ public class Admin_Console {
 
     public void newElection(){
         Scanner in = new Scanner(System.in);
-        System.out.println("Choose the type of election you want to create:"); //1-student, 2-general
-        printElectionTypeMenu();
-        int type = in.nextInt();
         int department;
-        if(type == 1){
-            System.out.println("Insert the department where the election is happening:");
-            //listDepartments();
-            department = in.nextInt();
-        }
-        else
-            department = 0;
+        //listDepartments(0);
+        System.out.println("Insert the department where the election is happening (0 if general council):");
+        department = in.nextInt();
         System.out.println("Insert the start date of the election (Format: dd/mm/yy hh:mm):");
-        Date startDate = getDate();
+        Date startDate = new Date();
+        try {
+            startDate = getDate();
+        } catch (ParseException e){
+            e.printStackTrace();
+        }
         System.out.println("Insert the end date of the election (Format: dd/mm/yy hh:mm):");
-        Date endDate = getDate();
+        Date endDate = new Date();
+        try {
+            endDate = getDate();
+        } catch (ParseException e){
+            e.printStackTrace();
+        }
         System.out.println("Insert a title for the election:");
         String title = in.nextLine();
         System.out.println("Insert a description for the election:");
         String description = in.nextLine();
-        createElection(startDate, endDate, title, description, type, department);
+        this.rmi.createElection(startDate, endDate, title, description, department);
     }
 
-    public Date getDate() {
+    public Date getDate() throws ParseException {
         Scanner in = new Scanner(System.in);
         String dateString = in.nextLine();
         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -82,6 +163,7 @@ public class Admin_Console {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        return date.parse(dateString);
     }
 
     public void newUser(){
@@ -96,10 +178,10 @@ public class Admin_Console {
         printUserTypeMenu();
         int type = in.nextInt();
         System.out.println("Choose the faculty of the user:");
-        //printFacultyList();
+        //listFaculties();
         int facultyId = in.nextInt();
         System.out.println("Choose the department of the user:");
-        //printDepartmentList(int facultyId);
+        //listDepartments(int facultyId);
         int departmentId = in.nextInt();
         System.out.println("Insert the ID number of the user:");
         int id = in.nextInt();
@@ -111,7 +193,7 @@ public class Admin_Console {
         String address = in.nextLine();
         System.out.println("Insert the contact number of the user:");
         String phoneNumber = in.nextLine();
-        register(name,username,password,type,facultyId,departmentId,address,id,idMonth,idYear,phoneNumber);
+        this.rmi.register(name, username,password,type,facultyId,departmentId,address,id,idMonth,idYear,phoneNumber);
     }
 
     public void printElectionTypeMenu(){
@@ -143,10 +225,13 @@ public class Admin_Console {
     public void chooseDepartmentsMenu(int opt){
         switch(opt){
             case 1: newDepartment();
+                    mainMenu();
                     break;
             case 2: alterDepartment();
+                    mainMenu();
                     break;
             case 3: removeDepartment();
+                    mainMenu();
                     break;
         }
     }
@@ -158,33 +243,33 @@ public class Admin_Console {
         //printFaculties();
         System.out.println("Insert the faculty id of the department:");
         int faculty = in.nextInt();
-        addDepartment(name,faculty);
+        rmi.addDepartment(name,faculty);
     }
 
     public void alterDepartment(){
         Scanner in = new Scanner(System.in);
         System.out.println("Choose the id of the department:");
-        //printDepartments();
+        //printDepartments(0);
         int department = in.nextInt();
-        while(!checkDepartment(department)){
+        while(!rmi.checkDepartment(department)){
             System.out.println("There is no faculty with that id, please insert a valid id:");
             department = in.nextInt();
         }
         System.out.println("Insert the new name of the department:");
         String newName = in.nextLine();
-        changeDepartment(newName,department);
+        rmi.changeDepartment(newName,department);
     }
 
     public void removeDepartment(){
         Scanner in = new Scanner(System.in);
         System.out.println("Choose the id of the department:");
-        //printDepartments();
+        //printDepartments(0);
         int department = in.nextInt();
-        while(!checkDepartment(department)){
+        while(!rmi.checkDepartment(department)){
             System.out.println("There is no faculty with that id, please insert a valid id:");
             department = in.nextInt();
         }
-        deleteDepartment(department);
+        rmi.deleteDepartment(department);
     }
 
     /*--------Faculties Menu---------*/
@@ -205,10 +290,13 @@ public class Admin_Console {
     public void chooseFacultiesMenu(int opt){
         switch(opt){
             case 1: newFaculty();
+                    mainMenu();
                 break;
             case 2: alterFaculty();
+                    mainMenu();
                 break;
             case 3: removeFaculty();
+                    mainMenu();
                 break;
         }
     }
@@ -217,7 +305,7 @@ public class Admin_Console {
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the name of the new faculty:");
         String name = in.nextLine();
-        addFaculty(name);
+        rmi.addFaculty(name);
     }
 
     public void alterFaculty(){
@@ -225,13 +313,13 @@ public class Admin_Console {
         System.out.println("Choose the id of the faculty:");
         //printFaculties();
         int faculty = in.nextInt();
-        while(!checkFaculty(faculty)){
+        while(!rmi.checkFaculty(faculty)){
             System.out.println("There is no faculty with that id, please insert a valid id:");
             faculty = in.nextInt();
         }
         System.out.println("Insert the new name of the faculty:");
         String newName = in.nextLine();
-        changeFaculty(newName,faculty);
+        rmi.changeFaculty(newName,faculty);
     }
 
     public void removeFaculty(){
@@ -239,20 +327,24 @@ public class Admin_Console {
         System.out.println("Choose the id of the faculty:");
         //printFaculties();
         int faculty = in.nextInt();
-        while(!checkFaculty(faculty)){
+        while(!rmi.checkFaculty(faculty)){
             System.out.println("There is no faculty with that id, please insert a valid id:");
             faculty = in.nextInt();
         }
-        deleteDepartment(faculty);
+        rmi.deleteFaculty(faculty);
     }
 
     /*--------Election Menu---------*/
 
     public void manageElections(){
         Scanner in = new Scanner(System.in);
+        //listElections();
+        System.out.println("Insert the id of the election you want to manage:");
+        int election_id = in.nextInt();
+        int department = rmi.getDepartment(election_id);
         printElectionsMenu();
         int opt = in.nextInt();
-        chooseElectionsMenu(opt);
+        chooseElectionsMenu(opt, election_id, department);
     }
 
     public void printElectionsMenu(){
@@ -262,15 +354,19 @@ public class Admin_Console {
         System.out.println("<4> Remove Voting Table");
     }
 
-    public void chooseElectionsMenu(int opt){
+    public void chooseElectionsMenu(int opt, int election_id, int department){
         switch(opt){
-            case 1: addCandidates();
+            case 1: addCandidates(department, election_id);
+                    mainMenu();
                     break;
-            case 2: removeCandidates();
+            case 2: removeCandidates(election_id);
+                    mainMenu();
                     break;
-            case 3: newVotingTable();
+            case 3: newVotingTable(election_id);
+                    mainMenu();
                     break;
-            case 4: removeVotingTable();
+            case 4: removeVotingTable(election_id);
+                    mainMenu();
                     break;
         }
     }
@@ -279,7 +375,7 @@ public class Admin_Console {
         Scanner in = new Scanner(System.in);
         System.out.println("Insert a name for the candidates list:");
         String name = in.nextLine();
-        int type;
+        int type = 0;
         if(electionType == 2){
             System.out.println("Choose the type of list you want to create:");
             printUserTypeMenu();
@@ -290,8 +386,9 @@ public class Admin_Console {
         ArrayList<String> students = new ArrayList<String>();
         ArrayList<String> professors = new ArrayList<String>();
         ArrayList<String> employees = new ArrayList<String>();
+        int check = 0;
         while((username = in.nextLine()) != null){
-            int check = checkUserType(username);
+            check = rmi.checkUserType(username);
             if(electionType == 2){
                 if(check == 1 && type == 1){ // Student
                     students.add(username);
@@ -326,6 +423,7 @@ public class Admin_Console {
                 return employees;
             }
         }
+        return new ArrayList<>();
     }
 
     public void removeCandidates(int election){
@@ -333,7 +431,7 @@ public class Admin_Console {
         System.out.println("Insert the name of the list you want to remove:");
         //printElectionLists(int election);
         String name = in.nextLine();
-        removeList(election, name);
+        rmi.removeList(election, name);
     }
 
     public void newVotingTable(int election){

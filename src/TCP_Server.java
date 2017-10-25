@@ -27,7 +27,7 @@ public class TCP_Server {
 
 				try {
 
-					input = new FileInputStream("tcpserverconfig.properties");
+					input = new FileInputStream("../tcpserverconfig.properties");
 
 					// load a properties file
 					prop.load(input);
@@ -96,11 +96,13 @@ class Connection extends Thread {
     PrintWriter out;
     Socket clientSocket;
     RMI_Interface_TCP rmi;
+    //userdata
     int id;
     String currentUser = new String();
     int userType = 0;
+    int userDep = 0;
+    int userId = 0;
     boolean status = false;
-    
 
     public Connection (Socket aClientSocket, int numero, RMI_Interface_TCP rmi) {
         id = numero;
@@ -118,8 +120,9 @@ class Connection extends Thread {
 			try {
 				String data = in.readLine();
 				chooseAction(parseInput(data));
-			} catch(IOException e){
-				e.printStackTrace();
+			} catch(IOException e){ //cliente exit
+				System.out.println("Client left ");
+				return;
 			}
 		}
     }
@@ -156,7 +159,6 @@ class Connection extends Thread {
 		return str;
 	}
 
-
 	private void write(String msg) {
     	this.out.println(msg);
 	}
@@ -168,8 +170,6 @@ class Connection extends Thread {
     public boolean getStatus() {
         return this.status;
     }
-    
-
 
 	private void chooseAction(LinkedHashMap<String, String> input){
 		String type = input.get("type");
@@ -181,7 +181,7 @@ class Connection extends Thread {
 		if(!status){
 			switch(type){
 				case "login":
-					if(input.containsKey("username") || input.containsKey("username")){
+					if(input.containsKey("username") &&  input.containsKey("username")){
 						login(input);
 					}else
 						write("type | error ; msg | parameters missing! ");
@@ -204,6 +204,7 @@ class Connection extends Thread {
 					break;
 				case "election":
 					getElections();
+					break;
 				default:
 					//run(); ?? lul
 					write("type | error ; msg | unkown type! ");
@@ -224,11 +225,15 @@ class Connection extends Thread {
 				write("type | status ; logged | on ; mswg | Welcome to iVotas " + username+ " !");
 				this.currentUser = username;
 				this.userType = type;
-				int userId = rmi.getUserId(username);
+				HashMap<String, Integer> userInfo = rmi.getUserId(username);
+			    this.userDep = userInfo.get("id_department");
+			    this.userId = userInfo.get("id");
+				this.status = true;
 				if(userId == 0){ //should not happen{
 					write("type | status ; logged | off ; msg | Incorrect identification!");
+					return;
 				}
-				HashMap<Integer, String> elections = rmi.getElections(type);
+				HashMap<Integer, String> elections = rmi.getElections(type, userDep);
 				if(elections != null){
 					write(HashmapToStringProtocol("election", elections));
 				}else
@@ -249,7 +254,7 @@ class Connection extends Thread {
 	private void getElections() {
 		HashMap<Integer, String> elections;
 		try {
-			elections = rmi.getElections(this.userType);
+			elections = rmi.getElections(this.userType, this.userDep);
 			if(elections != null){
 				write(HashmapToStringProtocol("election", elections));
 			}else
@@ -262,7 +267,14 @@ class Connection extends Thread {
 }
 
 	private void getLists(LinkedHashMap<String, String> input) {
-		
-	}
-    
+		try{
+			int id_election = Integer.parseInt(input.get("election"));
+			HashMap<Integer, String> lists = rmi.getListsElections(this.userType, this.userDep, id_election);
+			write(HashmapToStringProtocol("ElectionLists", lists));
+		}catch(NumberFormatException e1) {
+			write("type | lists; msg | invalid election id");
+		}catch(RemoteException e ){
+			//save this
+		}		
+	}	
 }
