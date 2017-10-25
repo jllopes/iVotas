@@ -27,7 +27,7 @@ public class TCP_Server {
 
 				try {
 
-					input = new FileInputStream("../tcpserverconfig.properties");
+					input = new FileInputStream("tcpserverconfig.properties");
 
 					// load a properties file
 					prop.load(input);
@@ -181,7 +181,7 @@ class Connection extends Thread {
 		if(!status){
 			switch(type){
 				case "login":
-					if(input.containsKey("username") &&  input.containsKey("username")){
+					if(input.containsKey("username") &&  input.containsKey("password")){
 						login(input);
 					}else
 						write("type | error ; msg | parameters missing! ");
@@ -204,6 +204,12 @@ class Connection extends Thread {
 					break;
 				case "election":
 					getElections();
+					break;
+				case "vote":
+					if(input.containsKey("election") && input.containsKey("vote")){
+						vote(input);
+					}else
+						write("type | error ; msg | parameters missing! ");
 					break;
 				default:
 					//run(); ?? lul
@@ -277,4 +283,29 @@ class Connection extends Thread {
 			//save this
 		}		
 	}	
+
+	private void vote(LinkedHashMap<String, String> input){
+		try{
+			int id_election = Integer.parseInt(input.get("election"));
+			int vote = Integer.parseInt(input.get("vote")); 
+			// vote = 0 blank , lista invalida -> nulo, lista valida -> new vote
+			
+			HashMap<Integer, String> lists = rmi.getListsElections(this.userType, this.userDep, id_election);
+			//public boolean vote(int userid ,int usertype, int userDep, int idElection, int idList)  //false se ja existir voto
+			if(vote == 0){
+				//insert vote blank
+			}else {
+				
+			}
+			
+			write(HashmapToStringProtocol("ElectionLists", lists));
+			
+			
+		}catch(NumberFormatException e1) {
+			write("type | lists; msg | invalid election id");
+		}catch(RemoteException e ){
+			//save this
+		}		
+		
+	}
 }
