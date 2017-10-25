@@ -10,10 +10,7 @@ insert into department(id_faculty, name) values (1, "DEM");
 insert into department(id_faculty, name) values (2, "Portuges");
 insert into department(id_faculty, name) values (2, "Ingles");
 
-insert into vote_table( id_department) values(1);
-insert into vote_table( id_department) values(2);
-insert into vote_table( id_department) values(3);
-insert into vote_table( id_department) values(4);
+
 
 
 
@@ -34,6 +31,10 @@ insert into data_person(name, address, cc_number, cc_month, cc_year,phoneNumber,
 
 #eleiçao 1 com 2 listas
 insert into election(name,description,start_date, end_date, department_number) values ("Votaçao nei","nova votaçao para o nucleo informatica",'2017-10-15 12:00:00','2017-10-17 12:00:00',1);
+insert into vote_table( id_department, id_election) values(1,1);
+insert into vote_table( id_department, id_election) values(2,1);
+insert into vote_table( id_department, id_election) values(3,1);
+insert into vote_table( id_department, id_election) values(4,1);
 insert into list_election(name, id_election, type) values ("Lista A",1,1);
 insert into person_list(id_person, id_list) values (1,1);
 insert into list_election(name, id_election, type) values ("Lista B",1,1);
@@ -53,21 +54,28 @@ insert into person_list(id_person, id_list) values (4,4);
 
 #eleicao 3
 insert into election(name,description, end_date, department_number) values ("Votaçao live","eleicao q deve estar a decorrer",date_add(current_timestamp(), interval 1 day) ,1);
+insert into vote_table( id_department, id_election) values(1,1);
+insert into vote_table( id_department, id_election) values(2,1);
+insert into vote_table( id_department, id_election) values(3,1);
+insert into vote_table( id_department, id_election) values(4,1);
+
 insert into list_election(name, id_election, type) values ("Lista A",3,1);
 insert into person_list(id_person, id_list) values (1,5);
 insert into list_election(name, id_election, type) values ("Lista B",3,2);
 insert into person_list(id_person, id_list) values (5,6);
 
-insert into vote(id_election, id_person, id_table) values (3,2,1);
-insert into vote(id_election, id_person, id_table) values (3,5,1);
+insert into vote(id_election, id_person, id_table) values (3,2,5);
+insert into vote(id_election, id_person, id_table) values (3,5,5);
 update list_election set list_election.vote = list_election.vote +1 where list_election.id = 5;
 update list_election set list_election.vote = list_election.vote +1 where list_election.id = 6;
 insert into department(id_faculty, name) values (1, "novo");
 #select vote.time_vote, person.username, election.name, department.name from vote, person,election, vote_table, department where vote.id_person = 1 and vote.id_election = 1 and vote.id_person = person.id and vote.id_election = election.id  and vote.id_table=vote_table.id and vote_table.id_department = department.id;
 
 
-select list_election.id , name from  list_election  where id_election =3 and type=1;
+select list_election.id , name from  list_election  where id_election =1 and type=1;
+select * from person;
 select * from election;
+select * from department where id_faculty =1;
 /*
 select * from election where start_date < current_timestamp() and end_date > current_timestamp();
 select * from list_election;

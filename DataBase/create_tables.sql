@@ -16,13 +16,7 @@ create table department
 	foreign key(id_faculty) references faculty(id)
 	);	
 
-create table vote_table
-	(id int(4) not null auto_increment,
-    id_department int(4) not null,
-    primary key(id),
-    foreign key(id_department) references department(id)
-	#UNIQUE(id_department)
-    );
+
 
 
 create table person
@@ -65,9 +59,21 @@ create table election
     start_date datetime default current_timestamp,
     end_date datetime not null,
     department_number int(4), #numero department
+    vote_blank int(4) default 0,
+    vote_null int(4) default 0,
     primary key(id),
     constraint after_date check (start_date < end_date and start_date >= current_timestamp)
 	);
+    
+create table vote_table
+	(id int(4) not null auto_increment,
+    id_department int(4) not null,
+    id_election int(4) not null,
+    primary key(id),
+    foreign key(id_department) references department(id),
+	foreign key(id_election) references election(id)
+	#UNIQUE(id_department)
+    );
     
 create table list_election
 	(
@@ -76,6 +82,8 @@ create table list_election
 	id_election int(4) not null,
     type int(1) not null,
    	vote int(4) default 0,
+    vote_blank int(4) default 0,
+    vote_null int(4) default 0,
     primary key(id),
     foreign key(id_election) references election(id),
 	constraint type_check_1_0 check (type is not null or type=1 or type=2 or type=3)
