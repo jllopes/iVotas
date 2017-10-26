@@ -27,9 +27,10 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		InputStream input = null;
 
 		try {
-			//FileOutputStream file = new FileOutputStream("caralho_onde_está_esta_merda");
-			input = new FileInputStream("../rmiconfig.properties");
-
+			if(new File("../rmiconfig.properties").exists()){
+				input = new FileInputStream("../rmiconfig.properties");
+			}else
+				input = new FileInputStream("rmiconfig.properties");
 			// load a properties file
 			prop.load(input);
 
@@ -118,6 +119,37 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 
 
 		return;
+	}
+	
+	public boolean checkUser(String username) throws RemoteException {
+		try {
+			connection.setAutoCommit(false);
+	    	String sql = "SELECT * FROM person WHERE username = ? limit 1";
+	    	PreparedStatement prepStatement = connection.prepareStatement(sql);
+	    	prepStatement.setString(1,username);
+	    	ResultSet rs = prepStatement.executeQuery();
+	    	if(rs.next()){
+	    		//theres someone with the same username;
+	    		return true;
+	    	}
+	    	rs.close();
+	    	return false;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+			return false;
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
 	}
 	
     public boolean register(String name, String username, String password, int type,int id_faculty, int id_departement, String address, int num_id, int month_id, int year_id, String phoneNumber) throws RemoteException{
@@ -1087,7 +1119,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			if(rs.next()){
 				String name = rs.getString("name");
 				int department = rs.getInt("department_number");
-				return new Election(name, id, department);
+				//return new Election(name, id, (Department)department);   
 			}else{
 				return null;
 			}
@@ -1120,7 +1152,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			ResultSet rs = prepStatement1.executeQuery();
 			if(rs.next()){
 				int department = rs.getInt("department_number");
-				return new VotingTable(department, id);
+				//return new VotingTable(department, id);
 			}else{
 				return null;
 			}
@@ -1460,4 +1492,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			return;
 		}
 	}
+
+
 }

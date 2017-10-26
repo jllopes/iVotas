@@ -2,33 +2,36 @@ import java.io.*;
 import java.net.*;
 import java.rmi.*;
 import java.util.*;
-
+import iVotas.Parser;
 public class TCP_Server {
 
 	int dc;
 	RMI_Interface_TCP rmi;
 	ArrayList<String> pedidos_espera;
 	ArrayList<Socket> list_socket;
-	ArrayList<Connection> conns;
+	List<Connection> conns ;
 	String rmi_name;
 	String rmi_ip;
 	int rmi_port;
 	int tcp_port;
 	int id_table;
+	int nTerminais;
 	
 	public TCP_Server() {
 		this.dc = 0;
 		pedidos_espera = new ArrayList<>();
 		list_socket = new ArrayList<>();
-		conns = new ArrayList<>();
-
+		conns = Collections.synchronizedList(new ArrayList<>());
+		nTerminais = 0;
 		//Properties https://www.mkyong.com/java/java-properties-file-examples/
 				Properties prop = new Properties();
 				InputStream input = null;
 
 				try {
-
-					input = new FileInputStream("tcpserverconfig.properties");
+					if(new File("../rmiconfig.properties").exists()){
+						input = new FileInputStream("../tcpserverconfig.properties");
+					}else
+						input = new FileInputStream("tcpserverconfig.properties");
 
 					// load a properties file
 					prop.load(input);
@@ -52,7 +55,38 @@ public class TCP_Server {
 				}
 	}
 
+    public boolean unlockTable(String username){
+    	try{
+			return rmi.checkUser(username);
+    			
+    	} catch(RemoteException e){
+    		if(rmiReconnection(6)){
+    			return unlockTable(username);
+    		}else 
+    			return false;
+		} 
+    }
 	
+    public boolean rmiReconnection(int try_attempts){ //try till it finds or runs out of attempts
+        if (try_attempts==0){
+            return false;
+        }
+        try {
+            this.rmi = (RMI_Interface_TCP) Naming.lookup("rmi://" + this.rmi_ip+ ":" + this.rmi_port+ "/" + this.rmi_name);
+            //this.RMI.addTCPServer((RMI_Interface_TCP)this,this.host_port);
+            return true;
+        } catch (RemoteException | NotBoundException | MalformedURLException e1) {
+        	System.out.println("RMI down, attemp to reconnect (" + (6-try_attempts) +")");
+            try {
+                try_attempts--;
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                System.out.println("Error sleep");
+            }
+            return rmiReconnection(try_attempts);
+        }
+    }
+ 
 	public static void main(String args[])  {
 		TCP_Server tcp = new TCP_Server();
 		int count = 0;
@@ -75,17 +109,58 @@ public class TCP_Server {
 				e.printStackTrace();
 			}
 			
-			//tcp.id_table = handShake();
+			new Thread(){ //thread in charge to put clients on valid tables
+				public void run(){
+					@SuppressWarnings("resource")
+					Scanner sc = new Scanner(System.in);
+					while(true){
+						//sc.nextLine();
+						String msg = sc.nextLine();
+						LinkedHashMap<String, String> input = Parser.parseInput(msg);
+						if(!input.containsKey("username"))
+							System.out.println("Follow the Protocol, missing username !");
+						else if (tcp.unlockTable(input.get("username"))) {
+							synchronized(tcp.conns){							
+								if(tcp.nTerminais == 0 ) {
+									System.out.println("TCP_Client: No TCP_Clients connected at the moment");
+								}else {
+									int i = 1;
+									for(Connection c : tcp.conns){
+										i++;
+										if(c.getLocked()){ //locked table
+											c.unlockTable(input.get("username"));
+											System.out.println("TCP_Client: " +c.id + " unlocked");
+											break;
+										}
+									}
+									if(i  == tcp.nTerminais + 1){
+										System.out.println("TCP_Client: No TCP_Clients available at the moment");
+										try {
+											Thread.sleep(1000);
+										} catch (InterruptedException e) {
+											System.out.println("Tables full, consider waiting");
+										}
+									}
+								}
+							}
+						}else {
+							System.out.println("Unknown username !");
+						}
+
+					}//while(true);
+				}
+				
+			}.start();
 			
 			
 			while (true) {
 				Socket clientSocket = listenSocket.accept(); 
-				System.out.println("CLIENT_SOCKET (created at accept())=" + clientSocket);
+				System.out.println("NEW_TABLE (created at accept())=" + clientSocket);
 				
 				synchronized (listenSocket) {
 					tcp.conns.add(new Connection(clientSocket, ++count, tcp));
 				}
-				
+				tcp.nTerminais ++;
 			}
 		} catch (IOException e) {
 			System.out.println("Listen:" + e.getMessage());
@@ -93,42 +168,7 @@ public class TCP_Server {
 
 	}
 
-	public int handShake(int id_election, int id_table){
-		try {
-			return this.rmi.assignTable();
-		} catch (RemoteException e) {
-			System.out.println("RMI: Cannot register table");
-			System.exit(0);
-			return 0;
-		}
-	}
 
-	//timeout
-    boolean rmiReconnection(int try_attempts){ //try till it finds or runs out of attempts
-        if (try_attempts==0){
-            return false;
-        }
-        try {
-            this.rmi = (RMI_Interface_TCP) Naming.lookup("rmi://" + this.rmi_ip+ ":" + this.rmi_port+ "/" + this.rmi_name);
-            //this.RMI.addTCPServer((RMI_Interface_TCP)this,this.host_port);
-            return true;
-        } catch (RemoteException | NotBoundException | MalformedURLException e1) {
-        	System.out.println("RMI down, attemp to reconnect (" + (6-try_attempts) +")");
-            try {
-                try_attempts--;
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                System.out.println("Error sleep");
-            }
-            return rmiReconnection(try_attempts);
-        }
-    }
-
-	
-	public void updateTime(){ //estas aqui mano
-		
-		
-	}
 }
 
 class Connection extends Thread {
@@ -143,7 +183,8 @@ class Connection extends Thread {
     int userDep = 0;
     int userId = 0;
     boolean status = false;
-    long  time = System.currentTimeMillis();
+    boolean block = true;
+    long  time;
     
     public Connection (Socket aClientSocket, int numero, TCP_Server tcp) {
         id = numero;
@@ -152,74 +193,45 @@ class Connection extends Thread {
             clientSocket = aClientSocket;
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             out = new PrintWriter(clientSocket.getOutputStream(), true);
-            new Thread(){
-            	public void run(){
-                	boolean unlock = true;
-                	while(unlock){
-                		if(( System.currentTimeMillis()- time)/1000 < 120){ //notlocked
-                			try {
-								Thread.sleep(5000);
-							} catch (InterruptedException e) {
-								System.out.println("lock check-thread error ");
-							}
-                		}else{
-                			unlock = false;
-                			System.out.println("mesa sem aÁao, dar lock");
-                		}
-                	}
-            	}
-            	
-            }.start();
-            this.start();
         }catch(IOException e){System.out.println("Connection:" + e.getMessage());}
     }
     
     //=============================
     public void run(){
-        while(true){
-			try {
+    	time = System.currentTimeMillis();
+        new Thread(){
+        	public void run(){
+            	while(!block){
+            		if(( System.currentTimeMillis()- time)/1000 < 120){ //notlocked
+            			try {
+							Thread.sleep(5000);
+						} catch (InterruptedException e) {
+							System.out.println("lock check-thread error ");
+						}
+            		}else{
+            			logout();
+            			System.out.println("mesa sem aÁao, dar lock");
+            		}
+            	}
+            	System.out.println("table locked ");
+        	}
+        	
+        }.start();
+    	
+		try {
+			while (true){
 				String data = in.readLine();
-				chooseAction(parseInput(data));
+				chooseAction(Parser.parseInput(data));
 				time = System.currentTimeMillis();
-			} catch(IOException e){ //cliente exit
-				System.out.println("Client force left ");
-				return;
 			}
+		} catch(IOException e){ //cliente exit
+			System.out.println("Client force left ");
+			block = true;
+			tcp.nTerminais--;
+			tcp.conns.remove(this);
+			return;
 		}
     }
-
-	private LinkedHashMap<String, String> parseInput(String input) throws RemoteException{
-
-		String[] aux;
-		LinkedHashMap<String, String> hashmap = new LinkedHashMap<String, String>();
-		aux = input.split(";");
-		for (String field : aux) {
-			try {
-				String[] split = field.split("\\|"); // | representa a fun√ß√£o OR por isso tem de ser \\|
-				String firstString = split[0].trim();
-				String secondString = split[1].trim();
-				hashmap.put(firstString, secondString);
-			}catch(ArrayIndexOutOfBoundsException e){
-				System.out.println("Message doesnt follow the protocol");
-				return null;
-			}
-		}
-		return hashmap;
-	}
-	
-	@SuppressWarnings({ "rawtypes" })
-	public String HashmapToStringProtocol(String name, HashMap<Integer,String> hashmap){
-	    Iterator it = hashmap.entrySet().iterator();
-	    int i = 0;
-    	String str = "type | "+name+"_list; "+name+"_count: "+hashmap.size()+"; ";
-	    while (it.hasNext()) {
-	        Map.Entry pair = (Map.Entry)it.next();
-			str += name+"_" + i + "_id | " + pair.getKey() + "; " + name+"_" + i  + "_name | " + pair.getValue() + "; ";
-	        it.remove(); // avoids a ConcurrentModificationException
-	    }
-	    System.out.println(str);
-		return str;
-	}
 
 	private void write(String msg) {
     	this.out.println(msg);
@@ -249,6 +261,9 @@ class Connection extends Thread {
 						}else
 							write("type | error ; msg | parameters missing! ");
 						break;
+					case "logout":
+						logout();
+						break;
 					default:
 						write("type | " +type +"; msg | login missing! ");
 						break;
@@ -274,8 +289,10 @@ class Connection extends Thread {
 						}else
 							write("type | error ; msg | parameters missing! ");
 						break;
+					case "logout":
+						logout();
+						break;
 					default:
-						//run(); ?? lul
 						write("type | error ; msg | unkown type! ");
 						break;
 				}
@@ -285,7 +302,16 @@ class Connection extends Thread {
 		}
 		return ;			
 	}
-
+	
+	private void logout(){
+	    this.currentUser = new String();
+	    this.userType = 0;
+	    this.userDep = 0;
+	    this.userId = 0;
+	    this.status = false;
+	    this.block = true;
+	}
+	
 	private void login(LinkedHashMap<String, String> input){
 		String username = input.get("username");
 		String password = input.get("password");
@@ -293,7 +319,7 @@ class Connection extends Thread {
 		int type;
 		try {
 			type = tcp.rmi.login(username, password);
-			if(type != 0) {
+			if(type != 0 && this.currentUser.equals(username)){
 				write("type | status ; logged | on ; mswg | Welcome to iVotas " + username+ " !");
 				this.currentUser = username;
 				this.userType = type;
@@ -307,12 +333,11 @@ class Connection extends Thread {
 				}
 				HashMap<Integer, String> elections = tcp.rmi.getElections(type, userDep);
 				if(elections != null){
-					write(HashmapToStringProtocol("election", elections));
+					write(Parser.HashmapToStringProtocol("election", elections));
 				}else
 					write("type | election ; msg | No elections occuring at the moment!");
 					
-			}
-			else{
+			}else{
 				write("type | status ; logged | off ; msg | Incorrect identification!");
 			}
 			return;
@@ -323,7 +348,6 @@ class Connection extends Thread {
 				write("type | Internal Error; msg | RMI down");
 			}
 		}
-		
 	}
 
 	private void getElections() {
@@ -331,7 +355,7 @@ class Connection extends Thread {
 		try {
 			elections = tcp.rmi.getElections(this.userType, this.userDep);
 			if(elections != null){
-				write(HashmapToStringProtocol("election", elections));
+				write(Parser.HashmapToStringProtocol("election", elections));
 			}else
 				write("type | election ; msg | No elections occuring at the moment!");
 		
@@ -348,7 +372,7 @@ class Connection extends Thread {
 		try{
 			int id_election = Integer.parseInt(input.get("election"));
 			HashMap<Integer, String> lists = tcp.rmi.getListsElections(this.userType, this.userDep, id_election);
-			write(HashmapToStringProtocol("ElectionLists", lists));
+			write(Parser.HashmapToStringProtocol("ElectionLists", lists));
 		}catch(NumberFormatException e1) {
 			write("type | lists; msg | invalid election id");
 		}catch(RemoteException e ){
@@ -385,7 +409,7 @@ class Connection extends Thread {
 				
 			}
 			
-			write(HashmapToStringProtocol("ElectionLists", lists));
+			write(Parser.HashmapToStringProtocol("ElectionLists", lists));
 			
 			
 		}catch(NumberFormatException e1) {
@@ -398,5 +422,16 @@ class Connection extends Thread {
 			}
 		}		
 		
+	}
+
+	public boolean getLocked(){
+		return this.block;
+	}
+	
+	public void unlockTable(String username){
+		this.block = false;
+		this.currentUser = username;
+		write("type | unlock ; msg | Table unlocked for " + username );
+        this.start();
 	}
 }
