@@ -225,14 +225,14 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 
 	    try {
 	    	connection.setAutoCommit(false);
-	    	
-		    String sql = "insert into departement(id_faculty, name) values (?,?)";
+
+		    String sql = "insert into department(id_faculty, name) values (?,?)";
 		    PreparedStatement prepStatement = connection.prepareStatement(sql);
 		    prepStatement.setInt(1,id_faculty );
 		    prepStatement.setString(2, name);
 		    prepStatement.executeUpdate();
 			prepStatement.close();
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -248,8 +248,39 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 				System.out.println("DB: Connection lost...");
 			}
 		}
-    	
+
     }
+
+	public void createList(String name, int type, int election) throws RemoteException{
+
+		try {
+			connection.setAutoCommit(false);
+
+			String sql = "insert into list_election(name, id_election, type) values (?,?,?)";
+			PreparedStatement prepStatement = connection.prepareStatement(sql);
+			prepStatement.setString(1,name);
+			prepStatement.setInt(2,election );
+			prepStatement.setInt(3, type);
+			prepStatement.executeUpdate();
+			prepStatement.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+
+	}
 
     public void addFaculty(String name) throws RemoteException{
 	    try {
@@ -284,7 +315,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	    try {
 	    	connection.setAutoCommit(false);
 
-		    String sql = "update departement set departement.name = ? where departement.id = ?";
+		    String sql = "update department set department.name = ? where department.id = ?";
 		    PreparedStatement prepStatement = connection.prepareStatement(sql);
 		    prepStatement.setString(1, name);
 		    prepStatement.setInt(2,id);
@@ -511,28 +542,17 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
     	
     }
 
-	public void changeElectionProperties(Date startDate, Date endDate, String name, String desc, int id, int which) throws RemoteException{
-	    //date parser admin side
-    	try {
-	    	connection.setAutoCommit(false);
-	    	/*
-				java.text.DateFormat format = new java.text.SimpleDateFormat("yyyyMMddHHmmss");
-				java.util.Date date = format.parse("20110210120534");
-				java.sql.Timestamp timestamp = new java.sql.Timestamp(date.getTime());
-				System.out.println(timestamp); // prints "2011-02-10 12:05:34.0"
-	    	 * 
-	    	 * 
-	    	 * */
-		    String sql = "update election where election.name = ? and election.description = ? and election.start_date = ? and election.end_date = ? where election.id = ?";
-		    PreparedStatement prepStatement = connection.prepareStatement(sql);
-		    prepStatement.setString(1,name);
-		    prepStatement.setString(2,desc);
-		    prepStatement.setTimestamp(3, (java.sql.Timestamp) startDate); /**/
-		    prepStatement.setTimestamp(4, (java.sql.Timestamp) endDate); /**/
-		    prepStatement.setInt(5, id);
-		    prepStatement.executeUpdate();
+	public void changeElectionStartDate(int id, Date startDate) throws RemoteException{
+		//date parser admin side
+		try {
+			connection.setAutoCommit(false);
+			String sql = "update election set election.start_date = ? where election.id = ?";
+			PreparedStatement prepStatement = connection.prepareStatement(sql);
+			prepStatement.setTimestamp(1, (java.sql.Timestamp) startDate.getTime());
+			prepStatement.setInt(2,id);
+			prepStatement.executeUpdate();
 			prepStatement.close();
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -548,8 +568,125 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 				System.out.println("DB: Connection lost...");
 			}
 		}
-    	
-    }
+
+	}
+
+	public void changeElectionEndDate(int id, Date endDate) throws RemoteException{
+		//date parser admin side
+		try {
+			connection.setAutoCommit(false);
+			String sql = "update election set election.end_date = ? where election.id = ?";
+			PreparedStatement prepStatement = connection.prepareStatement(sql);
+			prepStatement.setTimestamp(1, (java.sql.Timestamp) endDate.getTime());
+			prepStatement.setInt(2,id);
+			prepStatement.executeUpdate();
+			prepStatement.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+
+	}
+
+	public void changeElectionName(int id, String name) throws RemoteException{
+		//date parser admin side
+		try {
+			connection.setAutoCommit(false);
+			String sql = "update election set election.name = ? where election.id = ?";
+			PreparedStatement prepStatement = connection.prepareStatement(sql);
+			prepStatement.setString(1, name);
+			prepStatement.setInt(2,id);
+			prepStatement.executeUpdate();
+			prepStatement.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+
+	}
+
+	public void changeElectionDescription(int id, String desc) throws RemoteException{
+		//date parser admin side
+		try {
+			connection.setAutoCommit(false);
+			String sql = "update election set election.description = ? where election.id = ?";
+			PreparedStatement prepStatement = connection.prepareStatement(sql);
+			prepStatement.setString(1, desc);
+			prepStatement.setInt(2,id);
+			prepStatement.executeUpdate();
+			prepStatement.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+
+	}
+
+	public void addCandidatesToList(int list, ArrayList<Integer> users){
+		for(int user : users) {
+			try {
+				connection.setAutoCommit(false);
+
+				String sql = "insert into person_list(id_person, id_list) values (?,?)";
+				PreparedStatement prepStatement = connection.prepareStatement(sql);
+				prepStatement.setInt(1, user);
+				prepStatement.setInt(2, list);
+				prepStatement.executeUpdate();
+				prepStatement.close();
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				try {
+					connection.rollback();
+				} catch (SQLException e1) {
+					System.out.println("DB: Connection lost...");
+				}
+			} finally {
+				try {
+					connection.setAutoCommit(true);
+				} catch (SQLException e) {
+					System.out.println("DB: Connection lost...");
+				}
+			}
+		}
+	}
 
 	public boolean addVotingTable(int depId , int electionId) throws RemoteException {
     	try {
@@ -667,7 +804,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		try {
 			connection.setAutoCommit(false);
 
-			String sql1 = "select * from departement where id = ? limit 1";
+			String sql1 = "select * from department where id = ? limit 1";
 			PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
 			prepStatement1.setInt(1,id);
 			ResultSet rs = prepStatement1.executeQuery();
@@ -728,13 +865,13 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 
 	}
 
-	public int checkUserType(String username)throws RemoteException {
+	public int checkUserType(int id)throws RemoteException {
 		try {
 			connection.setAutoCommit(false);
 
-			String sql1 = "select type from person where username = ? limit 1";
+			String sql1 = "select type from person where id = ? limit 1";
 			PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
-			prepStatement1.setString(1,username);
+			prepStatement1.setInt(1,id);
 			ResultSet rs = prepStatement1.executeQuery();
 			if(rs.next()){
 				return rs.getInt("type");
@@ -759,6 +896,38 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 		return 0;
 
+	}
+
+	public int getListType(int id)throws RemoteException {
+		try {
+			connection.setAutoCommit(false);
+
+			String sql1 = "select type from list_election where id = ? limit 1";
+			PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
+			prepStatement1.setInt(1,id);
+			ResultSet rs = prepStatement1.executeQuery();
+			if(rs.next()){
+				return rs.getInt("type");
+			}else{
+				return 0;
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return 0;
 	}
 
 	public boolean checkElection(int id)throws RemoteException{
