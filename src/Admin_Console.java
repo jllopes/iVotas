@@ -77,7 +77,7 @@ public class Admin_Console {
         System.out.println("<7> Where User Voted");
     }
 
-    public void chooseMainMenu(int opt){
+    public void chooseMainMenu(int opt) throws RemoteException{
         switch(opt){
             case 1: newUser();
                     break;
@@ -91,44 +91,67 @@ public class Admin_Console {
                     break;
             case 6: consultPastElections();
                     break;
-            /*case 7: whereVoted();
-                    break;*/
+            case 7: whereVoted();
+                    break;
             default:
+                System.out.println("Please insert a valid option");
+                mainMenu();
                 break;
         }
     }
 
-    //TODO
-    /*public void whereVoted(){
+    public void whereVoted() throws RemoteException{
         Scanner in = new Scanner(System.in);
         //printUsers();
         System.out.println("Insert the id of the user:");
         int user = in.nextInt();
-        //ArrayList<Election> votes = getUserVotes(user);
+        ArrayList<Vote> votes = rmi.getUserVotes(user);
         for(Vote vote : votes){
-            System.out.println("Election Name: " + vote.name + " , Election Id: " + vote.id);
+            System.out.println("Election Name: " + vote.election.name + " , Election Id: " + vote.election.id);
         }
         System.out.println("Insert the id of the election:");
         int election = in.nextInt();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         for(Vote vote : votes){
-            if(vote.id == election){
-                System.out.println("Date: " + vote.date.toString() + " , Table:" + vote.table);
+            if(vote.election.id == election){
+                String date = formatter.format(vote.date);
+                System.out.println("Date: " + date + " , Table:" + vote.table);
                 break;
             }
         }
-    }*/
+    }
 
-    public void consultPastElections(){
+    public void consultPastElections() throws RemoteException{
         Scanner in = new Scanner(System.in);
-        //listPastElections();
+        HashMap<String, Integer> pastElections = listPastElections();
         System.out.println("Insert the id of which election you want to consult:");
         int id = in.nextInt();
-        while(!rmi.checkElection(id)){
+        while(checkPastElection(pastElections,id)){
             System.out.println("There is no election with that id, insert a valid id");
             id = in.nextInt();
         }
         System.out.println("The results of the election were the following:");
         printElectionResults(id);
+    }
+
+    public boolean checkPastElection(HashMap<String, Integer> elections, int election){
+        for(int id : elections.values()){
+            if(election == id)
+                return true;
+        }
+        return false;
+    }
+
+    public HashMap<String, Integer> listPastElections() throws RemoteException{
+        HashMap<String, Integer> elections = rmi.getPastElections();
+        HashMap<String, Integer> elections_copy = elections;
+        Iterator it = elections.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println("Name: "pair.getKey() + ", Id: " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+        return elections_copy;
     }
 
     public void printElectionResults(int id){
@@ -144,9 +167,13 @@ public class Admin_Console {
     public void newElection() throws RemoteException {
         Scanner in = new Scanner(System.in);
         int department;
-        //listDepartments();
+        listDepartments();
         System.out.println("Insert the department where the election is happening (0 if general council):");
         department = in.nextInt();
+        while(!rmi.checkDepartment(department)) {
+            System.out.println("There is no department with that id, please insert a valid id");
+            department = in.nextInt();
+        }
         System.out.println("Insert the start date of the election (Format: dd/mm/yy hh:mm):");
         Date startDate = new Date();
         try {
@@ -169,9 +196,8 @@ public class Admin_Console {
     }
 
     public void listDepartments(){
-        HashMap<String, Integer> departments = rmi.getAllDeparments();
-        HashMap<String, Integer> results = rmi.getElectionResults();
-        Iterator it = results.entrySet().iterator();
+        HashMap<String, Integer> departments = rmi.getAllDepartments();
+        Iterator it = departments.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             System.out.println("Name: "pair.getKey() + ", Id: " + pair.getValue());
@@ -191,7 +217,7 @@ public class Admin_Console {
         return date.parse(dateString);
     }
 
-    public void newUser(){
+    public void newUser()throws RemoteException{
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the user's name");
         String name = in.nextLine();
@@ -203,10 +229,10 @@ public class Admin_Console {
         printUserTypeMenu();
         int type = in.nextInt();
         System.out.println("Choose the faculty of the user:");
-        //listFaculties();
+        listFaculties();
         int facultyId = in.nextInt();
         System.out.println("Choose the department of the user:");
-        //listDepartments(int facultyId);
+        listDepartmentsFromFaculty(int facultyId);
         int departmentId = in.nextInt();
         System.out.println("Insert the ID number of the user:");
         int id = in.nextInt();
@@ -218,13 +244,24 @@ public class Admin_Console {
         String address = in.nextLine();
         System.out.println("Insert the contact number of the user:");
         String phoneNumber = in.nextLine();
-        this.rmi.register(name, username,password,type,facultyId,departmentId,address,id,idMonth,idYear,phoneNumber);
+        rmi.register(name, username,password,type,facultyId,departmentId,address,id,idMonth,idYear,phoneNumber);
     }
 
-    public void printElectionTypeMenu(){
+    public void listDepartmentsFromFaculty(int faculty) throws RemoteException{
+        HashMap<String, Integer> departments = rmi.getDepartmentsFromFaculty(faculty);
+        Iterator it = departments.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+
+    }
+
+    /*public void printElectionTypeMenu(){
         System.out.println("<1> Student Association");
         System.out.println("<2> General Council");
-    }
+    }*/
 
     public void printUserTypeMenu(){
         System.out.println("<1> Student");
@@ -261,14 +298,28 @@ public class Admin_Console {
         }
     }
 
-    public void newDepartment(){
+    public void newDepartment() throws RemoteException{
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the name of the new department:");
         String name = in.nextLine();
-        //printFaculties();
+        listFaculties();
         System.out.println("Insert the faculty id of the department:");
         int faculty = in.nextInt();
+        while(!rmi.checkFaculty(faculty)) {
+            System.out.println("There is no faculty with that id, please insert a valid id");
+            faculty = in.nextInt();
+        }
         rmi.addDepartment(name,faculty);
+    }
+
+    public void listFaculties(){
+        HashMap<String, Integer> faculties = rmi.getAllFaculties();
+        Iterator it = faculties.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
     }
 
     public void alterDepartment(){
@@ -347,7 +398,7 @@ public class Admin_Console {
         rmi.changeFaculty(newName,faculty);
     }
 
-    public void removeFaculty(){
+    public void removeFaculty() throws RemoteException{
         Scanner in = new Scanner(System.in);
         System.out.println("Choose the id of the faculty:");
         //printFaculties();
@@ -361,9 +412,9 @@ public class Admin_Console {
 
     /*--------Election Menu---------*/
 
-    public void manageElections(){
+    public void manageElections() throws RemoteException{
         Scanner in = new Scanner(System.in);
-        //listElections();
+        listElections();
         System.out.println("Insert the id of the election you want to manage:");
         int election_id = in.nextInt();
         int department = rmi.getDepartment(election_id);
@@ -372,14 +423,26 @@ public class Admin_Console {
         chooseElectionsMenu(opt, election_id, department);
     }
 
+    public void listElections() throws RemoteException{
+        HashMap<String, Integer> elections = rmi.getAllElections();
+        Iterator it = elections.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+
+    }
+
     public void printElectionsMenu(){
         System.out.println("<1> Add Candidates");
         System.out.println("<2> Remove Candidates");
         System.out.println("<3> Add Voting Table");
         System.out.println("<4> Remove Voting Table");
+        System.out.println("<5> Change Election Properties");
     }
 
-    public void chooseElectionsMenu(int opt, int election_id, int department){
+    public void chooseElectionsMenu(int opt, int election_id, int department) throws RemoteException{
         switch(opt){
             case 1: addCandidates(department, election_id);
                     mainMenu();
@@ -393,10 +456,40 @@ public class Admin_Console {
             case 4: removeVotingTable(election_id);
                     mainMenu();
                     break;
+            case 5: changeElection();
+                    mainMenu();
+                    break;
+            default:
+                    System.out.println("That is not a valid option");
+                    mainMenu();
+                    break;
         }
     }
 
-    public ArrayList<String> addCandidates(int electionType, int election){
+    public void changeElection(int id) throws RemoteException {
+        Scanner in = new Scanner(System.in);
+        System.out.println("Insert the new start date of the election (Format: dd/mm/yy hh:mm):");
+        Date startDate = new Date();
+        try {
+            startDate = getDate();
+        } catch (ParseException e){
+            e.printStackTrace();
+        }
+        System.out.println("Insert the new end date of the election (Format: dd/mm/yy hh:mm):");
+        Date endDate = new Date();
+        try {
+            endDate = getDate();
+        } catch (ParseException e){
+            e.printStackTrace();
+        }
+        System.out.println("Insert the new name of the election:");
+        String name = in.nextLine();
+        System.out.println("Insert the new description of the election:");
+        String desc = in.nextLine();
+        rmi.changeElectionProperties(startDate,endDate,name,desc,id);
+    }
+
+    public ArrayList<String> addCandidates(int electionType, int election) throws RemoteException{
         Scanner in = new Scanner(System.in);
         System.out.println("Insert a name for the candidates list:");
         String name = in.nextLine();
@@ -451,12 +544,22 @@ public class Admin_Console {
         return new ArrayList<>();
     }
 
-    public void removeCandidates(int election){
+    public void removeCandidates(int election) throws RemoteException{
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the name of the list you want to remove:");
-        //printElectionLists(int election);
+        listElectionLists(election);
         String name = in.nextLine();
         rmi.removeList(election, name);
+    }
+
+    public void listElectionLists(int election){
+        HashMap<String, Integer> lists = rmi.getElectionLists(election);
+        Iterator it = lists.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println("Name: "pair.getKey() + ", Id: " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
     }
 
     public void newVotingTable(int election){

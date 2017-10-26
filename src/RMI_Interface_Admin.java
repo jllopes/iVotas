@@ -20,7 +20,12 @@ public interface RMI_Interface_Admin extends Remote{
     public String whereUserVoted(int electionId, int userId)throws RemoteException;
     public ArrayList<Vote> getUserVotes(int id)throws RemoteException;
     public HashMap<String, Integer> getElectionResults(int id)throws RemoteException;
-    public HashMap<String, Integer> getAllDeparments() throws RemoteException;
+    public HashMap<String, Integer> getAllDepartments() throws RemoteException;
+    public HashMap<String, Integer> getAllFaculties() throws RemoteException
+    public HashMap<String,Integer> getPastElections() throws RemoteException;
+    public HashMap<String,Integer> getAllElections() throws RemoteException;
+    public HashMap<String,Integer> getElectionLists(int election) throws RemoteException;
+    public HashMap<String, Integer> getDepartmentsFromFaculty(int faculty) throws RemoteException;
     //CALLBACK MESAS DE VOTO -- estado mesas de voto
     //CALLBACK MESAS DE VOTO -- número eleitores que votaram em cada mesa de voto até ao momento
     public void endElection();
