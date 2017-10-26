@@ -123,14 +123,28 @@ public class Admin_Console {
         //listPastElections();
         System.out.println("Insert the id of which election you want to consult:");
         int id = in.nextInt();
+        while(!rmi.checkElection(id)){
+            System.out.println("There is no election with that id, insert a valid id");
+            id = in.nextInt();
+        }
         System.out.println("The results of the election were the following:");
-        //printElectionResults(id);
+        printElectionResults(id);
     }
 
-    public void newElection(){
+    public void printElectionResults(int id){
+        HashMap<String, Integer> results = rmi.getElectionResults();
+        Iterator it = results.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println(pair.getKey() + ": " + pair.getValue() + " votes");
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+    }
+
+    public void newElection() throws RemoteException {
         Scanner in = new Scanner(System.in);
         int department;
-        //listDepartments(0);
+        //listDepartments();
         System.out.println("Insert the department where the election is happening (0 if general council):");
         department = in.nextInt();
         System.out.println("Insert the start date of the election (Format: dd/mm/yy hh:mm):");
@@ -151,7 +165,18 @@ public class Admin_Console {
         String title = in.nextLine();
         System.out.println("Insert a description for the election:");
         String description = in.nextLine();
-        this.rmi.createElection(startDate, endDate, title, description, department);
+        rmi.createElection(startDate, endDate, title, description, department);
+    }
+
+    public void listDepartments(){
+        HashMap<String, Integer> departments = rmi.getAllDeparments();
+        HashMap<String, Integer> results = rmi.getElectionResults();
+        Iterator it = results.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println("Name: "pair.getKey() + ", Id: " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
     }
 
     public Date getDate() throws ParseException {
