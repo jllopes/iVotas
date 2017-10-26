@@ -58,6 +58,10 @@ public class Admin_Console {
         }
     }
 
+    public void receiveNotification(String notification){
+        System.out.println(notification);
+    }
+
     /*--------Main Menu---------*/
 
     public void mainMenu(){
@@ -417,7 +421,7 @@ public class Admin_Console {
         listElections();
         System.out.println("Insert the id of the election you want to manage:");
         int election_id = in.nextInt();
-        int department = rmi.getDepartment(election_id);
+        int department = rmi.getDepartmentNumber(election_id);
         printElectionsMenu();
         int opt = in.nextInt();
         chooseElectionsMenu(opt, election_id, department);

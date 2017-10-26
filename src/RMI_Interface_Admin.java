@@ -10,7 +10,7 @@ public interface RMI_Interface_Admin extends Remote{
     public boolean deleteFaculty(int id)throws RemoteException;
     public void createElection(Date startDate, Date endDate, String name, String desc, int id_department)throws RemoteException;
     public void removeList(int election, String name)throws RemoteException;
-    public int getDepartment(int id)throws RemoteException;
+    public int getDepartmentNumber(int id)throws RemoteException;
     public int getListType(int id)throws RemoteException
     public boolean checkDepartment(int id)throws RemoteException;
     public boolean checkFaculty(int id)throws RemoteException;

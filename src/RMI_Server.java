@@ -1179,7 +1179,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return null;
 	}
 
-	public int getDepartment(int id){
+	public int getDepartmentNumber(int id){
 		try {
 			connection.setAutoCommit(false);
 
@@ -1287,8 +1287,41 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			ResultSet rs = prepStatement1.executeQuery();
 			if(rs.next()){
 				String name = rs.getString("name");
-				int department = rs.getInt("department_number");
-				//return new Election(name, id, (Department)department);   
+				Department department = getDepartment(rs.getInt("department_number"));
+				return new Election(name, id, department);
+			}else{
+				return null;
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return null;
+	}
+
+	public Department getDepartment(int id){
+		try {
+			connection.setAutoCommit(false);
+
+			String sql1 = "select * from department where id = ? limit 1";
+			PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
+			prepStatement1.setInt(1,id);
+			ResultSet rs = prepStatement1.executeQuery();
+			if(rs.next()){
+				String name = rs.getString("name");
+				return new Department(name, id);
 			}else{
 				return null;
 			}
@@ -1320,8 +1353,8 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			prepStatement1.setInt(1,id);
 			ResultSet rs = prepStatement1.executeQuery();
 			if(rs.next()){
-				int department = rs.getInt("department_number");
-				//return new VotingTable(department, id);
+				Department department = getDepartment(rs.getInt("id_department"));
+				return new VotingTable(department, id);
 			}else{
 				return null;
 			}
