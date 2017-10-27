@@ -16,7 +16,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	private String databaseIP;
 	private String databasePass;
 	private String databaseUser;
-	static ArrayList<Admin_Interface_RMI> admins;
+	List<Admin_Interface_RMI> admins;
 	Connection connection = null;
 	
 	private static final long serialVersionUID = 1L;
@@ -26,7 +26,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		//Properties https://www.mkyong.com/java/java-properties-file-examples/
 		Properties prop = new Properties();
 		InputStream input = null;
-
+		admins = Collections.synchronizedList(new ArrayList());
 		try {
 			if(new File("../rmiconfig.properties").exists()){
 				input = new FileInputStream("../rmiconfig.properties");
@@ -1312,7 +1312,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return null;
 	}
 
-	public List getList(int id){
+	public Lista getList(int id){
 		try {
 			connection.setAutoCommit(false);
 
@@ -1324,7 +1324,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 				String name = rs.getString("name");
 				Election election = getElection(rs.getInt("id_election"));
 				int votes = rs.getInt("vote");
-				return new List(name, election, votes);
+				return new Lista(name, election, votes);
 			}else{
 				return null;
 			}
@@ -1503,6 +1503,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 
 	public int login(String username, String password )throws RemoteException {
     	try {
+    		sendNotification("shit it works");
 	    	connection.setAutoCommit(false);
 
 			String sql1 = "Select type from person where username = ? and password = ? limit 1";
@@ -1636,7 +1637,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		    			rs.close();
 		    			return false;
 		    		}
-		    		List list = getList(vote);
+		    		Lista list = getList(vote);
 		    		String str = ">Callback : List " + list.name + " got one more vote, they now have " + list.votes + " votes.";
 		    		sendNotification(str);
 
