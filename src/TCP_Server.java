@@ -193,6 +193,8 @@ class Connection extends Thread {
             clientSocket = aClientSocket;
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             out = new PrintWriter(clientSocket.getOutputStream(), true);
+            this.start();
+
         }catch(IOException e){System.out.println("Connection:" + e.getMessage());}
     }
     
@@ -201,21 +203,27 @@ class Connection extends Thread {
     	time = System.currentTimeMillis();
         new Thread(){
         	public void run(){
-            	while(!block){
-            		if(( System.currentTimeMillis()- time)/1000 < 120){ //notlocked
-            			try {
-							Thread.sleep(5000);
-						} catch (InterruptedException e) {
-							System.out.println("lock check-thread error ");
-						}
-            		}else{
-            			logout();
-            			System.out.println("mesa sem açao, dar lock");
-            		}
-            	}
-            	System.out.println("table locked ");
+        		while(true){
+	            	while(!block){
+	            		if(( System.currentTimeMillis()- time)/1000 < 120){ //notlocked
+	            			try {
+								Thread.sleep(5000);
+							} catch (InterruptedException e) {
+								System.out.println("lock check-thread error ");
+							}
+	            		}else{
+	            			logout();
+	            			System.out.println("Table locked without action");
+	            		}
+	            	}
+	            	try {
+	            		//System.out.println("Table locked, going to sleep 10s ...");
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+						System.out.println("Activity thread blocked ");
+					}
+        		}
         	}
-        	
         }.start();
     	
 		try {
@@ -432,6 +440,5 @@ class Connection extends Thread {
 		this.block = false;
 		this.currentUser = username;
 		write("type | unlock ; msg | Table unlocked for " + username );
-        this.start();
 	}
 }
