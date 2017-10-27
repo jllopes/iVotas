@@ -36,8 +36,8 @@ public class Parser {
 	        Map.Entry pair = (Map.Entry)it.next();
 			str += name+"_" + i + "_id | " + pair.getKey() + "; " + name+"_" + i  + "_name | " + pair.getValue() + "; ";
 	        it.remove(); // avoids a ConcurrentModificationException
+	        i++;
 	    }
-	    System.out.println(str);
 		return str;
 	}
 } 

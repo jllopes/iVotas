@@ -22,7 +22,7 @@ public class TCP_Server {
 		this.dc = 0;
 		pedidos_espera = new ArrayList<>();
 		list_socket = new ArrayList<>();
-		conns = Collections.synchronizedList(new ArrayList());
+		conns = Collections.synchronizedList(new ArrayList<>());
 		nTerminais = 0;
 		//Properties https://www.mkyong.com/java/java-properties-file-examples/
 				Properties prop = new Properties();
@@ -293,10 +293,11 @@ class Connection extends Thread {
 						getElections();
 						break;
 					case "vote":
-						if(input.containsKey("election") && input.containsKey("vote")){
+						if(input.containsKey("election")){
 							vote(input);
-						}else
+						}else{
 							write("type | error ; msg | parameters missing! ");
+						}
 						break;
 					case "logout":
 						logout();
@@ -307,6 +308,7 @@ class Connection extends Thread {
 				}
 			}					
 		} catch (NullPointerException e ){
+			System.out.println(input);
 			write("type | error ; msg | missing arguments! ");
 		}
 		return ;			
@@ -398,8 +400,6 @@ class Connection extends Thread {
 			int id_election = Integer.parseInt(input.get("election"));
 			int vote = Integer.parseInt(input.get("vote")); 
 			// vote = 0 blank , lista invalida -> nulo, lista valida -> new vote
-			
-			HashMap<Integer, String> lists = tcp.rmi.getListsElections(this.userType, this.userDep, id_election);
 			if(vote == 0){
 				//insert vote blank
 				boolean answer = tcp.rmi.vote_blank(this.userId , this.userType, userDep, id_election) ;
@@ -409,18 +409,13 @@ class Connection extends Thread {
 					write("type | vote ; msg: Vote invalid or already voted; (blank)"); //just for testing
 				}
 			}else {
-				boolean validation = tcp.rmi.vote(this.userId ,this.userType, userDep, id_election, vote, tcp.id_table);
+				boolean validation = tcp.rmi.vote(this.userId ,this.userType, this.userDep, id_election, vote, tcp.id_table);
 				if(validation){
 					write("type | vote ; msg: Success!; ");
 				}else{
 					write("type | vote ; msg: Vote invalid or already voted; ");
 				}
-				
-			}
-			
-			write(Parser.HashmapToStringProtocol("ElectionLists", lists));
-			
-			
+			}			
 		}catch(NumberFormatException e1) {
 			write("type | lists; msg | invalid election id");
 		}catch(RemoteException e ){

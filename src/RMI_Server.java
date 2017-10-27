@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.util.*;
 import java.sql.DriverManager;
 import java.util.Date;
-
 public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP , RMI_Interface_Admin{
 	private int port;
 	private String ip;
@@ -18,6 +17,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	private String databaseUser;
 	private Admin_Interface_RMI admin;
 	Connection connection = null;
+	List<Admin_Interface_RMI> admins;
 	
 	private static final long serialVersionUID = 1L;
 
@@ -26,7 +26,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		//Properties https://www.mkyong.com/java/java-properties-file-examples/
 		Properties prop = new Properties();
 		InputStream input = null;
-
+		this.admins = Collections.synchronizedList(new ArrayList<>());
 		try {
 			if(new File("../rmiconfig.properties").exists()){
 				input = new FileInputStream("../rmiconfig.properties");
@@ -1312,7 +1312,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return null;
 	}
 
-	public List getList(int id){
+	public Lista getList(int id){
 		try {
 			connection.setAutoCommit(false);
 
@@ -1324,7 +1324,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 				String name = rs.getString("name");
 				Election election = getElection(rs.getInt("id_election"));
 				int votes = rs.getInt("vote");
-				return new List(name, election, votes);
+				return new Lista(name, election, votes);
 			}else{
 				return null;
 			}
@@ -1545,11 +1545,10 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			prepStatement1.setInt(1,userDep);
 			prepStatement1.setInt(2,usertype);
 	    	ResultSet rs = prepStatement1.executeQuery();
-	    	
+
 	    	if(rs.next()){ //theres is at least one election
-	    		rs.beforeFirst();
 	    		HashMap<Integer, String> elections = new HashMap<>(); 
-	    		elections.put(rs.getInt("election.id"),rs.getString("election.name"));
+	    		rs.beforeFirst();
 	    		while(rs.next()){
 	        		elections.put(rs.getInt("election.id"),rs.getString("election.name"));
 	    		}
@@ -1620,45 +1619,64 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return null;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public boolean vote(int userId, int userType, int userDep, int id_election, int vote, int id_table) throws RemoteException{
-		 try {
-		    	connection.setAutoCommit(false); 
+		 try { //if no vote or vote = 0 is veryfied on tcp
+		    connection.setAutoCommit(false); 
 			 HashMap<Integer, String> lists = getListsElections(userType,userDep,id_election);
-		    	if( lists != null && lists.get(vote) != null){ //valid election
-		    		//search if theres is a vote already
-		    		String getvotes = "Select 1 from votes where id_election = ? and id_person = ?";
-		    		PreparedStatement prepStatement2 = connection.prepareStatement(getvotes);
-				    prepStatement2.setInt(1, id_election);
-				    prepStatement2.setInt(2, userId);
-		    		ResultSet rs = prepStatement2.executeQuery();
-		    		prepStatement2.close();
-		    		if(rs.next()){//already voted
-		    			rs.close();
-		    			return false;
-		    		}
-		    		List list = getList(vote);
-		    		String str = "List " + list.name + " got one more vote, they now have " + list.votes + " votes.";
-		    		sendNotification(str);
-
-				    String sql = "insert into vote(id_election, id_person, id_table) values (?,?,?)";
-				    PreparedStatement prepStatement = connection.prepareStatement(sql);
-				    prepStatement.setInt(1, vote);
-				    prepStatement.setInt(2, userId);
-				    prepStatement.setInt(3, id_table);
-
-				    prepStatement.executeUpdate();
-					prepStatement.close();
-					
-				    String sql1 = "update list_election set list_election.vote = list_election.vote +1 where list_election.id = ?";
-				    PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
-				    prepStatement1.setInt(1, vote);
-				    prepStatement1.executeUpdate();
-					prepStatement1.close();
-
-					//something to tell theres a new vote ¯\_(¨)_/¯
-		    		return true;
-		    	} else
+		    		if( lists != null){ //valid election
+		    		    Iterator it = lists.entrySet().iterator();
+		    		    while (it.hasNext()) {
+				    		//search if theres is a vote already
+		    		        Map.Entry pair = (Map.Entry)it.next();
+		    		    	if( (Integer)pair.getKey() == vote){
+					    		String getvotes = "Select 1 from vote where id_election = ? and id_person = ?";
+					    		PreparedStatement prepStatement2 = connection.prepareStatement(getvotes);
+							    prepStatement2.setInt(1, id_election);
+							    prepStatement2.setInt(2, userId);
+					    		ResultSet rs = prepStatement2.executeQuery();
+					    		if(rs.next()){//already voted
+					    			System.out.println("ja votou");
+						    		prepStatement2.close();
+					    			rs.close();
+					    			return false;
+					    		}
+					    		Lista list = getList(vote);
+					    		String str = "List " + list.name + " got one more vote, they now have " + list.votes + " votes.";
+					    		sendNotification(str);
+			
+							    String sql = "insert into vote(id_election, id_person, id_table) values (?,?,?)";
+							    PreparedStatement prepStatement = connection.prepareStatement(sql);
+							    prepStatement.setInt(1, id_election);
+							    prepStatement.setInt(2, userId);
+							    prepStatement.setInt(3, id_table);
+			
+							    prepStatement.executeUpdate();
+								prepStatement.close();
+								
+							    String sql1 = "update list_election set list_election.vote = list_election.vote +1 where list_election.id = ?";
+							    PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
+							    prepStatement1.setInt(1, id_election);
+							    prepStatement1.executeUpdate();
+								prepStatement1.close();
+		
+								//something to tell theres a new vote ¯\_(¨)_/¯
+					    		return true;
+		    		    	}else{
+		    			        it.remove(); // avoids a ConcurrentModificationException
+		    		    	}
+		    		    } 
+		    		    System.out.println("lista nao found");
+					    String nullVote = "update election set election.vote_null =  election.vote_null +1 where election.id = ?";
+					    PreparedStatement prepNullStatement = connection.prepareStatement(nullVote);
+					    prepNullStatement.setInt(1, id_election);
+					    prepNullStatement.executeUpdate();
+					    prepNullStatement.close();
+		    		    return true;
+		    	} else{
+		    		System.out.println("random vote false");
 		    		return false;
+		    	}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1675,9 +1693,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 				}
 			}
 			return false;
-
-		
-		
 	}
 
 	@Override
