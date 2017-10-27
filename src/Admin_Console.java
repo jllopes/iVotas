@@ -58,6 +58,10 @@ public class Admin_Console {
         }
     }
 
+    public void receiveNotification(String notification){
+        System.out.println(notification);
+    }
+
     /*--------Main Menu---------*/
 
     public void mainMenu(){
@@ -417,7 +421,7 @@ public class Admin_Console {
         listElections();
         System.out.println("Insert the id of the election you want to manage:");
         int election_id = in.nextInt();
-        int department = rmi.getDepartment(election_id);
+        int department = rmi.getDepartmentNumber(election_id);
         printElectionsMenu();
         int opt = in.nextInt();
         chooseElectionsMenu(opt, election_id, department);
@@ -435,11 +439,12 @@ public class Admin_Console {
     }
 
     public void printElectionsMenu(){
-        System.out.println("<1> Add Candidates");
-        System.out.println("<2> Remove Candidates");
+        System.out.println("<1> Add List");
+        System.out.println("<2> Remove List");
         System.out.println("<3> Add Voting Table");
         System.out.println("<4> Remove Voting Table");
         System.out.println("<5> Change Election Properties");
+        System.out.println("<6> Add Candidates to List");
     }
 
     public void chooseElectionsMenu(int opt, int election_id, int department) throws RemoteException{
@@ -459,6 +464,9 @@ public class Admin_Console {
             case 5: changeElection();
                     mainMenu();
                     break;
+            case 6:
+                    addCandidatesToList(election_id, department);
+                    break;
             default:
                     System.out.println("That is not a valid option");
                     mainMenu();
@@ -468,6 +476,21 @@ public class Admin_Console {
 
     public void changeElection(int id) throws RemoteException {
         Scanner in = new Scanner(System.in);
+        printChangeElectionMenu();
+        System.out.println("Insert the option:");
+        int opt = in.nextInt();
+        chooseChangeElectionMenu(opt, id);
+    }
+
+    public void printChangeElectionMenu(){
+        System.out.println("<1> Change start date");
+        System.out.println("<2> Change end date");
+        System.out.println("<3> Change name");
+        System.out.println("<4> Change description");
+    }
+
+    public void changeStartDate(int election)throws RemoteException{
+        Scanner in = new Scanner(System.in);
         System.out.println("Insert the new start date of the election (Format: dd/mm/yy hh:mm):");
         Date startDate = new Date();
         try {
@@ -475,73 +498,108 @@ public class Admin_Console {
         } catch (ParseException e){
             e.printStackTrace();
         }
-        System.out.println("Insert the new end date of the election (Format: dd/mm/yy hh:mm):");
+        rmi.changeElectionStartDate(election, startDate);
+    }
+
+    public void changeEndDate(int election)throws RemoteException{
+        Scanner in = new Scanner(System.in);
+        System.out.println("Insert the new start date of the election (Format: dd/mm/yy hh:mm):");
         Date endDate = new Date();
         try {
             endDate = getDate();
         } catch (ParseException e){
             e.printStackTrace();
         }
-        System.out.println("Insert the new name of the election:");
-        String name = in.nextLine();
-        System.out.println("Insert the new description of the election:");
-        String desc = in.nextLine();
-        rmi.changeElectionProperties(startDate,endDate,name,desc,id);
+        rmi.changeElectionEndDate(election, endDate);
     }
 
-    public ArrayList<String> addCandidates(int electionType, int election) throws RemoteException{
+    public void changeName(int election)throws RemoteException{
+        Scanner in = new Scanner(System.in);
+        System.out.println("Insert the new name for the election");
+        String name = in.nextLine();
+        rmi.changeElectionName(election, name);
+    }
+
+    public void changeDescription(int election)throws RemoteException{
+        Scanner in = new Scanner(System.in);
+        System.out.println("Insert the new description for the election");
+        String description = in.nextLine();
+        rmi.changeElectionDescription(election, description);
+    }
+
+    public void chooseChangeElectionMenu(int opt, int election)throws RemoteException{
+        switch (opt){
+            case 1:
+                changeStartDate(election);
+                break;
+            case 2:
+                changeEndDate(election);
+                break;
+            case 3:
+                changeName(election);
+                break;
+            case 4:
+                changeDescription(election);
+                break;
+        }
+    }
+
+    public void addCandidates(int department, int election) throws RemoteException {
         Scanner in = new Scanner(System.in);
         System.out.println("Insert a name for the candidates list:");
         String name = in.nextLine();
         int type = 0;
-        if(electionType == 2){
+        if (department != 0) {
             System.out.println("Choose the type of list you want to create:");
             printUserTypeMenu();
             type = in.nextInt();
         }
-        System.out.println("Insert the list of usernames who are going to be candidates of " + name + " and end it with an empty line:");
-        String username;
-        ArrayList<String> students = new ArrayList<String>();
-        ArrayList<String> professors = new ArrayList<String>();
-        ArrayList<String> employees = new ArrayList<String>();
-        int check = 0;
-        while((username = in.nextLine()) != null){
-            check = rmi.checkUserType(username);
-            if(electionType == 2){
+        rmi.createList(name, type, election);
+    }
+
+    public void addCandidatesToList(int election, int type) throws RemoteException{
+        Scanner in = new Scanner(System.in);
+        listElectionLists(election);
+        System.out.println("What list do you want to add candidates to?");
+        int list = in.nextInt();
+        System.out.println("How many candidates are you going to insert?");
+        int type = rmi.getListType(election);
+        int number = in.nextInt();
+        System.out.println("Insert the list of ids you want to be candidates of the list:");
+        int id;
+        ArrayList<Integer> users = new ArrayList<>();
+        int check;
+        int i = 0;
+        while(i<number){
+            id = in.nextInt();
+            check = rmi.checkUserType(id);
+            i++;
+            if(type == 2){
                 if(check == 1 && type == 1){ // Student
-                    students.add(username);
+                    users.add(id);
                 }
                 else if(check == 2 && type == 2){ // Professors
-                    professors.add(username);
+                    users.add(id);
                 }
                 else if(check == 3 && type == 3){ // Professors
-                    employees.add(username);
+                    users.add(id);
                 }
                 else{
                     System.out.println("There is no user with such a username, or the user does not match the type you chose, please insert a valid username:");
+                    i--;
                 }
             }
             else {
                 if (check == 1) { // Student
-                    students.add(username);
+                    users.add(id);
                 }
                 else{
                     System.out.println("That username does not exist or the user is not a student, please insert a valid username:");
+                    i--;
                 }
             }
         }
-        if(electionType == 2){
-            if(type == 1){ // Student
-                return students;
-            }
-            else if(type == 2){ // Professor
-                return professors;
-            }
-            else if(type == 3){ // Employee
-                return employees;
-            }
-        }
-        return new ArrayList<>();
+        rmi.addCandidatesToList(users);
     }
 
     public void removeCandidates(int election) throws RemoteException{

@@ -10,12 +10,17 @@ public interface RMI_Interface_Admin extends Remote{
     public boolean deleteFaculty(int id)throws RemoteException;
     public void createElection(Date startDate, Date endDate, String name, String desc, int id_department)throws RemoteException;
     public void removeList(int election, String name)throws RemoteException;
-    public int getDepartment(int id)throws RemoteException;
+    public int getDepartmentNumber(int id)throws RemoteException;
+    public int getListType(int id)throws RemoteException
     public boolean checkDepartment(int id)throws RemoteException;
     public boolean checkFaculty(int id)throws RemoteException;
-    public int checkUserType(String username)throws RemoteException;
-    public boolean checkElection(int id)throws RemoteException
-    public void changeElectionProperties(Date startDate, Date endDate, String name, String desc, int id)throws RemoteException;
+    public int checkUserType(int id)throws RemoteException;
+    public boolean checkElection(int id)throws RemoteException;
+    public void createList(String name, int type, int election) throws RemoteException;
+    public void changeElectionName(int id, String name) throws RemoteException;
+    public void changeElectionEndDate(int id, Date endDate) throws RemoteException;
+    public void changeElectionStartDate(int id, Date startDate) throws RemoteException;
+    public void changeElectionDescription(int id, String desc) throws RemoteException;
     public boolean addVotingTable(int depId)throws RemoteException;
     public String whereUserVoted(int electionId, int userId)throws RemoteException;
     public ArrayList<Vote> getUserVotes(int id)throws RemoteException;
