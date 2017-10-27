@@ -41,14 +41,14 @@ public class Admin_Console implements Admin_Interface_RMI {
 
     }
 
-    public void main(String args[]) {
+    public static void main(String args[]) {
         Admin_Console admin = new Admin_Console();
         /*rmi*/
         try {
             admin.rmi = (RMI_Interface_Admin) Naming.lookup("rmi://" + admin.rmi_ip+ ":" + admin.rmi_port+ "/" + admin.rmi_name);
             System.out.println("RMIFound");
-            rmi.setAdmin(admin);
-            mainMenu();
+            admin.rmi.setAdmin(admin);
+            admin.mainMenu();
 
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -65,7 +65,7 @@ public class Admin_Console implements Admin_Interface_RMI {
 
     /*--------Main Menu---------*/
 
-    public void mainMenu(){
+    public void mainMenu() throws RemoteException{
         Scanner in = new Scanner(System.in);
         printMainMenu();
         int opt = in.nextInt();
@@ -153,14 +153,14 @@ public class Admin_Console implements Admin_Interface_RMI {
         Iterator it = elections.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
-            System.out.println("Name: "pair.getKey() + ", Id: " + pair.getValue());
+            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
             it.remove(); // avoids a ConcurrentModificationException
         }
         return elections_copy;
     }
 
-    public void printElectionResults(int id){
-        HashMap<String, Integer> results = rmi.getElectionResults();
+    public void printElectionResults(int id) throws RemoteException{
+        HashMap<String, Integer> results = rmi.getElectionResults(id);
         Iterator it = results.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
@@ -200,12 +200,12 @@ public class Admin_Console implements Admin_Interface_RMI {
         rmi.createElection(startDate, endDate, title, description, department);
     }
 
-    public void listDepartments(){
+    public void listDepartments() throws RemoteException {
         HashMap<String, Integer> departments = rmi.getAllDepartments();
         Iterator it = departments.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
-            System.out.println("Name: "pair.getKey() + ", Id: " + pair.getValue());
+            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
             it.remove(); // avoids a ConcurrentModificationException
         }
     }
@@ -237,7 +237,7 @@ public class Admin_Console implements Admin_Interface_RMI {
         listFaculties();
         int facultyId = in.nextInt();
         System.out.println("Choose the department of the user:");
-        listDepartmentsFromFaculty(int facultyId);
+        listDepartmentsFromFaculty(facultyId);
         int departmentId = in.nextInt();
         System.out.println("Insert the ID number of the user:");
         int id = in.nextInt();
@@ -276,7 +276,7 @@ public class Admin_Console implements Admin_Interface_RMI {
 
     /*--------Departments Menu---------*/
 
-    public void manageDepartments(){
+    public void manageDepartments() throws RemoteException {
         Scanner in = new Scanner(System.in);
         printDepartmentsMenu();
         int opt = in.nextInt();
@@ -289,7 +289,7 @@ public class Admin_Console implements Admin_Interface_RMI {
         System.out.println("<3> Delete Department");
     }
 
-    public void chooseDepartmentsMenu(int opt){
+    public void chooseDepartmentsMenu(int opt) throws RemoteException {
         switch(opt){
             case 1: newDepartment();
                     mainMenu();
@@ -317,7 +317,7 @@ public class Admin_Console implements Admin_Interface_RMI {
         rmi.addDepartment(name,faculty);
     }
 
-    public void listFaculties(){
+    public void listFaculties() throws RemoteException {
         HashMap<String, Integer> faculties = rmi.getAllFaculties();
         Iterator it = faculties.entrySet().iterator();
         while (it.hasNext()) {
@@ -327,7 +327,7 @@ public class Admin_Console implements Admin_Interface_RMI {
         }
     }
 
-    public void alterDepartment(){
+    public void alterDepartment() throws RemoteException {
         Scanner in = new Scanner(System.in);
         System.out.println("Choose the id of the department:");
         //printDepartments(0);
@@ -341,7 +341,7 @@ public class Admin_Console implements Admin_Interface_RMI {
         rmi.changeDepartment(newName,department);
     }
 
-    public void removeDepartment(){
+    public void removeDepartment() throws RemoteException {
         Scanner in = new Scanner(System.in);
         System.out.println("Choose the id of the department:");
         //printDepartments(0);
@@ -355,7 +355,7 @@ public class Admin_Console implements Admin_Interface_RMI {
 
     /*--------Faculties Menu---------*/
 
-    public void manageFaculties(){
+    public void manageFaculties() throws RemoteException {
         Scanner in = new Scanner(System.in);
         printFacultiesMenu();
         int opt = in.nextInt();
@@ -368,7 +368,7 @@ public class Admin_Console implements Admin_Interface_RMI {
         System.out.println("<3> Delete Faculty");
     }
 
-    public void chooseFacultiesMenu(int opt){
+    public void chooseFacultiesMenu(int opt) throws RemoteException {
         switch(opt){
             case 1: newFaculty();
                     mainMenu();
@@ -382,14 +382,14 @@ public class Admin_Console implements Admin_Interface_RMI {
         }
     }
 
-    public void newFaculty(){
+    public void newFaculty() throws RemoteException {
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the name of the new faculty:");
         String name = in.nextLine();
         rmi.addFaculty(name);
     }
 
-    public void alterFaculty(){
+    public void alterFaculty() throws RemoteException {
         Scanner in = new Scanner(System.in);
         System.out.println("Choose the id of the faculty:");
         //printFaculties();
@@ -462,7 +462,7 @@ public class Admin_Console implements Admin_Interface_RMI {
             case 4: removeVotingTable(election_id);
                     mainMenu();
                     break;
-            case 5: changeElection();
+            case 5: changeElection(election_id);
                     mainMenu();
                     break;
             case 6:
@@ -564,7 +564,7 @@ public class Admin_Console implements Admin_Interface_RMI {
         System.out.println("What list do you want to add candidates to?");
         int list = in.nextInt();
         System.out.println("How many candidates are you going to insert?");
-        int type = rmi.getListType(election);
+        int list_type = rmi.getListType(election);
         int number = in.nextInt();
         System.out.println("Insert the list of ids you want to be candidates of the list:");
         int id;
@@ -576,13 +576,13 @@ public class Admin_Console implements Admin_Interface_RMI {
             check = rmi.checkUserType(id);
             i++;
             if(type == 2){
-                if(check == 1 && type == 1){ // Student
+                if(check == 1 && list_type == 1){ // Student
                     users.add(id);
                 }
-                else if(check == 2 && type == 2){ // Professors
+                else if(check == 2 && list_type == 2){ // Professors
                     users.add(id);
                 }
-                else if(check == 3 && type == 3){ // Professors
+                else if(check == 3 && list_type == 3){ // Professors
                     users.add(id);
                 }
                 else{
@@ -600,7 +600,7 @@ public class Admin_Console implements Admin_Interface_RMI {
                 }
             }
         }
-        rmi.addCandidatesToList(users);
+        rmi.addCandidatesToList(election, users);
     }
 
     public void removeCandidates(int election) throws RemoteException{
@@ -611,12 +611,12 @@ public class Admin_Console implements Admin_Interface_RMI {
         rmi.removeList(election, name);
     }
 
-    public void listElectionLists(int election){
+    public void listElectionLists(int election) throws RemoteException {
         HashMap<String, Integer> lists = rmi.getElectionLists(election);
         Iterator it = lists.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
-            System.out.println("Name: "pair.getKey() + ", Id: " + pair.getValue());
+            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
             it.remove(); // avoids a ConcurrentModificationException
         }
     }

@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.rmi.*;
 import java.util.*;
+import java.util.List;
 import iVotas.Parser;
 public class TCP_Server {
 
@@ -21,7 +22,7 @@ public class TCP_Server {
 		this.dc = 0;
 		pedidos_espera = new ArrayList<>();
 		list_socket = new ArrayList<>();
-		conns = Collections.synchronizedList(new ArrayList<>());
+		conns = Collections.synchronizedList(new ArrayList());
 		nTerminais = 0;
 		//Properties https://www.mkyong.com/java/java-properties-file-examples/
 				Properties prop = new Properties();
@@ -408,7 +409,7 @@ class Connection extends Thread {
 					write("type | vote ; msg: Vote invalid or already voted; (blank)"); //just for testing
 				}
 			}else {
-				boolean validation = tcp.rmi.vote(this.userId ,this.userType, userDep, id_election, vote , tcp.id_table );
+				boolean validation = tcp.rmi.vote(this.userId ,this.userType, userDep, id_election, vote/* , tcp.id_table*/ );
 				if(validation){
 					write("type | vote ; msg: Success!; ");
 				}else{

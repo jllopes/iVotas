@@ -549,7 +549,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			connection.setAutoCommit(false);
 			String sql = "update election set election.start_date = ? where election.id = ?";
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
-			prepStatement.setTimestamp(1, (java.sql.Timestamp) startDate.getTime());
+			prepStatement.setTimestamp(1, new Timestamp(startDate.getTime()));
 			prepStatement.setInt(2,id);
 			prepStatement.executeUpdate();
 			prepStatement.close();
@@ -578,7 +578,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			connection.setAutoCommit(false);
 			String sql = "update election set election.end_date = ? where election.id = ?";
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
-			prepStatement.setTimestamp(1, (java.sql.Timestamp) endDate.getTime());
+			prepStatement.setTimestamp(1, new Timestamp(endDate.getTime()));
 			prepStatement.setInt(2,id);
 			prepStatement.executeUpdate();
 			prepStatement.close();
@@ -659,7 +659,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 
 	}
 
-	public void addCandidatesToList(int list, ArrayList<Integer> users){
+	public void addCandidatesToList(int list, ArrayList<Integer> users) throws RemoteException{
 		for(int user : users) {
 			try {
 				connection.setAutoCommit(false);
@@ -1323,7 +1323,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			if(rs.next()){
 				String name = rs.getString("name");
 				Election election = getElection(rs.getInt("id_election"));
-				int votes = rs.getInt("vote";)
+				int votes = rs.getInt("vote");
 				return new List(name, election, votes);
 			}else{
 				return null;
@@ -1680,6 +1680,11 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		
 	}
 
+	@Override
+	public boolean vote_blank(int userid, int usertype, int userDep, int idElection) throws RemoteException {
+		return false;
+	}
+
 	public HashMap<String, Integer> getUserId(String username) throws RemoteException {
 		try{
 			String sql = "select id, id_department from person where username = ? limit 1";
@@ -1734,7 +1739,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			LocateRegistry.createRegistry(h.port).rebind("IVotas", h);
 
 			System.out.println("IVotas ready.");
-			new Thread() {
+			/*new Thread() {
 				public void run() {
 					while(true) {
 						h.endElections();
@@ -1745,7 +1750,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 						}
 					}
 				}
-			}.start();
+			}.start();*/
 			// main server
 		} catch (RemoteException re) {
 			System.out.println("RMI could not be created, lauching secundary");
