@@ -16,7 +16,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	private String databaseIP;
 	private String databasePass;
 	private String databaseUser;
-	private Admin_Interface_RMI admin;
+	static ArrayList<Admin_Interface_RMI> admins;
 	Connection connection = null;
 	
 	private static final long serialVersionUID = 1L;
@@ -46,7 +46,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			connection = DriverManager.getConnection("jdbc:mysql://"+this.databaseIP+":"+this.databasePort +"/ivotas",this.databaseUser, this.databasePass);
 		}catch (SQLException e){
 			System.out.println("Database: Cannot connect to database");
-			System.exit(0);
+			//System.exit(0);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -1637,7 +1637,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		    			return false;
 		    		}
 		    		List list = getList(vote);
-		    		String str = "List " + list.name + " got one more vote, they now have " + list.votes + " votes.";
+		    		String str = ">Callback : List " + list.name + " got one more vote, they now have " + list.votes + " votes.";
 		    		sendNotification(str);
 
 				    String sql = "insert into vote(id_election, id_person, id_table) values (?,?,?)";
@@ -1719,12 +1719,18 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return null;
 	}
 
-	public void setAdmin(Admin_Interface_RMI admin)throws RemoteException {
-		this.admin = admin;
+	public void setAdmin(Admin_Interface_RMI admin)throws RemoteException{
+		admins.add(admin);
 	}
 
-	public void sendNotification(String str){
-		admin.receiveNotification(str);
+	public void sendNotification(String str) throws RemoteException{
+		for(Admin_Interface_RMI admin : admins) {
+			try {
+				admin.receiveNotification(str);
+			} catch (NullPointerException e){
+				admins.remove(admin);
+			}
+		}
 	}
 
 	public static void main(String args[]) {
