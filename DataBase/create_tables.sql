@@ -18,7 +18,6 @@ create table department
 
 
 
-
 create table person
 	(id int(4) not null auto_increment,
     username varchar(16) not null,
@@ -68,10 +67,8 @@ create table election
 create table vote_table
 	(id int(4) not null auto_increment,
     id_department int(4) not null,
-    id_election int(4) not null,
     primary key(id),
-    foreign key(id_department) references department(id),
-	foreign key(id_election) references election(id)
+    foreign key(id_department) references department(id)
 	#UNIQUE(id_department)
     );
     

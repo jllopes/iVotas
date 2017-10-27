@@ -409,7 +409,7 @@ class Connection extends Thread {
 					write("type | vote ; msg: Vote invalid or already voted; (blank)"); //just for testing
 				}
 			}else {
-				boolean validation = tcp.rmi.vote(this.userId ,this.userType, userDep, id_election, vote/* , tcp.id_table*/ );
+				boolean validation = tcp.rmi.vote(this.userId ,this.userType, userDep, id_election, vote, tcp.id_table);
 				if(validation){
 					write("type | vote ; msg: Success!; ");
 				}else{

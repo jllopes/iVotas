@@ -9,14 +9,14 @@ import java.util.*;
 import java.sql.DriverManager;
 import java.util.Date;
 
-public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP{
+public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP , RMI_Interface_Admin{
 	private int port;
 	private String ip;
 	private int databasePort;
 	private String databaseIP;
 	private String databasePass;
 	private String databaseUser;
-	private Admin_Console admin;
+	private Admin_Interface_RMI admin;
 	Connection connection = null;
 	
 	private static final long serialVersionUID = 1L;
@@ -689,7 +689,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 	}
 
-	public boolean addVotingTable(int depId , int electionId) throws RemoteException {
+	public boolean addVotingTable(int depId) throws RemoteException {
     	try {
 	    	connection.setAutoCommit(false);
 	    	/* limit 1 vote_table per election ??
@@ -705,7 +705,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	    	rs.close();
 	    	*/
 
-			String sql = "insert into vote_table(id,id_election) values (?,?)";
+			String sql = "insert into vote_table(id_department) values (?)";
 		    PreparedStatement prepStatement = connection.prepareStatement(sql);
 		    prepStatement.setInt(1,depId );
 		    prepStatement.executeUpdate();
@@ -1620,15 +1620,15 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return null;
 	}
 
-	public boolean vote(int userId, int usertype, int userDep,int idElection, int idList) throws RemoteException{ //false se ja existir voto
+	public boolean vote(int userId, int userType, int userDep, int id_election, int vote, int id_table) throws RemoteException{
 		 try {
-		    	connection.setAutoCommit(false);
-			 HashMap<Integer, String> lists = getListsElections(usertype,userDep,idElection);
-		    	if( lists != null && lists.get(idList) != null){ //valid election
+		    	connection.setAutoCommit(false); 
+			 HashMap<Integer, String> lists = getListsElections(userType,userDep,id_election);
+		    	if( lists != null && lists.get(vote) != null){ //valid election
 		    		//search if theres is a vote already
 		    		String getvotes = "Select 1 from votes where id_election = ? and id_person = ?";
 		    		PreparedStatement prepStatement2 = connection.prepareStatement(getvotes);
-				    prepStatement2.setInt(1, idElection);
+				    prepStatement2.setInt(1, id_election);
 				    prepStatement2.setInt(2, userId);
 		    		ResultSet rs = prepStatement2.executeQuery();
 		    		prepStatement2.close();
@@ -1636,22 +1636,22 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		    			rs.close();
 		    			return false;
 		    		}
-		    		List list = getList(idList);
+		    		List list = getList(vote);
 		    		String str = "List " + list.name + " got one more vote, they now have " + list.votes + " votes.";
 		    		sendNotification(str);
 
 				    String sql = "insert into vote(id_election, id_person, id_table) values (?,?,?)";
 				    PreparedStatement prepStatement = connection.prepareStatement(sql);
-				    prepStatement.setInt(1, idElection);
+				    prepStatement.setInt(1, vote);
 				    prepStatement.setInt(2, userId);
-				    prepStatement.setInt(3, idList);
+				    prepStatement.setInt(3, id_table);
 
 				    prepStatement.executeUpdate();
 					prepStatement.close();
 					
 				    String sql1 = "update list_election set list_election.vote = list_election.vote +1 where list_election.id = ?";
 				    PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
-				    prepStatement1.setInt(1, idList);
+				    prepStatement1.setInt(1, vote);
 				    prepStatement1.executeUpdate();
 					prepStatement1.close();
 
@@ -1719,7 +1719,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return null;
 	}
 
-	public void setAdmin(Admin_Console admin)throws RemoteException {
+	public void setAdmin(Admin_Interface_RMI admin)throws RemoteException {
 		this.admin = admin;
 	}
 
@@ -1758,6 +1758,27 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			return;
 		}
 	}
+
+	@Override
+	public void changeDepartment(String newName, int id) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean deleteDepartment(int id) throws RemoteException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void removeList(int election, String name) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
 
 
 }

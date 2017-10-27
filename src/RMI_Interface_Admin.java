@@ -32,8 +32,8 @@ public interface RMI_Interface_Admin extends Remote{
     public HashMap<String,Integer> getElectionLists(int election) throws RemoteException;
     public void addCandidatesToList(int list, ArrayList<Integer> users) throws RemoteException;
     public HashMap<String, Integer> getDepartmentsFromFaculty(int faculty) throws RemoteException;
-    public void setAdmin(Admin_Console admin)throws RemoteException;
+    public void setAdmin(Admin_Interface_RMI admin)throws RemoteException;
     //CALLBACK MESAS DE VOTO -- estado mesas de voto
     //CALLBACK MESAS DE VOTO -- número eleitores que votaram em cada mesa de voto até ao momento
-    public void endElection();
+  //  public void endElection();
 }
