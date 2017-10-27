@@ -1687,6 +1687,18 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			LocateRegistry.createRegistry(h.port).rebind("IVotas", h);
 
 			System.out.println("IVotas ready.");
+			new Thread() {
+				public void run() {
+					while(true) {
+						h.endElections();
+						try {
+							Thread.sleep(40000);
+						} catch (InterruptedException e) {
+							System.out.println("Problem with end auctions thread!");
+						}
+					}
+				}
+			}.start();
 			// main server
 		} catch (RemoteException re) {
 			System.out.println("RMI could not be created, lauching secundary");
