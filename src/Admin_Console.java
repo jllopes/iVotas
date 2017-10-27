@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class Admin_Console {
+public class Admin_Console implements Admin_Interface_RMI {
     RMI_Interface_Admin rmi;
     String rmi_name;
     String rmi_ip;
@@ -47,6 +47,7 @@ public class Admin_Console {
         try {
             admin.rmi = (RMI_Interface_Admin) Naming.lookup("rmi://" + admin.rmi_ip+ ":" + admin.rmi_port+ "/" + admin.rmi_name);
             System.out.println("RMIFound");
+            rmi.setAdmin(admin);
             mainMenu();
 
         } catch (RemoteException e) {

@@ -16,6 +16,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	private String databaseIP;
 	private String databasePass;
 	private String databaseUser;
+	private Admin_Console admin;
 	Connection connection = null;
 	
 	private static final long serialVersionUID = 1L;
@@ -1311,6 +1312,41 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return null;
 	}
 
+	public List getList(int id){
+		try {
+			connection.setAutoCommit(false);
+
+			String sql1 = "select * from list_election where id = ? limit 1";
+			PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
+			prepStatement1.setInt(1,id);
+			ResultSet rs = prepStatement1.executeQuery();
+			if(rs.next()){
+				String name = rs.getString("name");
+				Election election = getElection(rs.getInt("id_election"));
+				int votes = rs.getInt("vote";)
+				return new List(name, election, votes);
+			}else{
+				return null;
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return null;
+	}
+
 	public Department getDepartment(int id){
 		try {
 			connection.setAutoCommit(false);
@@ -1600,7 +1636,10 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		    			rs.close();
 		    			return false;
 		    		}
-		    		
+		    		List list = getList(idList);
+		    		String str = "List " + list.name + " got one more vote, they now have " + list.votes + " votes.";
+		    		sendNotification(str);
+
 				    String sql = "insert into vote(id_election, id_person, id_table) values (?,?,?)";
 				    PreparedStatement prepStatement = connection.prepareStatement(sql);
 				    prepStatement.setInt(1, idElection);
@@ -1674,7 +1713,15 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 		return null;
 	}
-	
+
+	public void setAdmin(Admin_Console admin)throws RemoteException {
+		this.admin = admin;
+	}
+
+	public void sendNotification(String str){
+		admin.receiveNotification(str);
+	}
+
 	public static void main(String args[]) {
 		
 		/*
