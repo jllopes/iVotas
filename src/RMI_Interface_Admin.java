@@ -9,7 +9,7 @@ public interface RMI_Interface_Admin extends Remote{
     public boolean deleteDepartment(int id)throws RemoteException;
     public boolean deleteFaculty(int id)throws RemoteException;
     public void createElection(Date startDate, Date endDate, String name, String desc, int id_department)throws RemoteException;
-    public void removeList(int election, String name)throws RemoteException;
+    public void removeList(int id) throws RemoteException;
     public int getDepartmentNumber(int id)throws RemoteException;
     public int getListType(int id)throws RemoteException;
     public boolean checkDepartment(int id)throws RemoteException;
@@ -23,7 +23,8 @@ public interface RMI_Interface_Admin extends Remote{
     public void changeElectionDescription(int id, String desc) throws RemoteException;
     public boolean addVotingTable(int depId)throws RemoteException;
     public String whereUserVoted(int electionId, int userId)throws RemoteException;
-    public ArrayList<Vote> getUserVotes(int id)throws RemoteException;
+    public HashMap<String, Integer> getUserVotedElections(int id) throws RemoteException;
+    public HashMap<Date, String> getUserVoteDetails(int id, int election) throws RemoteException;
     public HashMap<String, Integer> getElectionResults(int id)throws RemoteException;
     public HashMap<String, Integer> getAllDepartments() throws RemoteException;
     public HashMap<String, Integer> getAllFaculties() throws RemoteException;

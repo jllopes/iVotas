@@ -69,7 +69,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void mainMenu() throws RemoteException{
         Scanner in = new Scanner(System.in);
         printMainMenu();
-        int opt = in.nextInt();
+        int opt = Integer.parseInt(in.nextLine());
         chooseMainMenu(opt);
     }
 
@@ -86,18 +86,25 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void chooseMainMenu(int opt) throws RemoteException{
         switch(opt){
             case 1: newUser();
+                    mainMenu();
                     break;
             case 2: manageDepartments();
+                    mainMenu();
                     break;
             case 3: manageFaculties();
+                    mainMenu();
                     break;
             case 4: newElection();
+                    mainMenu();
                     break;
             case 5: manageElections();
+                    mainMenu();
                     break;
             case 6: consultPastElections();
+                    mainMenu();
                     break;
             case 7: whereVoted();
+                    mainMenu();
                     break;
             default:
                 System.out.println("Please insert a valid option");
@@ -110,20 +117,24 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         Scanner in = new Scanner(System.in);
         //printUsers();
         System.out.println("Insert the id of the user:");
-        int user = in.nextInt();
-        ArrayList<Vote> votes = rmi.getUserVotes(user);
-        for(Vote vote : votes){
-            System.out.println("Election Name: " + vote.election.name + " , Election Id: " + vote.election.id);
+        int user = Integer.parseInt(in.nextLine());
+        HashMap<String, Integer> elections = rmi.getUserVotedElections(user);
+        Iterator it = elections.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
         }
         System.out.println("Insert the id of the election:");
-        int election = in.nextInt();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        for(Vote vote : votes){
-            if(vote.election.id == election){
-                String date = formatter.format(vote.date);
-                System.out.println("Date: " + date + " , Table:" + vote.table);
-                break;
-            }
+        int election = Integer.parseInt(in.nextLine());
+        HashMap<Date, String> details = rmi.getUserVoteDetails(user, election);
+        it = details.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            String date = formatter.format(pair.getKey());
+            System.out.println("Date: " + date + ", Table: " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
         }
     }
 
@@ -131,10 +142,10 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         Scanner in = new Scanner(System.in);
         HashMap<String, Integer> pastElections = listPastElections();
         System.out.println("Insert the id of which election you want to consult:");
-        int id = in.nextInt();
+        int id = Integer.parseInt(in.nextLine());
         while(checkPastElection(pastElections,id)){
             System.out.println("There is no election with that id, insert a valid id");
-            id = in.nextInt();
+            id = Integer.parseInt(in.nextLine());
         }
         System.out.println("The results of the election were the following:");
         printElectionResults(id);
@@ -175,22 +186,30 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         int department;
         listDepartments();
         System.out.println("Insert the department where the election is happening (0 if general council):");
-        department = in.nextInt();
-        while(!rmi.checkDepartment(department)) {
+        department = Integer.parseInt(in.nextLine());
+        while(!rmi.checkDepartment(department) && department != 0) {
             System.out.println("There is no department with that id, please insert a valid id");
-            department = in.nextInt();
+            department = Integer.parseInt(in.nextLine());
         }
-        System.out.println("Insert the start date of the election (Format: dd/mm/yy hh:mm):");
+        System.out.println("Insert the start date of the election (Format: dd/mm/yyyy hh:mm):");
         Date startDate = new Date();
         try {
             startDate = getDate();
+            while(startDate == null){
+                System.out.println("Please insert a valid date! (Format: dd/mm/yyyy hh:mm");
+                getDate();
+            }
         } catch (ParseException e){
             e.printStackTrace();
         }
-        System.out.println("Insert the end date of the election (Format: dd/mm/yy hh:mm):");
+        System.out.println("Insert the end date of the election (Format: dd/mm/yyyy hh:mm):");
         Date endDate = new Date();
         try {
             endDate = getDate();
+            while(endDate == null){
+                System.out.println("Please insert a valid date! (Format: dd/mm/yyyy hh:mm");
+                getDate();
+            }
         } catch (ParseException e){
             e.printStackTrace();
         }
@@ -218,9 +237,8 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         try {
             return date.parse(dateString);
         } catch (ParseException e) {
-            e.printStackTrace();
+            return null;
         }
-        return date.parse(dateString);
     }
 
     public void newUser()throws RemoteException{
@@ -233,19 +251,19 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         String password = in.nextLine();
         System.out.println("Choose the type of user:");
         printUserTypeMenu();
-        int type = in.nextInt();
+        int type = Integer.parseInt(in.nextLine());
         System.out.println("Choose the faculty of the user:");
         listFaculties();
-        int facultyId = in.nextInt();
+        int facultyId = Integer.parseInt(in.nextLine());
         System.out.println("Choose the department of the user:");
         listDepartmentsFromFaculty(facultyId);
-        int departmentId = in.nextInt();
+        int departmentId = Integer.parseInt(in.nextLine());
         System.out.println("Insert the ID number of the user:");
-        int id = in.nextInt();
+        int id = Integer.parseInt(in.nextLine());
         System.out.println("Insert the validity month of the ID:");
-        int idMonth = in.nextInt();
+        int idMonth = Integer.parseInt(in.nextLine());
         System.out.println("Insert the validity year of the ID:");
-        int idYear = in.nextInt();
+        int idYear = Integer.parseInt(in.nextLine());
         System.out.println("Insert the address of the user:");
         String address = in.nextLine();
         System.out.println("Insert the contact number of the user:");
@@ -280,7 +298,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void manageDepartments() throws RemoteException {
         Scanner in = new Scanner(System.in);
         printDepartmentsMenu();
-        int opt = in.nextInt();
+        int opt = Integer.parseInt(in.nextLine());
         chooseDepartmentsMenu(opt);
     }
 
@@ -293,13 +311,10 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void chooseDepartmentsMenu(int opt) throws RemoteException {
         switch(opt){
             case 1: newDepartment();
-                    mainMenu();
                     break;
             case 2: alterDepartment();
-                    mainMenu();
                     break;
             case 3: removeDepartment();
-                    mainMenu();
                     break;
         }
     }
@@ -310,10 +325,10 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         String name = in.nextLine();
         listFaculties();
         System.out.println("Insert the faculty id of the department:");
-        int faculty = in.nextInt();
+        int faculty = Integer.parseInt(in.nextLine());
         while(!rmi.checkFaculty(faculty)) {
             System.out.println("There is no faculty with that id, please insert a valid id");
-            faculty = in.nextInt();
+            faculty = Integer.parseInt(in.nextLine());
         }
         rmi.addDepartment(name,faculty);
     }
@@ -331,27 +346,34 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void alterDepartment() throws RemoteException {
         Scanner in = new Scanner(System.in);
         System.out.println("Choose the id of the department:");
-        //printDepartments(0);
-        int department = in.nextInt();
+        listDepartments();
+        int department = Integer.parseInt(in.nextLine());
         while(!rmi.checkDepartment(department)){
             System.out.println("There is no faculty with that id, please insert a valid id:");
-            department = in.nextInt();
+            department = Integer.parseInt(in.nextLine());
         }
         System.out.println("Insert the new name of the department:");
         String newName = in.nextLine();
         rmi.changeDepartment(newName,department);
+
     }
 
     public void removeDepartment() throws RemoteException {
         Scanner in = new Scanner(System.in);
         System.out.println("Choose the id of the department:");
-        //printDepartments(0);
-        int department = in.nextInt();
+        listDepartments();
+        int department = Integer.parseInt(in.nextLine());
         while(!rmi.checkDepartment(department)){
             System.out.println("There is no faculty with that id, please insert a valid id:");
-            department = in.nextInt();
+            department = Integer.parseInt(in.nextLine());
         }
-        rmi.deleteDepartment(department);
+        boolean check = rmi.deleteDepartment(department);
+        if(check){
+            System.out.println("Operation completed successfully");
+        } else {
+            System.out.println("Operation is not valid, please confirm there is nothing linked to that department");
+        }
+
     }
 
     /*--------Faculties Menu---------*/
@@ -359,7 +381,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void manageFaculties() throws RemoteException {
         Scanner in = new Scanner(System.in);
         printFacultiesMenu();
-        int opt = in.nextInt();
+        int opt = Integer.parseInt(in.nextLine());
         chooseFacultiesMenu(opt);
     }
 
@@ -372,13 +394,10 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void chooseFacultiesMenu(int opt) throws RemoteException {
         switch(opt){
             case 1: newFaculty();
-                    mainMenu();
                 break;
             case 2: alterFaculty();
-                    mainMenu();
                 break;
             case 3: removeFaculty();
-                    mainMenu();
                 break;
         }
     }
@@ -393,11 +412,11 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void alterFaculty() throws RemoteException {
         Scanner in = new Scanner(System.in);
         System.out.println("Choose the id of the faculty:");
-        //printFaculties();
-        int faculty = in.nextInt();
+        listFaculties();
+        int faculty = Integer.parseInt(in.nextLine());
         while(!rmi.checkFaculty(faculty)){
             System.out.println("There is no faculty with that id, please insert a valid id:");
-            faculty = in.nextInt();
+            faculty = Integer.parseInt(in.nextLine());
         }
         System.out.println("Insert the new name of the faculty:");
         String newName = in.nextLine();
@@ -407,13 +426,18 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void removeFaculty() throws RemoteException{
         Scanner in = new Scanner(System.in);
         System.out.println("Choose the id of the faculty:");
-        //printFaculties();
-        int faculty = in.nextInt();
+        listFaculties();
+        int faculty = Integer.parseInt(in.nextLine());
         while(!rmi.checkFaculty(faculty)){
             System.out.println("There is no faculty with that id, please insert a valid id:");
-            faculty = in.nextInt();
+            faculty = Integer.parseInt(in.nextLine());
         }
-        rmi.deleteFaculty(faculty);
+        boolean check = rmi.deleteFaculty(faculty);
+        if(check){
+            System.out.println("Operation completed successfully");
+        } else{
+            System.out.println("Operation invalid, please confirm nothing is linked to the faculty");
+        }
     }
 
     /*--------Election Menu---------*/
@@ -422,10 +446,10 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         Scanner in = new Scanner(System.in);
         listElections();
         System.out.println("Insert the id of the election you want to manage:");
-        int election_id = in.nextInt();
+        int election_id = Integer.parseInt(in.nextLine());
         int department = rmi.getDepartmentNumber(election_id);
         printElectionsMenu();
-        int opt = in.nextInt();
+        int opt = Integer.parseInt(in.nextLine());
         chooseElectionsMenu(opt, election_id, department);
     }
 
@@ -452,26 +476,20 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void chooseElectionsMenu(int opt, int election_id, int department) throws RemoteException{
         switch(opt){
             case 1: addCandidates(department, election_id);
-                    mainMenu();
                     break;
             case 2: removeCandidates(election_id);
-                    mainMenu();
                     break;
             case 3: newVotingTable(election_id);
-                    mainMenu();
                     break;
             case 4: removeVotingTable(election_id);
-                    mainMenu();
                     break;
             case 5: changeElection(election_id);
-                    mainMenu();
                     break;
             case 6:
                     addCandidatesToList(election_id, department);
                     break;
             default:
                     System.out.println("That is not a valid option");
-                    mainMenu();
                     break;
         }
     }
@@ -480,7 +498,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         Scanner in = new Scanner(System.in);
         printChangeElectionMenu();
         System.out.println("Insert the option:");
-        int opt = in.nextInt();
+        int opt = Integer.parseInt(in.nextLine());
         chooseChangeElectionMenu(opt, id);
     }
 
@@ -554,7 +572,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         if (department != 0) {
             System.out.println("Choose the type of list you want to create:");
             printUserTypeMenu();
-            type = in.nextInt();
+            type = Integer.parseInt(in.nextLine());
         }
         rmi.createList(name, type, election);
     }
@@ -563,17 +581,18 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         Scanner in = new Scanner(System.in);
         listElectionLists(election);
         System.out.println("What list do you want to add candidates to?");
-        int list = in.nextInt();
+        int list = Integer.parseInt(in.nextLine());
         System.out.println("How many candidates are you going to insert?");
         int list_type = rmi.getListType(election);
-        int number = in.nextInt();
+        int number = Integer.parseInt(in.nextLine());
+        in.nextLine();
         System.out.println("Insert the list of ids you want to be candidates of the list:");
         int id;
         ArrayList<Integer> users = new ArrayList<>();
         int check;
         int i = 0;
         while(i<number){
-            id = in.nextInt();
+            id = Integer.parseInt(in.nextLine());
             check = rmi.checkUserType(id);
             i++;
             if(type == 2){
@@ -606,27 +625,35 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
 
     public void removeCandidates(int election) throws RemoteException{
         Scanner in = new Scanner(System.in);
-        System.out.println("Insert the name of the list you want to remove:");
-        listElectionLists(election);
-        String name = in.nextLine();
-        rmi.removeList(election, name);
+        boolean check = listElectionLists(election);
+        if(check) {
+            System.out.println("Insert the id of the list you want to remove:");
+            int id = Integer.parseInt(in.nextLine());
+            rmi.removeList(id);
+        }
+
     }
 
-    public void listElectionLists(int election) throws RemoteException {
+    public boolean listElectionLists(int election) throws RemoteException {
         HashMap<String, Integer> lists = rmi.getElectionLists(election);
+        if(lists == null) {
+            System.out.println("There are no lists for this election");
+            return false;
+        }
         Iterator it = lists.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
             it.remove(); // avoids a ConcurrentModificationException
         }
+        return true;
     }
 
     public void newVotingTable(int election){
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the id of the voting table you want to associate with the election:");
         //listVotingTables();
-        int votingTable = in.nextInt();
+        int votingTable = Integer.parseInt(in.nextLine());
         //addVotingTable(election, votingTable);
     }
 
@@ -634,7 +661,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the id of the voting table you want to remove from the election:");
         //listElectionTables(election);
-        int votingTable = in.nextInt();
+        int votingTable = Integer.parseInt(in.nextLine());
         //deleteVotingTable(election, votingTable);
     }
 }

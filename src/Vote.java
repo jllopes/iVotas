@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.Date;
 
-public class Vote{
+public class Vote implements Serializable{
     User user;
     Election election;
     VotingTable table;
