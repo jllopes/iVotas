@@ -6,7 +6,6 @@ import java.sql.*;
 import java.io.*;
 import java.sql.Connection;
 import java.util.*;
-import java.sql.DriverManager;
 import java.util.Date;
 public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP , RMI_Interface_Admin{
 	private int port;
@@ -16,6 +15,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	private String databasePass;
 	private String databaseUser;
 	List<Admin_Interface_RMI> admins;
+	List<Integer> tables;
 	Connection connection = null;
 	
 	private static final long serialVersionUID = 1L;
@@ -26,6 +26,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		Properties prop = new Properties();
 		InputStream input = null;
 		this.admins = Collections.synchronizedList(new ArrayList<>());
+		this.tables = Collections.synchronizedList(new ArrayList<>());
 		try {
 			if(new File("../rmiconfig.properties").exists()){
 				input = new FileInputStream("../rmiconfig.properties");
@@ -721,7 +722,25 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 
     }
 
-   /* public ArrayList<Vote> getUserVotes(int id){
+	public void addTable(int idTable) throws RemoteException{
+		synchronized(tables){
+			for(Integer table : tables){
+				if(table == idTable){
+					return;
+				}
+			}
+			tables.add(idTable);
+		}
+	}
+	public void removeTable(int idTable) throws RemoteException{
+		synchronized(tables){
+			tables.remove((Object)idTable);
+		}
+
+	}
+	
+	
+  /* public ArrayList<Vote> getUserVotes(int id){
 		ArrayList<Vote> votes = new ArrayList<>();
 		try {
 			connection.setAutoCommit(false);
@@ -752,7 +771,10 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return false;
 	}
 	*/
-
+    public List<Integer> getOnlineTables() throws RemoteException{    	
+    	return this.tables;
+    }
+	
     public String whereUserVoted(int electionId, int userId) throws RemoteException{
     	try {
 	    	connection.setAutoCommit(false);
@@ -1685,7 +1707,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		    		    	}
 		    		    } 
 		    		    System.out.println("lista nao found");
-					    String nullVote = "update election set election.vote_null =  election.vote_null +1 where election.id = ?";
+					    String nullVote = "update election set election.vote_blank =  election.vote_blank +1 where election.id = ?";
 					    PreparedStatement prepNullStatement = connection.prepareStatement(nullVote);
 					    prepNullStatement.setInt(1, id_election);
 					    prepNullStatement.executeUpdate();
@@ -1714,9 +1736,44 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			return false;
 	}
 
-	@Override
 	public boolean vote_blank(int userid, int usertype, int userDep, int idElection) throws RemoteException {
-		return false;
+	    try {
+	    	String getvotes = "Select 1 from vote where id_election = ? and id_person = ?";
+    		PreparedStatement prepStatement2 = connection.prepareStatement(getvotes);
+		    prepStatement2.setInt(1, idElection);
+		    prepStatement2.setInt(2, userid);
+    		ResultSet rs = prepStatement2.executeQuery();
+    		if(rs.next()){//already voted
+	    		prepStatement2.close();
+    			rs.close();
+    			return false;
+    		}
+    		String str = "New blank vote on election " + idElection + " .";
+    		sendNotification(str);
+	    	
+	    	
+		    String nullVote = "update election set election.vote_null =  election.vote_blank +1 where election.id = ?";
+		    PreparedStatement prepNullStatement = connection.prepareStatement(nullVote);
+			prepNullStatement.setInt(1, idElection);
+		    prepNullStatement.executeUpdate();
+		    prepNullStatement.close();
+		    return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+	    return false;
 	}
 
 	public HashMap<String, Integer> getUserId(String username) throws RemoteException {
@@ -1767,38 +1824,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 	}
 
-	public static void main(String args[]) {
-		
-		/*
-		 		System.getProperties().put("java.security.policy", "policy.all");
-				System.setSecurityManager(new RMISecurityManager()); 
-		 */
-		
-		try {
-			RMI_Server h = new RMI_Server();
-			LocateRegistry.createRegistry(h.port).rebind("IVotas", h);
-
-			System.out.println("IVotas ready.");
-			/*new Thread() {
-				public void run() {
-					while(true) {
-						h.endElections();
-						try {
-							Thread.sleep(40000);
-						} catch (InterruptedException e) {
-							System.out.println("Problem with end auctions thread!");
-						}
-					}
-				}
-			}.start();*/
-			// main server
-		} catch (RemoteException re) {
-			System.out.println("RMI could not be created, lauching secundary");
-			start();
-			return;
-		}
-	}
-
 	public void changeDepartment(String newName, int id) throws RemoteException {
 		try {
 				connection.setAutoCommit(false);
@@ -1828,7 +1853,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 
 	}
 		
-
 	public boolean deleteDepartment(int id) throws RemoteException {
 		try {
 			connection.setAutoCommit(false);
@@ -1910,8 +1934,36 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 	}
 
+	public static void main(String args[]) {
+		
+		/*
+		 		System.getProperties().put("java.security.policy", "policy.all");
+				System.setSecurityManager(new RMISecurityManager()); 
+		 */
+		
+		try {
+			RMI_Server h = new RMI_Server();
+			LocateRegistry.createRegistry(h.port).rebind("IVotas", h);
 
-
-
+			System.out.println("IVotas ready.");
+			/*new Thread() {
+				public void run() {
+					while(true) {
+						h.endElections();
+						try {
+							Thread.sleep(40000);
+						} catch (InterruptedException e) {
+							System.out.println("Problem with end auctions thread!");
+						}
+					}
+				}
+			}.start();*/
+			// main server
+		} catch (RemoteException re) {
+			System.out.println("RMI could not be created, lauching secundary");
+			start();
+			return;
+		}
+	}
 
 }

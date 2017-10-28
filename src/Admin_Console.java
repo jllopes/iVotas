@@ -18,7 +18,11 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         InputStream input = null;
 
         try {
-            input = new FileInputStream("../tcpserverconfig.properties");
+			if(new File("../tcpserverconfig.properties").exists()){
+				input = new FileInputStream("../tcpserverconfig.properties");
+			}else
+				input = new FileInputStream("tcpserverconfig.properties");
+
 
             // load a properties file
             prop.load(input);
@@ -81,6 +85,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         System.out.println("<5> Manage Election");
         System.out.println("<6> Consult Past Elections");
         System.out.println("<7> Where User Voted");
+        System.out.println("<8> Check online tables");
     }
 
     public void chooseMainMenu(int opt) throws RemoteException{
@@ -106,6 +111,9 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
             case 7: whereVoted();
                     mainMenu();
                     break;
+            case 8: getTables();
+            		mainMenu();
+            		break;
             default:
                 System.out.println("Please insert a valid option");
                 mainMenu();
@@ -113,6 +121,19 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         }
     }
 
+    public void getTables() throws RemoteException{
+    	List<Integer> online = rmi.getOnlineTables();
+    	if(online.isEmpty()){
+    		System.out.println("No tables online at the moment.");
+    	}else{
+    		System.out.println("Online Tables ids:");
+    		for(int i = 0; i< online.size();i++ ){
+    			System.out.println("\t<" +i+"> - " + online.get(i) );
+    		}
+    	}
+    	return;
+    }
+    
     public void whereVoted() throws RemoteException{
         Scanner in = new Scanner(System.in);
         //printUsers();
