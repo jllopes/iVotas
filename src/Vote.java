@@ -8,6 +8,9 @@ public class Vote implements Serializable{
     Date date;
 
     public Vote(User user, Election election, VotingTable table, Date date){
-        super();
+        this.user = user;
+        this.election = election;
+        this.table = table;
+        this.date = date;
     }
 }

@@ -48,6 +48,8 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			System.exit(0);
 		} catch (IOException ex) {
 			ex.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		} finally {
 			if (input != null) {
 				try {
@@ -1276,7 +1278,9 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			if(rs.next()){
 				String name = rs.getString("name");
 				Department department = getDepartment(rs.getInt("department_number"));
-				return new Election(name, id, department);
+				Election election = new Election(name, id, department);
+				System.out.println("wtf" + election.name +  " " + election.id + " " + election.department.name);
+				return election;
 			}else{
 				return null;
 			}
@@ -1343,8 +1347,12 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			prepStatement1.setInt(1,id);
 			ResultSet rs = prepStatement1.executeQuery();
 			if(rs.next()){
+				System.out.println("id " + id);
 				String name = rs.getString("name");
-				return new Department(name, id);
+				System.out.println(", " + name);
+				Department department = new Department(name, id);
+				System.out.println(department.name);
+				return department;
 			}else{
 				return null;
 			}
@@ -1874,7 +1882,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 	}
 
-	public void removeList(int election, String name) throws RemoteException {
+	public void removeList(int id) throws RemoteException {
 		try {
 			connection.setAutoCommit(false);
 

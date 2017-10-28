@@ -3,6 +3,7 @@ public class Department{
     int id;
 
     public Department(String name, int id){
-        super();
+        this.name = name;
+        this.id = id;
     }
 }

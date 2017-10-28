@@ -3,6 +3,7 @@ public class VotingTable{
     int id;
 
     public VotingTable(Department department, int id){
-        super();
+        this.department = department;
+        this.id = id;
     }
 }

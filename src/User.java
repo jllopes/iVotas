@@ -3,6 +3,7 @@ public class User{
     int id;
 
     public User(String username, int id){
-        super();
+        this.username = username;
+        this.id = id;
     }
 }

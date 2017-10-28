@@ -4,6 +4,8 @@ public class Election{
     Department department;
 
     public Election(String name, int id, Department department){
-        super();
+        this.name = name;
+        this.id = id;
+        this.department = department;
     }
 }

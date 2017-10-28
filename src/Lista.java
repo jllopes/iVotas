@@ -4,6 +4,8 @@ public class Lista {
     Election election;
 
     public Lista(String name, Election election, int votes){
-        super();
+        this.name = name;
+        this.election = election;
+        this.votes = votes;
     }
 }
