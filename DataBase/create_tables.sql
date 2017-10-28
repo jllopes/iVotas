@@ -79,8 +79,6 @@ create table list_election
 	id_election int(4) not null,
     type int(1) not null,
    	vote int(4) default 0,
-    vote_blank int(4) default 0,
-    vote_null int(4) default 0,
     primary key(id),
     foreign key(id_election) references election(id),
 	constraint type_check_1_0 check (type is not null or type=1 or type=2 or type=3)
