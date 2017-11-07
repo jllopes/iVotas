@@ -136,10 +136,14 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     
     public void whereVoted() throws RemoteException{
         Scanner in = new Scanner(System.in);
-        //printUsers();
+        listUsers();
         System.out.println("Insert the id of the user:");
         int user = Integer.parseInt(in.nextLine());
         HashMap<String, Integer> elections = rmi.getUserVotedElections(user);
+        if(elections == null){
+            System.out.println("User hasn't voted in any election");
+            return;
+        }
         Iterator it = elections.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
@@ -247,6 +251,16 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+    }
+
+    public void listUsers() throws RemoteException {
+        HashMap<String, Integer> users = rmi.getUsers();
+        Iterator it = users.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println("Username: " + pair.getKey() + ", Id: " + pair.getValue());
             it.remove(); // avoids a ConcurrentModificationException
         }
     }
@@ -488,10 +502,10 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void printElectionsMenu(){
         System.out.println("<1> Add List");
         System.out.println("<2> Remove List");
-        System.out.println("<3> Add Voting Table");
-        System.out.println("<4> Remove Voting Table");
-        System.out.println("<5> Change Election Properties");
-        System.out.println("<6> Add Candidates to List");
+        /*System.out.println("<3> Add Voting Table");
+        System.out.println("<4> Remove Voting Table");*/
+        System.out.println("<3> Change Election Properties");
+        System.out.println("<4> Add Candidates to List");
     }
 
     public void chooseElectionsMenu(int opt, int election_id, int department) throws RemoteException{
@@ -500,13 +514,13 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
                     break;
             case 2: removeCandidates(election_id);
                     break;
-            case 3: newVotingTable(election_id);
+            /*case 3: newVotingTable(election_id);
                     break;
             case 4: removeVotingTable(election_id);
+                    break;*/
+            case 3: changeElection(election_id);
                     break;
-            case 5: changeElection(election_id);
-                    break;
-            case 6:
+            case 4:
                     addCandidatesToList(election_id, department);
                     break;
             default:
@@ -606,7 +620,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         System.out.println("How many candidates are you going to insert?");
         int list_type = rmi.getListType(election);
         int number = Integer.parseInt(in.nextLine());
-        in.nextLine();
+        listUsers();
         System.out.println("Insert the list of ids you want to be candidates of the list:");
         int id;
         ArrayList<Integer> users = new ArrayList<>();
@@ -670,7 +684,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         return true;
     }
 
-    public void newVotingTable(int election){
+    /*public void newVotingTable(int election){
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the id of the voting table you want to associate with the election:");
         //listVotingTables();
@@ -684,5 +698,5 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         //listElectionTables(election);
         int votingTable = Integer.parseInt(in.nextLine());
         //deleteVotingTable(election, votingTable);
-    }
+    }*/
 }

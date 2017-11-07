@@ -33,6 +33,7 @@ public interface RMI_Interface_Admin extends Remote{
     public HashMap<String,Integer> getElectionLists(int election) throws RemoteException;
     public void addCandidatesToList(int list, ArrayList<Integer> users) throws RemoteException;
     public HashMap<String, Integer> getDepartmentsFromFaculty(int faculty) throws RemoteException;
+    public HashMap<String, Integer> getUsers() throws RemoteException;
     public void setAdmin(Admin_Interface_RMI admin)throws RemoteException;
     public List<Integer> getOnlineTables() throws RemoteException;
 }
