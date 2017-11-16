@@ -1,4 +1,6 @@
-public class VotingTable{
+import java.io.Serializable;
+
+public class VotingTable implements Serializable{
     Department department;
     int id;
 

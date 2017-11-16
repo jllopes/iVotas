@@ -139,33 +139,25 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         listUsers();
         System.out.println("Insert the id of the user:");
         int user = Integer.parseInt(in.nextLine());
-        HashMap<String, Integer> elections = rmi.getUserVotedElections(user);
+        ArrayList<Election> elections = rmi.getUserVotedElections(user);
         if(elections == null){
             System.out.println("User hasn't voted in any election");
             return;
         }
-        Iterator it = elections.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
-            it.remove(); // avoids a ConcurrentModificationException
+        for(Election election : elections) {
+            System.out.println("Name: " + election.name + ", Id: " + election.id);
         }
         System.out.println("Insert the id of the election:");
         int election = Integer.parseInt(in.nextLine());
-        HashMap<Date, String> details = rmi.getUserVoteDetails(user, election);
-        it = details.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            String date = formatter.format(pair.getKey());
-            System.out.println("Date: " + date + ", Table: " + pair.getValue());
-            it.remove(); // avoids a ConcurrentModificationException
-        }
+        Vote vote = rmi.getUserVoteDetails(user, election);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String date = formatter.format(vote.date);
+        System.out.println("Date: " + date + ", Table: " + vote.table.department.name);
     }
 
     public void consultPastElections() throws RemoteException{
         Scanner in = new Scanner(System.in);
-        HashMap<String, Integer> pastElections = listPastElections();
+        ArrayList<Election> pastElections = listPastElections();
         System.out.println("Insert the id of which election you want to consult:");
         int id = Integer.parseInt(in.nextLine());
         while(checkPastElection(pastElections,id)){
@@ -176,24 +168,20 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         printElectionResults(id);
     }
 
-    public boolean checkPastElection(HashMap<String, Integer> elections, int election){
-        for(int id : elections.values()){
-            if(election == id)
+    public boolean checkPastElection(ArrayList<Election> elections, int election){
+        for(Election el : elections){
+            if(el.id == election)
                 return true;
         }
         return false;
     }
 
-    public HashMap<String, Integer> listPastElections() throws RemoteException{
-        HashMap<String, Integer> elections = rmi.getPastElections();
-        HashMap<String, Integer> elections_copy = elections;
-        Iterator it = elections.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
-            it.remove(); // avoids a ConcurrentModificationException
+    public ArrayList<Election> listPastElections() throws RemoteException{
+        ArrayList<Election> elections = rmi.getPastElections();
+        for(Election election: elections){
+            System.out.println("Name: " + election.name + ", Id: " + election.id);
         }
-        return elections_copy;
+        return elections;
     }
 
     public void printElectionResults(int id) throws RemoteException{
@@ -246,22 +234,16 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     }
 
     public void listDepartments() throws RemoteException {
-        HashMap<String, Integer> departments = rmi.getAllDepartments();
-        Iterator it = departments.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
-            it.remove(); // avoids a ConcurrentModificationException
+        ArrayList<Department> departments = rmi.getAllDepartments();
+        for(Department department : departments) {
+            System.out.println("Name: " + department.name + ", Id: " + department.id);
         }
     }
 
     public void listUsers() throws RemoteException {
-        HashMap<String, Integer> users = rmi.getUsers();
-        Iterator it = users.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            System.out.println("Username: " + pair.getKey() + ", Id: " + pair.getValue());
-            it.remove(); // avoids a ConcurrentModificationException
+        ArrayList<User> users = rmi.getUsers();
+        for(User user: users){
+            System.out.println("Username: " + user.username + ", Id: " + user.id);
         }
     }
 
@@ -307,14 +289,10 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     }
 
     public void listDepartmentsFromFaculty(int faculty) throws RemoteException{
-        HashMap<String, Integer> departments = rmi.getDepartmentsFromFaculty(faculty);
-        Iterator it = departments.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
-            it.remove(); // avoids a ConcurrentModificationException
+        ArrayList<Department> departments = rmi.getDepartmentsFromFaculty(faculty);
+        for(Department department : departments){
+            System.out.println("Name: " + department.name + ", Id: " + department.id);
         }
-
     }
 
     /*public void printElectionTypeMenu(){
@@ -489,14 +467,10 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     }
 
     public void listElections() throws RemoteException{
-        HashMap<String, Integer> elections = rmi.getAllElections();
-        Iterator it = elections.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
-            it.remove(); // avoids a ConcurrentModificationException
+        ArrayList<Election> elections = rmi.getAllElections();
+        for(Election election : elections){
+            System.out.println("Name: " + election.name + ", Id: " + election.id);
         }
-
     }
 
     public void printElectionsMenu(){
@@ -670,16 +644,13 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     }
 
     public boolean listElectionLists(int election) throws RemoteException {
-        HashMap<String, Integer> lists = rmi.getElectionLists(election);
+        ArrayList<Lista> lists = rmi.getElectionLists(election);
         if(lists == null) {
             System.out.println("There are no lists for this election");
             return false;
         }
-        Iterator it = lists.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            System.out.println("Name: " + pair.getKey() + ", Id: " + pair.getValue());
-            it.remove(); // avoids a ConcurrentModificationException
+        for(Lista list : lists) {
+            System.out.println("Name: " + list.name + ", Id: " + list.id);
         }
         return true;
     }

@@ -1,4 +1,6 @@
-public class Election{
+import java.io.Serializable;
+
+public class Election implements Serializable{
     String name;
     int id;
     Department department;
