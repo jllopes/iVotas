@@ -112,8 +112,8 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
                     mainMenu();
                     break;
             case 8: getTables();
-            		mainMenu();
-            		break;
+	            		mainMenu();
+	            		break;
             default:
                 System.out.println("Please insert a valid option");
                 mainMenu();
@@ -122,16 +122,16 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     }
 
     public void getTables() throws RemoteException{
-    	List<Integer> online = rmi.getOnlineTables();
-    	if(online.isEmpty()){
-    		System.out.println("No tables online at the moment.");
-    	}else{
-    		System.out.println("Online Tables ids:");
-    		for(int i = 0; i< online.size();i++ ){
-    			System.out.println("\t<" +i+"> - " + online.get(i) );
-    		}
-    	}
-    	return;
+	    	List<Integer> online = rmi.getOnlineTables();
+	    	if(online.isEmpty()){
+	    		System.out.println("No tables online at the moment.");
+	    	}else{
+	    		System.out.println("Online Tables ids:");
+	    		for(int i = 0; i< online.size();i++ ){
+	    			System.out.println("\t<" +i+"> - " + online.get(i) );
+	    		}
+	    	}
+	    	return;
     }
     
     public void whereVoted() throws RemoteException{
@@ -476,10 +476,10 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void printElectionsMenu(){
         System.out.println("<1> Add List");
         System.out.println("<2> Remove List");
-        /*System.out.println("<3> Add Voting Table");
-        System.out.println("<4> Remove Voting Table");*/
         System.out.println("<3> Change Election Properties");
         System.out.println("<4> Add Candidates to List");
+        System.out.println("<5> Add Voting Table");
+        System.out.println("<6> Remove Voting Table");
     }
 
     public void chooseElectionsMenu(int opt, int election_id, int department) throws RemoteException{
@@ -497,6 +497,10 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
             case 4:
                     addCandidatesToList(election_id, department);
                     break;
+            case 5: addVotingTable(election_id);
+            			break;
+            case 5: removeVotingTable(election_id);
+					break;
             default:
                     System.out.println("That is not a valid option");
                     break;
@@ -655,19 +659,19 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         return true;
     }
 
-    /*public void newVotingTable(int election){
+    public void addVotingTable(int election){
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the id of the voting table you want to associate with the election:");
-        //listVotingTables();
+        getTables();
         int votingTable = Integer.parseInt(in.nextLine());
-        //addVotingTable(election, votingTable);
+        rmi.addVotingTable(election, votingTable);
     }
 
     public void removeVotingTable(int election){
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the id of the voting table you want to remove from the election:");
-        //listElectionTables(election);
+        getTables();
         int votingTable = Integer.parseInt(in.nextLine());
-        //deleteVotingTable(election, votingTable);
-    }*/
+        rmi.deleteVotingTable(election, votingTable);
+    }
 }
