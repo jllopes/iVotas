@@ -32,5 +32,5 @@ public interface RMI_Interface_Admin extends Remote{
     public ArrayList<Department> getDepartmentsFromFaculty(int faculty) throws RemoteException;
     public ArrayList<User> getUsers() throws RemoteException;
     public void setAdmin(Admin_Interface_RMI admin)throws RemoteException;
-    public List<TCP_Interface> getOnlineTables() throws RemoteException;
+    public List<Integer> getOnlineTables() throws RemoteException;
 }

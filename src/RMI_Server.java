@@ -53,20 +53,20 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 						try {			
 							ArrayList<TCP_Interface> toBeRemoved = new ArrayList<>();
 							synchronized(tables){
-								System.out.println("checking tables" + tables.size() );
 								for(TCP_Interface t : tables){
 									try {
-										if(t.ping() == 1)
-											System.out.println("teste");
+										t.ping("Ping");
 									} catch (NullPointerException e) {
-										System.out.println("mesa offline");
-										tables.remove(t);
-										
+										System.out.println("Mesa offline");
+										toBeRemoved.add(t);
 									} catch (RemoteException e) {
 										System.out.println("mesa offline");
-										tables.remove(t);
+										toBeRemoved.add(t);
 									}
 								}
+							}
+							for(TCP_Interface t : toBeRemoved){
+								removeTable(t);
 							}
 
 							Thread.sleep(5000);
@@ -473,7 +473,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		    prepStatement.setInt(1, id);
 		    prepStatement.executeUpdate();
 			prepStatement.close();
-	    	
+			
 	     	return true;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -791,8 +791,14 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return false;
 	}
 	*/
-    public List<TCP_Interface> getOnlineTables() throws RemoteException{    	
-    	return this.tables;
+    public List<Integer> getOnlineTables() throws RemoteException{  
+    	ArrayList<Integer> onlineIds = new ArrayList<>();
+    	synchronized(tables){
+	    	for(TCP_Interface t: tables){
+	    		onlineIds.add(t.ping("GetIds"));
+	    	}	
+    	}
+		return onlineIds;
     }
 
 	/**

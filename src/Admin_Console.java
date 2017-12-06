@@ -111,29 +111,29 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
             case 7: whereVoted();
                     mainMenu();
                     break;
-          /*  case 8: getTables();
+            case 8: getTables();
 	            		mainMenu();
-	            		break;*/
+	            		break;
             default:
                 System.out.println("Please insert a valid option");
                 mainMenu();
                 break;
         }
     }
-/*
+
     public void getTables() throws RemoteException{
-	    //	List<Integer> online = rmi.getOnlineTables();
+	    	List<Integer> online = rmi.getOnlineTables();
 	    	if(online.isEmpty()){
 	    		System.out.println("No tables online at the moment.");
 	    	}else{
-	    		System.out.println("Online Tables ids:");g
+	    		System.out.println("Online Tables ids:");
 	    		for(int i = 0; i< online.size();i++ ){
 	    			System.out.println("\t<" +i+"> - " + online.get(i) );
 	    		}
 	    	}
 	    	return;
     }
-    */
+    
     public void whereVoted() throws RemoteException{
         Scanner in = new Scanner(System.in);
         listUsers();

@@ -1,10 +1,11 @@
 import java.io.*;
 import java.net.*;
 import java.rmi.*;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.List;
 import iVotas.Parser;
-public class TCP_Server implements TCP_Interface , Serializable {
+public class TCP_Server extends UnicastRemoteObject implements TCP_Interface , Serializable  {
 
 
 	private static final long serialVersionUID = 1L;
@@ -20,7 +21,7 @@ public class TCP_Server implements TCP_Interface , Serializable {
 	int id_table;
 	int nTerminais;
 	
-	public TCP_Server() {
+	public TCP_Server() throws RemoteException {
 		this.dc = 0;
 		pedidos_espera = new ArrayList<>();
 		list_socket = new ArrayList<>();
@@ -92,10 +93,10 @@ public class TCP_Server implements TCP_Interface , Serializable {
     }
  
 	public static void main(String args[])  {
-		TCP_Server tcp = new TCP_Server();
-		int count = 0;
-		try {
 
+		try {
+			TCP_Server tcp = new TCP_Server();
+			int count = 0;
 			/* tirar antes de entregar */
 			@SuppressWarnings("resource")
 			ServerSocket listenSocket = new ServerSocket(tcp.tcp_port);
@@ -105,7 +106,7 @@ public class TCP_Server implements TCP_Interface , Serializable {
 			try {
 				tcp.rmi = (RMI_Interface_TCP) Naming.lookup("rmi://" + tcp.rmi_ip+ ":" + tcp.rmi_port+ "/" + tcp.rmi_name);
 				System.out.println("RMIFound");
-				tcp.rmi.addTable(tcp);
+				tcp.rmi.addTable((TCP_Interface)tcp);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			} catch (NotBoundException e) {
@@ -169,14 +170,14 @@ public class TCP_Server implements TCP_Interface , Serializable {
 				}
 				tcp.nTerminais ++;
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			System.out.println("Listen:" + e.getMessage());
 		} 
 
 	}
 
-	public int ping() throws RemoteException {
-		return 1;
+	public int ping(String isAlive) throws RemoteException{
+		return this.id_table;
 	}
 }
 
