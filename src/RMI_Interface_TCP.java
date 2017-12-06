@@ -11,6 +11,5 @@ public interface RMI_Interface_TCP extends Remote {
 	public boolean vote(int userId, int userType, int userDep, int id_election, int vote, int id_table) throws RemoteException;
 	public boolean vote_blank(int userid ,int usertype, int userDep, int idElection) throws RemoteException; //false se ja existir voto
 
-	public void addTable(int idTable) throws RemoteException;
-	public void removeTable(int idTable) throws RemoteException;
+	public void addTable(TCP_Interface t) throws RemoteException;
 }

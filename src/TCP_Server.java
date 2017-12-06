@@ -4,8 +4,10 @@ import java.rmi.*;
 import java.util.*;
 import java.util.List;
 import iVotas.Parser;
-public class TCP_Server {
+public class TCP_Server implements TCP_Interface , Serializable {
 
+
+	private static final long serialVersionUID = 1L;
 	int dc;
 	RMI_Interface_TCP rmi;
 	ArrayList<String> pedidos_espera;
@@ -75,7 +77,7 @@ public class TCP_Server {
         try {
             this.rmi = (RMI_Interface_TCP) Naming.lookup("rmi://" + this.rmi_ip+ ":" + this.rmi_port+ "/" + this.rmi_name);
             //this.RMI.addTCPServer((RMI_Interface_TCP)this,this.host_port);
-            this.rmi.addTable(this.id_table);
+            this.rmi.addTable(this);
             return true;
         } catch (RemoteException | NotBoundException | MalformedURLException e1) {
         	System.out.println("RMI down, attemp to reconnect (" + (6-try_attempts) +")");
@@ -103,7 +105,7 @@ public class TCP_Server {
 			try {
 				tcp.rmi = (RMI_Interface_TCP) Naming.lookup("rmi://" + tcp.rmi_ip+ ":" + tcp.rmi_port+ "/" + tcp.rmi_name);
 				System.out.println("RMIFound");
-				tcp.rmi.addTable(tcp.id_table);
+				tcp.rmi.addTable(tcp);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			} catch (NotBoundException e) {
@@ -120,14 +122,7 @@ public class TCP_Server {
 					while(true){
 						//sc.nextLine();
 						String msg = sc.nextLine();
-						if(msg.toLowerCase().equals("shutdown")){
-							try {
-								tcp.rmi.removeTable(tcp.id_table);
-								System.exit(0);
-							} catch (RemoteException e) {
-								System.out.println("RMI out, im out too");
-							}
-						}
+
 						LinkedHashMap<String, String> input = Parser.parseInput(msg);
 						if(!input.containsKey("username"))
 							System.out.println("Follow the Protocol, missing username !");
@@ -177,15 +172,12 @@ public class TCP_Server {
 		} catch (IOException e) {
 			System.out.println("Listen:" + e.getMessage());
 		} 
-		try {
-			tcp.rmi.removeTable(tcp.id_table);
-			System.exit(0);
-		} catch (RemoteException e) {
-			System.out.println("RMI out, im out too");
-		}
 
 	}
 
+	public int ping() throws RemoteException {
+		return 1;
+	}
 }
 
 class Connection extends Thread {

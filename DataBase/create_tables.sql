@@ -62,6 +62,16 @@ create table voteTable
 	#UNIQUE(id_department)
     );
     
+create table tableElection
+	(
+    id int(4) not null auto_increment,
+    id_table int(4) not null,
+    id_election int(4) not null,
+    primary key(id),
+    foreign key(id_table) references voteTable(id),
+    foreign key(id_election) references election(id)
+    );
+    
 create table electionList
 	(
     id int(4) not null auto_increment,

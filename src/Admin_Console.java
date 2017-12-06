@@ -111,29 +111,29 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
             case 7: whereVoted();
                     mainMenu();
                     break;
-            case 8: getTables();
+          /*  case 8: getTables();
 	            		mainMenu();
-	            		break;
+	            		break;*/
             default:
                 System.out.println("Please insert a valid option");
                 mainMenu();
                 break;
         }
     }
-
+/*
     public void getTables() throws RemoteException{
-	    	List<Integer> online = rmi.getOnlineTables();
+	    //	List<Integer> online = rmi.getOnlineTables();
 	    	if(online.isEmpty()){
 	    		System.out.println("No tables online at the moment.");
 	    	}else{
-	    		System.out.println("Online Tables ids:");
+	    		System.out.println("Online Tables ids:");g
 	    		for(int i = 0; i< online.size();i++ ){
 	    			System.out.println("\t<" +i+"> - " + online.get(i) );
 	    		}
 	    	}
 	    	return;
     }
-    
+    */
     public void whereVoted() throws RemoteException{
         Scanner in = new Scanner(System.in);
         listUsers();
@@ -499,7 +499,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
                     break;
             case 5: addVotingTable(election_id);
             			break;
-            case 5: removeVotingTable(election_id);
+            case 6: removeVotingTable(election_id);
 					break;
             default:
                     System.out.println("That is not a valid option");
@@ -662,16 +662,16 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
     public void addVotingTable(int election){
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the id of the voting table you want to associate with the election:");
-        getTables();
+     //   getTables();
         int votingTable = Integer.parseInt(in.nextLine());
-        rmi.addVotingTable(election, votingTable);
+     //   rmi.addVotingTable(election, votingTable);
     }
 
     public void removeVotingTable(int election){
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the id of the voting table you want to remove from the election:");
-        getTables();
+       // getTables();
         int votingTable = Integer.parseInt(in.nextLine());
-        rmi.deleteVotingTable(election, votingTable);
+     //   rmi.deleteVotingTable(election, votingTable);
     }
 }

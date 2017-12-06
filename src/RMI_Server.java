@@ -15,7 +15,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	private String databasePass;
 	private String databaseUser;
 	List<Admin_Interface_RMI> admins;
-	List<Integer> tables;
+	List<TCP_Interface> tables;
 	Connection connection = null;
 	
 	private static final long serialVersionUID = 1L;
@@ -43,6 +43,44 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			databaseUser = prop.getProperty("database_User");
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://"+this.databaseIP+":"+this.databasePort +"/ivotas",this.databaseUser, this.databasePass);
+		
+		
+			System.out.println("IVotas ready.");
+			new Thread() {
+				public void run() {
+					while(true) {
+
+						try {			
+							ArrayList<TCP_Interface> toBeRemoved = new ArrayList<>();
+							synchronized(tables){
+								System.out.println("checking tables" + tables.size() );
+								for(TCP_Interface t : tables){
+									try {
+										if(t.ping() == 1)
+											System.out.println("teste");
+									} catch (NullPointerException e) {
+										System.out.println("mesa offline");
+										tables.remove(t);
+										
+									} catch (RemoteException e) {
+										System.out.println("mesa offline");
+										tables.remove(t);
+									}
+								}
+							}
+
+							Thread.sleep(5000);
+
+							
+						} catch (InterruptedException e) {
+							System.out.println("Problem with end auctions thread!");
+						}
+						
+					}
+				}
+			}.start();
+		
+		
 		}catch (SQLException e){
 			System.out.println("Database: Cannot connect to database");
 			System.exit(0);
@@ -709,21 +747,16 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
     }
 	*/
 
-	public void addTable(int idTable) throws RemoteException{
+	public void addTable(TCP_Interface t) throws RemoteException{
 		synchronized(tables){
-			for(Integer table : tables){
-				if(table == idTable){
-					return;
-				}
-			}
-			tables.add(idTable);
+
+			tables.add(t);
 		}
 	}
-	public void removeTable(int idTable) throws RemoteException{
+	public void removeTable(TCP_Interface t) {
 		synchronized(tables){
-			tables.remove((Object)idTable);
+			tables.remove(t);
 		}
-
 	}
 	
 	
@@ -758,7 +791,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return false;
 	}
 	*/
-    public List<Integer> getOnlineTables() throws RemoteException{    	
+    public List<TCP_Interface> getOnlineTables() throws RemoteException{    	
     	return this.tables;
     }
 
@@ -1760,11 +1793,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		
 	}
 
-
-	/*
-	FOI AQUI QUE FICOU TODO
-	 */
-
 	public ArrayList<User> getUsers() throws RemoteException{
 		try {
 			connection.setAutoCommit(false);
@@ -2183,27 +2211,14 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		try {
 			RMI_Server h = new RMI_Server();
 			LocateRegistry.createRegistry(h.port).rebind("IVotas", h);
-
-			System.out.println("IVotas ready.");
-			/*new Thread() {
-				public void run() {
-					while(true) {
-						h.endElections();
-						try {
-							Thread.sleep(40000);
-						} catch (InterruptedException e) {
-							System.out.println("Problem with end auctions thread!");
-						}
-					}
-				}
-			}.start();*/
-			// main server
+			
 		} catch (RemoteException re) {
 			System.out.println("RMI could not be created, lauching secundary");
 			start();
 			return;
 		}
 	}
+
 
 
 
