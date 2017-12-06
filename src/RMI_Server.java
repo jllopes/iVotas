@@ -1168,7 +1168,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 					Department dep = getDepartment(department);
 					elections.add(new Election(electionName, electionId, dep));
 				}
-				System.out.println(elections);
 				return elections;
 			} else {
 				return null;
@@ -1514,11 +1513,8 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			prepStatement1.setInt(1,id);
 			ResultSet rs = prepStatement1.executeQuery();
 			if(rs.next()){
-				System.out.println("id " + id);
 				String name = rs.getString("name");
-				System.out.println(", " + name);
 				Department department = new Department(name, id);
-				System.out.println(department.name);
 				return department;
 			}else{
 				return null;
@@ -1911,7 +1907,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 							    prepStatement2.setInt(2, userId);
 					    		ResultSet rs = prepStatement2.executeQuery();
 					    		if(rs.next()){//already voted
-					    			System.out.println("ja votou");
 						    		prepStatement2.close();
 					    			rs.close();
 					    			return false;
@@ -1922,7 +1917,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			
 							    String sql = "insert into vote(election, user, table) values (?,?,?)";
 							    PreparedStatement prepStatement = connection.prepareStatement(sql);
-							    prepStatement.setInt(1, election);
+							    prepStatement.setInt(1, vote);
 							    prepStatement.setInt(2, userId);
 							    prepStatement.setInt(3, id_table);
 			
@@ -2209,5 +2204,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			return;
 		}
 	}
+
+
 
 }
