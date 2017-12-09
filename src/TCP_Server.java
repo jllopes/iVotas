@@ -32,7 +32,7 @@ public class TCP_Server extends UnicastRemoteObject implements TCP_Interface , S
 				InputStream input = null;
 
 				try {
-					if(new File("../tconfig.properties").exists()){
+					if(new File("../tcpserverconfig.properties").exists()){
 						input = new FileInputStream("../tcpserverconfig.properties");
 					}else
 						input = new FileInputStream("tcpserverconfig.properties");
@@ -176,7 +176,7 @@ public class TCP_Server extends UnicastRemoteObject implements TCP_Interface , S
 
 	}
 
-	public int ping(String isAlive) throws RemoteException{
+	public int ping(String isAlive) throws RemoteException {
 		return this.id_table;
 	}
 }

@@ -1,4 +1,5 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
@@ -86,6 +87,8 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         System.out.println("<6> Consult Past Elections");
         System.out.println("<7> Where User Voted");
         System.out.println("<8> Check online tables");
+        System.out.println("<9> Change User Details");
+        System.out.println("<10> Early Vote");
     }
 
     public void chooseMainMenu(int opt) throws RemoteException{
@@ -112,8 +115,14 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
                     mainMenu();
                     break;
             case 8: getTables();
-	            		mainMenu();
-	            		break;
+                    mainMenu();
+                    break;
+            case 9: changeUserDetails();
+                    mainMenu();
+                    break;
+            case 10: earlyVote();
+                     mainMenu();
+                     break;
             default:
                 System.out.println("Please insert a valid option");
                 mainMenu();
@@ -121,19 +130,91 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         }
     }
 
-    public void getTables() throws RemoteException{
+    public void earlyVote() throws RemoteException{
+        Scanner in = new Scanner(System.in);
+        System.out.println("Login");
+        System.out.println("Username:");
+        String username = in.nextLine();
+        System.out.println("Password:");
+        String password = in.nextLine();
+        int type = rmi.login(username, password);
+        if(type != 0){
+            System.out.println("Login successful");
+            HashMap<Integer, String> elections = rmi.getEarlyElections(type);
+            if(elections == null){
+                System.out.println("There are no elections for you to vote on.");
+                return;
+            }
+            Iterator it = elections.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry)it.next();
+                System.out.println("Id: " + pair.getKey() + " Name: " + pair.getValue());
+                it.remove();
+            }
+            System.out.println("Insert the id of the election:");
+            int election = in.nextInt();
+            HashMap<Integer, String> lists = rmi.getListsEarlyElections(type,election);
+            if(lists == null){
+                System.out.println("There are no lists for this election or the id you inserted does not correspond to a valid election");
+                return;
+            }
+            Iterator it2 = lists.entrySet().iterator();
+            while (it2.hasNext()) {
+                Map.Entry pair = (Map.Entry)it2.next();
+                System.out.println("Id: " + pair.getKey() + " Name: " + pair.getValue());
+                it2.remove();
+            }
+            System.out.println("Insert the id of the list you want to vote on:");
+            int list = in.nextInt();
+            HashMap<String, Integer> user = rmi.getUserId(username);
+            int id = user.get("id");
+            int dep = user.get("department");
+            boolean success = rmi.earlyVote(id, type, dep, election, list);
+            if(!success)
+                System.out.println("There was something wrong, your vote wasn't registered");
+        }
+    }
+
+    public void changeUserDetails() throws RemoteException{
+        Scanner in = new Scanner(System.in);
+        listUsers();
+        System.out.println("Insert the id of the user:");
+        int user = Integer.parseInt(in.nextLine());
+        System.out.println("Insert the new name for the user");
+        String name = in.nextLine();
+        System.out.println("Choose the new faculty of the user:");
+        listFaculties();
+        int facultyId = Integer.parseInt(in.nextLine());
+        System.out.println("Choose the new department of the user:");
+        listDepartmentsFromFaculty(facultyId);
+        int departmentId = Integer.parseInt(in.nextLine());
+        System.out.println("Insert the new ID number of the user:");
+        int id = Integer.parseInt(in.nextLine());
+        System.out.println("Insert the new validity month of the ID:");
+        int idMonth = Integer.parseInt(in.nextLine());
+        System.out.println("Insert the new validity year of the ID:");
+        int idYear = Integer.parseInt(in.nextLine());
+        System.out.println("Insert the new address of the user:");
+        String address = in.nextLine();
+        System.out.println("Insert the new contact number of the user:");
+        String phoneNumber = in.nextLine();
+        rmi.updateUser(user,name,facultyId,departmentId,address,id,idMonth,idYear,phoneNumber);
+    }
+
+    public boolean getTables() throws RemoteException{
 	    	List<Integer> online = rmi.getOnlineTables();
 	    	if(online.isEmpty()){
 	    		System.out.println("No tables online at the moment.");
-	    	}else{
-	    		System.out.println("Online Tables ids:");
-	    		for(int i = 0; i< online.size();i++ ){
-	    			System.out.println("\t<" +i+"> - " + online.get(i) );
-	    		}
-	    	}
-	    	return;
+	    		return false;
+	    	}else {
+                System.out.println("Online Tables ids:");
+                for (int i = 0; i < online.size(); i++) {
+                    System.out.println("\ttable: <" + i + ">, id: " + online.get(i));
+                }
+                return true;
+            }
     }
-    
+
     public void whereVoted() throws RemoteException{
         Scanner in = new Scanner(System.in);
         listUsers();
@@ -659,19 +740,39 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         return true;
     }
 
-    public void addVotingTable(int election){
+    public void addVotingTable(int election) throws RemoteException{
         Scanner in = new Scanner(System.in);
         System.out.println("Insert the id of the voting table you want to associate with the election:");
-     //   getTables();
-        int votingTable = Integer.parseInt(in.nextLine());
-     //   rmi.addVotingTable(election, votingTable);
+        if(getTables()) {
+            int votingTable = Integer.parseInt(in.nextLine());
+            if(!rmi.addVotingTable(election, votingTable)) {
+                System.out.println("That table is already associated with this election.");
+            }
+
+        }
     }
 
-    public void removeVotingTable(int election){
+    public boolean getTablesElection(int election) throws RemoteException{
+        ArrayList<Integer> tables = rmi.getElectionTables(election);
+        if(tables != null) {
+            int j = 0;
+            for (int i : tables) {
+                System.out.println("\ttable: <" + j + ">, id: " + i);
+                j++;
+            }
+            System.out.println("Insert the id of the voting table you want to remove from the election:");
+            return true;
+        }else{
+            System.out.println("There are no tables associated with this election.");
+            return false;
+        }
+    }
+
+    public void removeVotingTable(int election) throws RemoteException{
         Scanner in = new Scanner(System.in);
-        System.out.println("Insert the id of the voting table you want to remove from the election:");
-       // getTables();
-        int votingTable = Integer.parseInt(in.nextLine());
-     //   rmi.deleteVotingTable(election, votingTable);
+        if(getTablesElection(election)) {
+            int votingTable = Integer.parseInt(in.nextLine());
+            rmi.deleteVotingTable(election, votingTable);
+        }
     }
 }

@@ -33,4 +33,13 @@ public interface RMI_Interface_Admin extends Remote{
     public ArrayList<User> getUsers() throws RemoteException;
     public void setAdmin(Admin_Interface_RMI admin)throws RemoteException;
     public List<Integer> getOnlineTables() throws RemoteException;
+    public void deleteVotingTable(int election, int table) throws RemoteException;
+    public boolean addVotingTable(int election, int table) throws RemoteException;
+    public ArrayList<Integer> getElectionTables(int election) throws RemoteException;
+    public boolean updateUser(int user,String name, int faculty, int department, String address, int num_id, int month_id, int year_id, String phoneNumber) throws RemoteException;
+    public int login(String username, String password )throws RemoteException;
+    public HashMap<Integer, String> getEarlyElections(int usertype) throws RemoteException;
+    public HashMap<Integer, String> getListsEarlyElections(int usertype, int idElection) throws RemoteException;
+    public boolean earlyVote(int userId, int userType, int userDep, int election, int vote) throws RemoteException;
+    public HashMap<String, Integer> getUserId(String username) throws RemoteException;
 }

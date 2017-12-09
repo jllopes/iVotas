@@ -16,8 +16,6 @@ create table department
 	foreign key(faculty) references faculty(id)
 	);	
 
-
-
 create table user
 	(id int(4) not null auto_increment,
     username varchar(16) not null,
@@ -65,11 +63,11 @@ create table voteTable
 create table tableElection
 	(
     id int(4) not null auto_increment,
-    id_table int(4) not null,
-    id_election int(4) not null,
+    voteTable int(4) not null,
+    election int(4) not null,
     primary key(id),
-    foreign key(id_table) references voteTable(id),
-    foreign key(id_election) references election(id)
+    foreign key(voteTable) references voteTable(id),
+    foreign key(election) references election(id)
     );
     
 create table electionList
@@ -99,7 +97,7 @@ create table vote
 	(
     id int(4) not null auto_increment,
 	election int(4) not null,
-	voteTable int(4) not null,
+	voteTable int(4),
 	user int(4) not null,
     voteTime TIMESTAMP default current_timestamp,
     primary key(id),

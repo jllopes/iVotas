@@ -14,8 +14,8 @@ insert into department(faculty, name) values (2, "Ingles");
 
 
 
-insert into user(username, password, type, faculty, department, name, address, ccNumber, ccMonth, ccYear, phoneNumber) values ("gbc","gbc",1,1,1,"Gabriel Cardoso", "Coimbra", 123123123, 10, 1990,"+351123456789");
-insert into user(username, password, type, faculty, department, name, address, ccNumber, ccMonth, ccYear, phoneNumber) values ("jonny","jonny",1,1,1,"Joao Lopes", "Coimbra", 123123123, 8, 1990,"+351123456789");
+insert into user(username, password, type, faculty, department, name, address, ccNumber, ccMonth, ccYear, phoneNumber) values ("pjsg","pjsg",1,1,1,"Pedro Gonçalves", "Coimbra", 123123123, 10, 1990,"+351123456789");
+insert into user(username, password, type, faculty, department, name, address, ccNumber, ccMonth, ccYear, phoneNumber) values ("jllopes","jllopes",1,1,1,"Joao Lopes", "Coimbra", 123123123, 8, 1990,"+351123456789");
 insert into user(username, password, type, faculty, name, address, ccNumber, ccMonth, ccYear,phoneNumber) values ("maria","maria",2,2,"Professora Maria Joana", "Coimbra", 123123123, 10, 1990,"+351123456789");
 insert into user(username, password, type, faculty, department, name, address, ccNumber, ccMonth, ccYear,phoneNumber) values ("djoana","djoana",2,2,4,"Dona Joana Silva", "Coimbra", 123123123, 10, 1990,"+351123456789");
 insert into user(username, password, type, faculty, department, name, address, ccNumber, ccMonth, ccYear,phoneNumber) values ("docente5","docente5",2,1,1,"Mais uma pessoa porque sim", "Russia", 123123123, 8, 1990,"+351123456789");
@@ -56,7 +56,6 @@ insert into candidate(user, list) values (1,5);
 insert into electionList(name, election, type) values ("Lista B",3,2);
 insert into candidate(user, list) values (5,6);
 
-insert into vote(election, user, voteTable) values (3,2,5);
 insert into vote(election, user, voteTable) values (3,5,5);
 update electionList set electionList.vote = electionList.vote +1 where electionList.id = 5;
 update electionList set electionList.vote = electionList.vote +1 where electionList.id = 6;
