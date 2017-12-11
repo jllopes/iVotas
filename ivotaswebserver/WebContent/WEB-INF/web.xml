@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- The web.xml web application descriptor file represents the core of the Java web application,
+so it is appropriate that it is also part of the core of the Struts framework. In the web.xml
+file, Struts defines its FilterDispatcher, the Servlet Filter class that initializes the Struts
+framework and handles all requests. This filter can contain initialization parameters that affect
+what, if any, additional configuration files are loaded and how the framework should behave. -->
+
+<web-app id="primes" version="2.4"
+    xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+ 
+    <filter>
+        <filter-name>struts2</filter-name>
+        <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+    </filter>
+ 
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+</web-app>
