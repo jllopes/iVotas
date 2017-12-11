@@ -235,7 +235,12 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         Vote vote = rmi.getUserVoteDetails(user, election);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String date = formatter.format(vote.date);
-        System.out.println("Date: " + date + ", Table: " + vote.table.department.name);
+        if(vote.table != null) {
+            System.out.println("Date: " + date + ", Table: " + vote.table.department.name);
+        }
+        else{
+            System.out.println("Date: " + date + ", It Was an early vote.");
+        }
     }
 
     public void consultPastElections() throws RemoteException{
@@ -243,9 +248,11 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         ArrayList<Election> pastElections = listPastElections();
         System.out.println("Insert the id of which election you want to consult:");
         int id = Integer.parseInt(in.nextLine());
-        while(checkPastElection(pastElections,id)){
+        boolean valid = checkPastElection(pastElections,id);
+        while(!valid){
             System.out.println("There is no election with that id, insert a valid id");
             id = Integer.parseInt(in.nextLine());
+            valid = checkPastElection(pastElections,id);
         }
         System.out.println("The results of the election were the following:");
         printElectionResults(id);
@@ -293,7 +300,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
             startDate = getDate();
             while(startDate == null){
                 System.out.println("Please insert a valid date! (Format: dd/mm/yyyy hh:mm");
-                getDate();
+                startDate = getDate();
             }
         } catch (ParseException e){
             e.printStackTrace();
@@ -304,7 +311,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
             endDate = getDate();
             while(endDate == null){
                 System.out.println("Please insert a valid date! (Format: dd/mm/yyyy hh:mm");
-                getDate();
+                endDate = getDate();
             }
         } catch (ParseException e){
             e.printStackTrace();
@@ -551,6 +558,7 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
 
     public void listElections() throws RemoteException{
         ArrayList<Election> elections = rmi.getAllElections();
+        System.out.println(elections);
         for(Election election : elections){
             System.out.println("Name: " + election.name + ", Id: " + election.id);
         }

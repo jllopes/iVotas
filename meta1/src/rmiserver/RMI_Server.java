@@ -1,5 +1,4 @@
 package rmiserver;
-
 import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
@@ -60,7 +59,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 										System.out.println("Mesa offline");
 										toBeRemoved.add(t);
 									} catch (RemoteException e) {
-										System.out.println("mesa offline");
+										System.out.println("Mesa offline");
 										toBeRemoved.add(t);
 									}
 								}
@@ -227,12 +226,12 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	    	prepStatement1.setInt(3,type);
 	    	prepStatement1.setInt(4,faculty);
 	    	prepStatement1.setInt(5,department);
-			prepStatement1.setString(1, name);
-			prepStatement1.setString(2, address);
-			prepStatement1.setInt(3, num_id);
-			prepStatement1.setInt(4, month_id);
-			prepStatement1.setInt(5, year_id);
-			prepStatement1.setString(6, phoneNumber);
+			prepStatement1.setString(6, name);
+			prepStatement1.setString(7, address);
+			prepStatement1.setInt(8, num_id);
+			prepStatement1.setInt(9, month_id);
+			prepStatement1.setInt(10, year_id);
+			prepStatement1.setString(11, phoneNumber);
 		    prepStatement1.executeUpdate();
 		    prepStatement1.close();
 	     	return true;
@@ -1333,15 +1332,17 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			ResultSet rs = prepStatement.executeQuery();
 			Date current = new Date();
 			if(rs.next()){
-				String electionName = rs.getString("name");
-				int electionId = rs.getInt("id");
-				int department = rs.getInt("department");
-				if(department == 0){
-					elections.add(new Election(electionName, electionId, null));
-				}
-				else{
-					Department dep = getDepartment(department);
-					elections.add(new Election(electionName, electionId, dep));
+				rs.beforeFirst();
+				while(rs.next()) {
+					String electionName = rs.getString("name");
+					int electionId = rs.getInt("id");
+					int department = rs.getInt("department");
+					if (department == 0) {
+						elections.add(new Election(electionName, electionId, null));
+					} else {
+						Department dep = getDepartment(department);
+						elections.add(new Election(electionName, electionId, dep));
+					}
 				}
 				return elections;
 			} else {
@@ -1558,7 +1559,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		try {
 			connection.setAutoCommit(false);
 
-			String sql1 = "select * from user where id = ? limit 1";
+			String sql1 = "select username from user where id = ? limit 1";
 			PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
 			prepStatement1.setInt(1,id);
 			ResultSet rs = prepStatement1.executeQuery();
@@ -1866,8 +1867,8 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 				}
 				String blank_votes = "blank";
 				String null_votes = "null";
-				int blank_total = rs2.getInt("vote_blank");
-				int null_total = rs2.getInt("vote_null");
+				int blank_total = rs2.getInt("blankVotes");
+				int null_total = rs2.getInt("nullVotes");
 				results.put(blank_votes, blank_total);
 				results.put(null_votes, null_total);
 				return results;
@@ -2184,7 +2185,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 						prepStatement1.executeUpdate();
 						prepStatement1.close();
 
-						//something to tell theres a new vote Â¯\_(Â¨)_/Â¯
+						//something to tell theres a new vote ¯\_(¨)_/¯
 						return true;
 					}else{
 						it.remove(); // avoids a ConcurrentModificationException
@@ -2262,7 +2263,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 							    prepStatement1.executeUpdate();
 								prepStatement1.close();
 		
-								//something to tell theres a new vote Â¯\_(Â¨)_/Â¯
+								//something to tell theres a new vote ¯\_(¨)_/¯
 					    		return true;
 		    		    	}else{
 		    			        it.remove(); // avoids a ConcurrentModificationException
@@ -2507,10 +2508,9 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 
 	public static void main(String args[]) {
 		
-		/*
-		 		System.getProperties().put("java.security.policy", "policy.all");
-				System.setSecurityManager(new RMISecurityManager()); 
-		 */
+	 		System.getProperties().put("java.security.policy", "policy.all");
+			System.setSecurityManager(new SecurityManager()); 
+		 
 		
 		try {
 			RMI_Server h = new RMI_Server();

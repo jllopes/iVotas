@@ -1,5 +1,4 @@
 package rmiserver;
-
 import java.io.*;
 import java.net.*;
 import java.rmi.*;
@@ -135,15 +134,17 @@ public class TCP_Server extends UnicastRemoteObject implements TCP_Interface , S
 									System.out.println("TCP_Client: No TCP_Clients connected at the moment");
 								}else {
 									int i = 1;
+									int j = 0;
 									for(Connection c : tcp.conns){
 										i++;
 										if(c.getLocked()){ //locked table
 											c.unlockTable(input.get("username"));
 											System.out.println("TCP_Client: " +c.id + " unlocked");
+											j=1;
 											break;
 										}
 									}
-									if(i  == tcp.nTerminais + 1){
+									if(i == tcp.nTerminais + 1 && j==0){
 										System.out.println("TCP_Client: No TCP_Clients available at the moment");
 										try {
 											Thread.sleep(1000);
@@ -241,7 +242,9 @@ class Connection extends Thread {
 		try {
 			while (true){
 				String data = in.readLine();
-				chooseAction(Parser.parseInput(data));
+				if(data != null) {
+					chooseAction(Parser.parseInput(data));
+				}
 				time = System.currentTimeMillis();
 			}
 		} catch(IOException e){ //cliente exit
@@ -294,7 +297,6 @@ class Connection extends Thread {
 						login(input); //should be reviewed
 						break;
 					case "lists":
-						
 						if(input.containsKey("election")){
 							getLists(input);
 						}else
@@ -342,11 +344,11 @@ class Connection extends Thread {
 		try {
 			type = tcp.rmi.login(username, password);
 			if(type != 0 && this.currentUser.equals(username)){
-				write("type | status ; logged | on ; mswg | Welcome to iVotas " + username+ " !");
+				write("type | status ; logged | on ; msg | Welcome to iVotas " + username+ " !");
 				this.currentUser = username;
 				this.userType = type;
 				HashMap<String, Integer> userInfo = tcp.rmi.getUserId(username);
-			    this.userDep = userInfo.get("id_department");
+			    this.userDep = userInfo.get("department");
 			    this.userId = userInfo.get("id");
 				this.status = true;
 				if(userId == 0){ //should not happen{
