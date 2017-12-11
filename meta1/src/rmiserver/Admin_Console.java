@@ -1,3 +1,5 @@
+package rmiserver;
+
 import java.io.*;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;

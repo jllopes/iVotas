@@ -1,3 +1,5 @@
+package rmiserver;
+
 import java.rmi.*;
 import java.util.*;
 public interface RMI_Interface_Admin extends Remote{

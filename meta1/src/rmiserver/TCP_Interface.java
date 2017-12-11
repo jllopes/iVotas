@@ -1,3 +1,5 @@
+package rmiserver;
+
 import java.rmi.*;
 
 public interface TCP_Interface extends Remote{
