@@ -11,15 +11,17 @@ public class SessionBean {
 	private RMI_Interface_TCP server;
 	private String username;
 	private String password;
+	private int type = 0;
 	
 	public SessionBean(){
 		try{
+			/*
 	 		System.getProperties().put("java.security.policy", "policy.all");
 			System.setSecurityManager(new SecurityManager()); 
-		
+			*/
 			//server = (RMI_Interface_TCP) LocateRegistry.getRegistry("127.0.0.1",1099).lookup("IVotas");
-			//server = (RMI_Interface_TCP) Naming.lookup("rmi://127.0.0.1:1099/IVotas");
-			server = (RMI_Interface_TCP) Naming.lookup("IVotas");
+			server = (RMI_Interface_TCP) Naming.lookup("rmi://127.0.0.1:1099/IVotas");
+			//server = (RMI_Interface_TCP) Naming.lookup("IVotas");
 
 			System.out.println("encontrou rmi");
 		}catch(NotBoundException|MalformedURLException|RemoteException e) {
@@ -29,7 +31,7 @@ public class SessionBean {
 	}
 
 	public boolean login() throws RemoteException{
-		if(server.login(this.username, this.password) != 0)
+		if( (type = server.login(this.username, this.password)) != 0)
 			return true;
 		return false;
 	}
@@ -48,6 +50,14 @@ public class SessionBean {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
 	}
 	
 	

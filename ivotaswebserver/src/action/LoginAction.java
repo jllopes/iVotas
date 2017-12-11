@@ -11,9 +11,13 @@ import java.util.Map;
 public class LoginAction extends ActionSupport implements SessionAware {
 
 
-	private static final long serialVersionUID = 5324400703881589837L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2059576564105439712L;
 	private Map<String,Object> session;
 	private String username = null, password = null;
+	private int type = 0;
 	
 	@Override
 	public String execute() {
@@ -25,7 +29,10 @@ public class LoginAction extends ActionSupport implements SessionAware {
 				session.put("password", password);
 				if(this.getSessionBean().login()){
 					session.put("loggedin", true);
-					return SUCCESS;
+					if(this.getSessionBean().getType() == 4){
+						return "admin";
+					}else
+						return "user";
 				} else {
 					session.put("loggedin", false);
 					return LOGIN;
@@ -35,6 +42,10 @@ public class LoginAction extends ActionSupport implements SessionAware {
 		}catch(RemoteException e){
 			return ERROR;
 		}
+	}
+	
+	public void setType(int type){
+		this.type = type;
 	}
 	
 	public void setUsername(String username) {
