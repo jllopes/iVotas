@@ -61,6 +61,7 @@ update electionList set electionList.vote = electionList.vote +1 where electionL
 update electionList set electionList.vote = electionList.vote +1 where electionList.id = 6;
 insert into department(faculty, name) values (1, "novo");
 
+insert into user(username, password, type, faculty, department, name, address, ccNumber, ccMonth, ccYear,phoneNumber) values ("admin","admin",4,1,1,"Admin", "Admin", 999999999, 8, 1990,"+351123456789");
 /*
 select * from election where startDate < current_timestamp() and endDate > current_timestamp();
 select * from electionList;

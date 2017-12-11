@@ -35,7 +35,7 @@ create table user
     UNIQUE(username),
     constraint validYear check (cc_year > 1970 and cc_year < 2050),
     constraint validMonth check (cc_month > 0 and cc_month < 13),
-    constraint typeCheck check (type is not null or type=1 or type=2 or type=3)
+    constraint typeCheck check (type is not null or type=1 or type=2 or type=3 or type=4)
     );
 
 create table election
