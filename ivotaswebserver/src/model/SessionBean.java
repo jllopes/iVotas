@@ -50,13 +50,13 @@ public class SessionBean {
 		return server.getElections(this.userType, this.userDep);
 	}
 	
-	public HashMap<Integer, String> getListsElections() throws RemoteException {
+	/*public HashMap<Integer, String> getListsElections() throws RemoteException {
 		return 	server.getListsElections( this.userType, this.userDep, idElection); //arranjar este parametro
-	}
+	}*/
 	
-	public HashMap<Integer, String> getPeopleFromList throws RemoteException {
+	/*public HashMap<Integer, String> getPeopleFromList throws RemoteException {
 		
-	}
+	}*/
 
 	
 	public String getUsername() {
