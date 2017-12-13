@@ -447,6 +447,7 @@ class Connection extends Thread {
 	
 	public void unlockTable(String username){
 		this.block = false;
+		time = System.currentTimeMillis();
 		this.currentUser = username;
 		write("type | unlock ; msg | Table unlocked for " + username );
 	}

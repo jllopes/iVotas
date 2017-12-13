@@ -29,7 +29,7 @@ public class LoginAction extends ActionSupport implements SessionAware {
 				session.put("password", password);
 				if(this.getSessionBean().login()){
 					session.put("loggedin", true);
-					if(this.getSessionBean().getType() == 4){
+					if(this.getSessionBean().getUserType() == 4){
 						return "admin";
 					}else
 						return "user";

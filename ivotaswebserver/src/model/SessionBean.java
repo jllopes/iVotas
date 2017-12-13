@@ -4,6 +4,8 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+
 import rmiserver.*;
 
 
@@ -11,7 +13,11 @@ public class SessionBean {
 	private RMI_Interface_TCP server;
 	private String username;
 	private String password;
-	private int type = 0;
+	private int userType = 0;
+	private int userDep = 0;
+	private int userId = 0;
+	
+	
 	
 	public SessionBean(){
 		try{
@@ -31,11 +37,28 @@ public class SessionBean {
 	}
 
 	public boolean login() throws RemoteException{
-		if( (type = server.login(this.username, this.password)) != 0)
+		if( (userType = server.login(this.username, this.password)) != 0){
+			HashMap<String, Integer> userInfo = server.getUserId(username);
+		    this.userDep = userInfo.get("department");
+		    this.userId = userInfo.get("id");
 			return true;
+		}
 		return false;
 	}
  	
+	public HashMap<Integer, String> getElections() throws RemoteException{
+		return server.getElections(this.userType, this.userDep);
+	}
+	
+	public HashMap<Integer, String> getListsElections() throws RemoteException {
+		return 	server.getListsElections( this.userType, this.userDep, idElection); //arranjar este parametro
+	}
+	
+	public HashMap<Integer, String> getPeopleFromList throws RemoteException {
+		
+	}
+
+	
 	public String getUsername() {
 		return username;
 	}
@@ -52,12 +75,32 @@ public class SessionBean {
 		this.password = password;
 	}
 
-	public int getType() {
-		return type;
+	public int getUserType() {
+		return this.userType;
 	}
 
-	public void setType(int type) {
-		this.type = type;
+	public void setUserType(int type) {
+		this.userType = type;
+	}
+
+	
+	public int getUserDep() {
+		return userDep;
+	}
+
+	
+	public void setUserDep(int userDep) {
+		this.userDep = userDep;
+	}
+
+	
+	public int getUserId() {
+		return userId;
+	}
+	
+
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 	
 	
