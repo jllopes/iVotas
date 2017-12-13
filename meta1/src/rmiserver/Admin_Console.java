@@ -681,50 +681,47 @@ public class Admin_Console extends UnicastRemoteObject implements Admin_Interfac
         rmi.createList(name, type, election);
     }
 
-    public void addCandidatesToList(int election, int type) throws RemoteException{
+    public void addCandidatesToList(int election, int department) throws RemoteException{
+    	//type = department
         Scanner in = new Scanner(System.in);
         listElectionLists(election);
         System.out.println("What list do you want to add candidates to?");
         int list = Integer.parseInt(in.nextLine());
         System.out.println("How many candidates are you going to insert?");
-        int list_type = rmi.getListType(election);
+        int type = rmi.getListType(list);
         int number = Integer.parseInt(in.nextLine());
         listUsers();
         System.out.println("Insert the list of ids you want to be candidates of the list:");
         int id;
         ArrayList<Integer> users = new ArrayList<>();
-        int check;
+        int userType, userDep;
         int i = 0;
         while(i<number){
             id = Integer.parseInt(in.nextLine());
-            check = rmi.checkUserType(id);
+            userType = rmi.checkUserType(id);
+            userDep = rmi.checkUserDep(id);
             i++;
-            if(type == 2){
-                if(check == 1 && list_type == 1){ // Student
-                    users.add(id);
-                }
-                else if(check == 2 && list_type == 2){ // Professors
-                    users.add(id);
-                }
-                else if(check == 3 && list_type == 3){ // Professors
-                    users.add(id);
-                }
-                else{
-                    System.out.println("There is no user with such a username, or the user does not match the type you chose, please insert a valid username:");
-                    i--;
-                }
+            if(type != 0){
+            	if(userType == type && (department == 0 || (department == userDep))) {
+            		users.add(id);
+            	}else{
+            		System.out.println("Invalid id or incompatible assigns");
+            		i--;
+            	}
             }
             else {
-                if (check == 1) { // Student
-                    users.add(id);
-                }
-                else{
-                    System.out.println("That username does not exist or the user is not a student, please insert a valid username:");
-                    i--;
-                }
+            	if(userType != 0){
+            		rmi.editListType(list,userType);
+            		type = userType;
+                	users.add(id);
+            	}else{
+            		System.out.println("Invalid id");
+            		i--;
+            	}
+            		
             }
         }
-        rmi.addCandidatesToList(election, users);
+        rmi.addCandidatesToList(list, users);
     }
 
     public void removeCandidates(int election) throws RemoteException{

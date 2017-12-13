@@ -44,4 +44,8 @@ public interface RMI_Interface_Admin extends Remote{
     public HashMap<Integer, String> getListsEarlyElections(int usertype, int idElection) throws RemoteException;
     public boolean earlyVote(int userId, int userType, int userDep, int election, int vote) throws RemoteException;
     public HashMap<String, Integer> getUserId(String username) throws RemoteException;
+    
+    public int checkUserDep(int id) throws RemoteException;
+    public void editListType(int listId,int userType) throws RemoteException;
+    
 }

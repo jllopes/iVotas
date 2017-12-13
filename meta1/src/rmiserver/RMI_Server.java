@@ -2146,7 +2146,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return null;
 	}
 
-
 	public boolean earlyVote(int userId, int userType, int userDep, int election, int vote) throws RemoteException{
 		try { //if no vote or vote = 0 is veryfied on tcp
 			connection.setAutoCommit(false);
@@ -2220,8 +2219,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 		return true;
 	}
-
-
 
 	@SuppressWarnings("rawtypes")
 	public boolean vote(int userId, int userType, int userDep, int election, int vote, int table) throws RemoteException{
@@ -2505,6 +2502,71 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			}
 		}
 	}
+	
+
+	public int checkUserDep(int id) throws RemoteException {
+		try {
+			connection.setAutoCommit(false);
+
+			String sql4 = "Select type from user where id = ? limit 1";
+			PreparedStatement prepStatement4 = connection.prepareStatement(sql4);
+			prepStatement4.setInt(1, id);
+			ResultSet rs = prepStatement4.executeQuery();
+			if(rs.next()){
+				int type = rs.getInt("type");
+				prepStatement4.close();
+				rs.close();
+				return type;
+			}
+			else return 0;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return 0;
+	}
+
+	public void editListType(int listId,int userType) throws RemoteException {
+		try {
+			connection.setAutoCommit(false);
+
+			String sql = "update electionlist set electionlist.type = ? where electionList.id = ?";
+			PreparedStatement prepStatement = connection.prepareStatement(sql);
+			prepStatement.setInt(1, listId);
+			prepStatement.setInt(2, userType);
+			prepStatement.executeUpdate();
+			prepStatement.close();
+
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+	}
+	
 
 	public static void main(String args[]) {
 		
@@ -2522,4 +2584,5 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			return;
 		}
 	}
+
 }
