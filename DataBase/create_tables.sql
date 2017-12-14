@@ -54,7 +54,7 @@ create table election
     
 create table voteTable
 	(id int(4) not null auto_increment,
-    department int(4) not null,
+    department int(4) null,
     primary key(id),
     foreign key(department) references department(id)
 	#UNIQUE(id_department)
@@ -97,7 +97,7 @@ create table vote
 	(
     id int(4) not null auto_increment,
 	election int(4) not null,
-	voteTable int(4),
+	voteTable int(4) null,
 	user int(4) not null,
     voteTime TIMESTAMP default current_timestamp,
     primary key(id),
