@@ -15,31 +15,28 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="assets/js/admin.js"></script>
 	<script>
-	                                	function departmentSelection(){
-	                                		console.log("cona cona")
-	                                		var select = document.getElementById("departmentSelect");
-	                                		var length = select.options.length;
-	                                		for(i = length-1 ; i>=0 ; i--){
-	                                			select.remove(i);
-	                                		}
-	                                		<c:forEach items="${sessionBean.getFaculties()}" var="faculty">
-	                                			console.log("cona cona cona")
-	                                			<c:if test="${faculty.value != null}">
-	                                				console.log("cona cona cona cona")
-		                                			var id = "<c:out value="${faculty.key.value}"/>";
-		                                			if(id == document.getElementById("facultySelect").value){
-		                                				<c:forEach items="${faculty.value}" var="department">
-														var option = document.createElement('option');
-			                                				option.text = "<c:out value="${department.key}"/>"
-			                                				option.value = "<c:out value="${department.value}"/>"
-			                                				departmentSelect.add(option,0)
-		    									    		</c:forEach>
-		                                			}
-	                                			</c:if>
-									  	</c:forEach>
-									  
-	                                	}
-                                </script>
+                                	function departmentSelection(){
+                                		var select = document.getElementById("departmentSelect");
+                                		var length = select.options.length;
+                                		for(i = length-1 ; i>=0 ; i--){
+                                			select.remove(i);
+                                		}
+                                		<c:forEach items="${sessionBean.getFaculties()}" var="faculty">
+                                			<c:if test="${faculty.value != null}">
+	                                			var id = "<c:out value="${faculty.key.value}"/>";
+	                                			if(id == document.getElementById("facultySelect").value){
+	                                				<c:forEach items="${faculty.value}" var="department">
+													var option = document.createElement('option');
+		                                				option.text = "<c:out value="${department.key}"/>"
+		                                				option.value = "<c:out value="${department.value}"/>"
+		                                				departmentSelect.add(option,0)
+	    									    		</c:forEach>
+	                                			}
+                                			</c:if>
+								  	</c:forEach>
+								  
+                                	}
+	</script>
 </head>
 <body>
 	<div class="container">
@@ -47,14 +44,12 @@
 	        <div class="col-md-3">
 	            <ul class="nav nav-pills nav-stacked admin-menu">
 	                <li><a href="#" id="home" action="home">Home</a></li>
-	                <li class="active"><a href="http://www.jquery2dotnet.com" id="register" action="register" class="active">Register User</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="departments" action="departments">Manage Departments</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="faculties" action="faculties">Manage Faculties</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="newElections" action="newElection">Create Election</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="elections" action="elections">Manage Election</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="electionResults" action="electionResults">Past Election Results</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="userVote" action="userVote">User Vote Info</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="tables" action="tables">Online Tables</a></li>
+	                <li class="active"><a href="http://www.jquery2dotnet.com" id="register" action="registerPage" class="active">Register User</a></li>
+	                <li><a href="http://www.jquery2dotnet.com" id="newElections" action="newElectionPage">Create Election</a></li>
+	                <li><a href="http://www.jquery2dotnet.com" id="elections" action="electionsPage">Manage Election</a></li>
+	                <li><a href="http://www.jquery2dotnet.com" id="electionResults" action="electionResultsPage">Past Election Results</a></li>
+	                <li><a href="http://www.jquery2dotnet.com" id="userVote" action="userVotePage">User Vote Info</a></li>
+	                <li><a href="http://www.jquery2dotnet.com" id="tables" action="tablesPage">Online Tables</a></li>
 	            </ul>
 	        </div>
 	        <div class="col-md-9 well admin-content" id="register">
@@ -64,7 +59,7 @@
                             <div class="panel-title">Sign Up</div>
                         </div>  
                         <div class="panel-body" >
-                            <form id="signupform" class="form-horizontal" role="form">
+                            <form id="signupform" class="form-horizontal" role="form" action="register" method="POST">
                                 
                                 <div id="signupalert" style="display:none" class="alert alert-danger">
                                     <p>Error:</p>
@@ -91,7 +86,6 @@
 				                            <option>User</option>
 				                            <option>Professor</option>
 				                            <option>Employee</option>
-				                            <option>Administrator</option>
 				                          </select>
 				                    </div>
 				                </div>
@@ -102,7 +96,9 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <select onchange="departmentSelection()" id="facultySelect" name="faculties">
+                                		<label for="fac" class="col-sm-3 control-label">Faculty</label>
+				                    <div class="col-sm-4">
+                                    <select onchange="departmentSelection()" id="facultySelect" name="faculty" class="form-control">
                                     <option value="" disabled selected>Faculty</option>
 									  <c:forEach items="${sessionBean.getFaculties()}" var="faculty">
 									    <option value="${faculty.key.value}">
@@ -110,50 +106,55 @@
     									    </option>
 									  </c:forEach>
 									</select>
+									</div>
                                 </div>
                                 <div class="form-group">
-                                    <select id="departmentSelect" name="departments">
+                               	<label for="dep" class="col-sm-3 control-label">Department</label>
+				                    <div class="col-sm-4">
+                                    <select id="departmentSelect" name="department" class="form-control">
                                     <option value="" disabled selected>Department</option>
 									</select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="department" class="col-md-3 control-label">Department</label>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" name="department" placeholder="Department">
-                                    </div>
+									</div>
                                 </div>
                                 <div class="form-group">
                                     <label for="id" class="col-md-3 control-label">Id Number</label>
                                     <div class="col-md-9">
-                                        <input type="password" class="form-control" name="id" placeholder="Id">
+                                        <input type="number" class="form-control" name="id" placeholder="Id">
                                     </div>
                                 </div>
                                     
                                 <div class="form-group">
                                     <label for="month" class="col-md-3 control-label">Validity Month</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" name="month" placeholder="12">
+                                        <input type="number" class="form-control" name="month" placeholder="12" min=0 max=12>
                                     </div>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label for="year" class="col-md-3 control-label">Validity Year</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" name="year" placeholder="2017">
+                                        <input type="number" class="form-control" name="year" placeholder="2017" min=1970 max=2050>
                                     </div>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label for="phone" class="col-md-3 control-label">Phone Number</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" name="phone" placeholder="915151515">
+                                        <input type="text" class="form-control" name="phone" placeholder="123123123">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="address" class="col-md-3 control-label">Address</label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" name="address" placeholder="Address">
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <!-- Button -->                                        
                                     <div class="col-md-offset-3 col-md-9">
-                                        <button id="btn-signup" type="button" class="btn btn-primary" onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> &nbsp Register</button>
+                                        <button id="btn-signup" type="submit" class="btn btn-primary"onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> &nbsp Register</button>
                                     </div>
                                 </div>
                                 

@@ -47,33 +47,28 @@ public class SessionBean {
 		return false;
 	}
  	
-	public void setFaculty(int faculty) {
-		this.faculty = faculty;
-		System.out.println(faculty);
+	public boolean unusedUsername(String username) throws RemoteException {
+		return !server.checkUser(username);
 	}
 	
-	public int getFaculty() {
-		return this.faculty;
+	public boolean newUser(String username, String password, int userType, String name, int faculty, int department, int id, int month, int year, String phoneNumber, String address) throws RemoteException{
+		return server.register(name, username, password, userType, faculty, department, address, id, month, year, phoneNumber);
 	}
 	
 	public HashMap<Pair<String, Integer>, HashMap<String, Integer>> getFaculties() throws RemoteException{
 		HashMap<String, Integer> faculties = server.getAllFaculties();
-		System.out.println(faculties);
 		HashMap<Pair<String, Integer>, HashMap<String, Integer>> facultyInfo = new HashMap<Pair<String, Integer>, HashMap<String, Integer>>();
 		Iterator it = faculties.entrySet().iterator();
     		while (it.hasNext()) {
     			Map.Entry<String, Integer> f = (Map.Entry) it.next();
-    			System.out.println(f);
     		    facultyInfo.put(new Pair<String, Integer>(f.getKey(), f.getValue()), this.getDepartmentsFaculty(f.getValue()));
     		}
-    		System.out.println(facultyInfo);
     		return facultyInfo;
 	}
 	
 	public HashMap<String, Integer> getDepartmentsFaculty(int faculty) throws RemoteException{
 		if(faculty != 0) {
 		ArrayList<Department> departments = server.getDepartmentsFromFaculty(faculty);
-		System.out.println(departments);
 		HashMap<String, Integer> departmentMap = new HashMap<>();
 		if(departments != null) {
 			for(Department dep : departments) {

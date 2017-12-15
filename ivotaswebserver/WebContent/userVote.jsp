@@ -18,8 +18,6 @@
 	            <ul class="nav nav-pills nav-stacked admin-menu">
 	                <li><a href="#" id="home" action="home">Home</a></li>
 	                <li class="active"><a href="http://www.jquery2dotnet.com" id="register" action="register" class="active">Register User</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="departments" action="departments">Manage Departments</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="faculties" action="faculties">Manage Faculties</a></li>
 	                <li><a href="http://www.jquery2dotnet.com" id="newElections" action="newElection">Create Election</a></li>
 	                <li><a href="http://www.jquery2dotnet.com" id="elections" action="elections">Manage Election</a></li>
 	                <li><a href="http://www.jquery2dotnet.com" id="electionResults" action="electionResults">Past Election Results</a></li>
