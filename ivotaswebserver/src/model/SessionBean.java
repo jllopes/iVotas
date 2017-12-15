@@ -106,17 +106,6 @@ public class SessionBean {
 		return server.createElection(dateStart, dateEnd, name, description, department);
 	}
 	
-	public HashMap<String, Integer> getAllElections() throws RemoteException{
-		ArrayList<Election> elections = server.getAllElections();
-		HashMap<String, Integer> electionMap = new HashMap<>();
-		if(elections != null) {
-			for(Election election : elections) {
-				electionMap.put(election.name, election.id);
-			}	
-		}
-		System.out.println(electionMap);
-		return electionMap;
-	}
 	
 	public HashMap<Integer, String> getElections() throws RemoteException{
 		return server.getElections(this.userType, this.userDep);
@@ -128,16 +117,36 @@ public class SessionBean {
 	
 	public boolean vote(int idElection, int vote) throws RemoteException{		
 		if(vote == 0){		
-			return  server.vote_blank(this.userId,this.userType, this.userDep, idElection);		
+			return  server.vote_blank(this.userId,this.userType, this.userDep, idElection,1);		
 		}else{		
 			return server.vote(this.userId, this.userType, this.userDep, idElection, vote,1);		
 		}		
+	}
+	
+	public boolean vote_blank( int idElection) throws RemoteException{		
+		return server.vote_blank( this.userId, this.userType, this.userDep, idElection,1);		
 	}
 	
 	/*public HashMap<Integer, String> getPeopleFromList throws RemoteException {
 		
 	}*/
 
+	public ArrayList<Election> getAllElections() throws RemoteException {
+		return server.getAllElections();
+	}
+	
+	public Election getElectionInfo(int idElection) throws RemoteException {
+		return server.getElection(idElection);
+	}
+	
+	public ArrayList<String> getPeopleList(int idList) throws RemoteException {
+		System.out.println("LISTA " + idList);
+		ArrayList<String> candidates = server.getPeopleList(idList);
+		for(String s : candidates){
+			System.out.println(s);
+		}
+		return candidates;
+	}
 	
 	public String getUsername() {
 		return username;

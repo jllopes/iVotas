@@ -49,8 +49,8 @@
                                     <select id="electionSelect" name="election" class="form-control">
                                     <option value="" disabled selected>Election</option>
 									  <c:forEach items="${sessionBean.getAllElections()}" var="election">
-									    <option value="${election.key}">
-									    		${election.key}
+									    <option value="${election.getId()}">
+									    		${election.getName()}
     									    </option>
 									  </c:forEach>
 									</select>

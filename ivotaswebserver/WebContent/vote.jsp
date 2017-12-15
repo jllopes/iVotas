@@ -10,17 +10,60 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>IVotas - Lists</title>
-	<!-- CSS -->
-	<link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-	<link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
-	<link rel="stylesheet" href="assets/css/notification.css">
-	
-	<!-- JS  -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-	<script src="assets/js/notifications.js"></script>
+<title>IVotas - VOTE</title>
+
 </head>
 <body>
+<style>
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropbtn:hover, .dropbtn:focus {
+    background-color: #3e8e41;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover {background-color: #f1f1f1}
+
+.show {display:block;}
+</style>
+
+
+    <c:set var="election" value="${sessionBean.getElectionInfo(electionId)}"/>
+      <br><c:out value = "${election.getName()}"/>
+      <br><c:out value = "${election.getDescription()}"/>
+      <br><c:out value = "${election.getDepartment().getName()}"/>
+      <br><c:out value = "${election.getPrettyStartDate()}"/>
+     <br> <c:out value = "${election.getPrettyEndDate()}"/>
+      <br><c:out value = "${election.getBlankVotes()}"/>
+      <br><c:out value = "${election.getNullVotes()}"/>
 
 	<c:choose>
 		<c:when test="${electionLists.size() > 0}">
@@ -32,7 +75,7 @@
 	</c:choose>
 	
 	
-	<form action="vote" >
+	<form action="vote" method="POST">
 		<input type='hidden' name=electionId id=electionId value="${electionId}" />
 	
 		<c:forEach items="${electionLists}" var="value">
@@ -40,33 +83,48 @@
     			<input type="checkbox" name="listId" value="${value.key}" />
     			<!--  input type='hidden' name=listId id=listId value="${value.key}" />	-->
  			 	<!-- input type="submit" value="${value.value}"/> --><br>	
-		</c:forEach>
+				<div class="dropdown" >
+				<button type="button" onclick="myFunction(${value.key})" class="dropbtn">
+					<img src="https://cedcn.org/wp-content/themes/cedcn/images/icon-arrow_dropdown.svg" width=25 height=25>
+				</button>
+				  <div id="${value.key}" class="dropdown-content">
+	 			 	<c:forEach items="${sessionBean.getPeopleList(value.key)}" var="name">
+				 		<a>${name}</a>
+				 	</c:forEach>
+				  </div>
+				</div>
+				<br></br>
+
+		 	</c:forEach>
 		<input type="submit" value="Vote"/>
 	</form>
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	<button id="showError">Show Error Notification</button>
-	<button id="showSuccess">Show Success Notification</button>
-		
-	<script>
-	$('#showError').on('click', function(e) {
-	    displayNotification('error', 'User already voted !!', 2000);
-	    e.preventDefault();
-	});
 
-	$('#showSuccess').on('click', function(e) {
-	    displayNotification('success', 'Vote submited with success !!', 2000);
-	    e.preventDefault();
-	});
 
-	</script> 
+	<script> 
+	/* When the user clicks on the button, 
+	toggle between hiding and showing the dropdown content */
+	function myFunction( x) {
+	    document.getElementById(x).classList.toggle("show");
+	}
+	
+	// Close the dropdown if the user clicks outside of it
+	window.onclick = function(event) {
+	  if (!event.target.matches('.dropbtn')) {
+	
+	    var dropdowns = document.getElementsByClassName("dropdown-content");
+	    var i;
+	    for (i = 0; i < dropdowns.length; i++) {
+	      var openDropdown = dropdowns[i];
+	      if (openDropdown.classList.contains('show')) {
+	        openDropdown.classList.remove('show');
+	      }
+	    }
+	  }
+	}
+	</script>
+
 
 </body>
 </html>

@@ -27,7 +27,8 @@ public interface RMI_Interface_Bean extends Remote{
     public ArrayList<Department> getDepartmentsFromFaculty(int faculty) throws RemoteException;
     public HashMap<String, Integer> getAllFaculties() throws RemoteException;
     public ArrayList<Election> getAllElections() throws RemoteException;
-    
+    public Election getElection(int id) throws RemoteException;
+    public ArrayList<String> getPeopleList(int listId) throws RemoteException;
     /* TCP */
     
     public String message() throws java.rmi.RemoteException;
@@ -37,7 +38,7 @@ public interface RMI_Interface_Bean extends Remote{
 	public HashMap<String, Integer>  getUserId(String username) throws RemoteException;
 	public boolean checkUser(String username) throws RemoteException;
 	public boolean vote(int userId, int userType, int userDep, int id_election, int vote, int id_table) throws RemoteException;
-	public boolean vote_blank(int userid ,int usertype, int userDep, int idElection) throws RemoteException; //false se ja existir voto
+	public boolean vote_blank(int userid ,int usertype, int userDep, int idElection, int table) throws RemoteException; //false se ja existir voto
 
 	public void addTable(TCP_Interface t) throws RemoteException;
 	public ArrayList<Department> getAllDepartments();

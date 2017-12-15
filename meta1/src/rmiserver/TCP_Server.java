@@ -415,7 +415,7 @@ class Connection extends Thread {
 			// vote = 0 blank , lista invalida -> nulo, lista valida -> new vote
 			if(vote == 0){
 				//insert vote blank
-				boolean answer = tcp.rmi.vote_blank(this.userId , this.userType, userDep, id_election) ;
+				boolean answer = tcp.rmi.vote_blank(this.userId , this.userType, userDep, id_election, tcp.id_table) ;
 				if(answer){
 					write("type | vote ; msg: Success! (blank); "); //just for testing
 				}else{

@@ -22,32 +22,42 @@ public class VoteAction extends ActionSupport implements SessionAware {
 	private static final long serialVersionUID = 1921101606516661655L;
 	private Map<String,Object> session;
 	private int electionId;
-	private ArrayList<Integer> listId = new ArrayList<>();
-	//private int listId;
-
+	//private ArrayList<Integer> listId = new ArrayList<>();
+	private String[] listId = null;
+	private int counter = 0;
+		
 	public String execute() {
-		System.out.println("FUNFA2" + listId);/*
-		if(listId.size() == 0){
-			System.out.println("VAZIO");
-		}else if(listId.size() == 1)
-			System.out.println("SO 1");
-		else
-			System.out.println("VARIOS");*/
-		return SUCCESS;
-			/*
+
 		try{
 			if(this.getSessionBean() != null){
-				if(this.getSessionBean().vote(this.electionId, this.listId)){
+				boolean a;
+				if(counter== 0){
+					a = this.getSessionBean().vote_blank(electionId);
+				}else if(counter == 1)
+					a = this.getSessionBean().vote(electionId, Integer.parseInt(listId[0]));
+				else{
+					a = this.getSessionBean().vote(electionId,0 ); //invalid list
+				}
+				System.out.println("ASDFASDF " + a);
+				if(a){
+					addActionMessage("Vote with success");
 					return SUCCESS;
-				}else
-					return INPUT; //something to popup already vote or error
+				
+				}else{
+					addActionError("User already voted");
+					return SUCCESS; //already vote	
+				}
 			}else
 				return LOGIN;
+			
+		} catch(NumberFormatException e1) {
+			return ERROR;
 		}catch (RemoteException e){
 			return ERROR;
-		}	*/
+		}	
 	}
-	
+
+
 	public SessionBean getSessionBean(){
 		if(!session.containsKey("sessionBean"))
 			return null;
@@ -66,18 +76,20 @@ public class VoteAction extends ActionSupport implements SessionAware {
 	public void setElectionId(int electionId) {
 		this.electionId = electionId;
 	}
-
-	public ArrayList<Integer> getListId() {
-		return listId;
-	}
-
-	public void setListId(ArrayList<Integer> listId) {
-		this.listId =listId;
-	}
-
-
-
 	
 	
+	public String[] getListId() {
+		if(listId != null)
+			return listId;
+		else
+			return null;
+	}
+
+	public void setListId(String[] listId) {
+		this.listId = listId;
+		this.counter = listId.length;
+	}
+	
+
 }
 

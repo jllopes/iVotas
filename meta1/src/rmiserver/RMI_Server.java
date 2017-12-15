@@ -1196,25 +1196,26 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			connection.setAutoCommit(false);
 
 			ArrayList<Election> elections = new ArrayList<Election>();
-			String sql = "select * from election";
+			String sql = "select * from election where endDate < current_timestamp";
 			PreparedStatement prepStatement = connection.prepareStatement(sql);
 			ResultSet rs = prepStatement.executeQuery();
 			Date current = new Date();
 			if(rs.next()){
 				rs.beforeFirst();
 				while(rs.next()) {
-					Date date = rs.getTimestamp("endDate");
-					if(date.before(current)){
-						String electionName = rs.getString("name");
-						int electionId = rs.getInt("id");
-						int department = rs.getInt("department");
-						if(department == 0){
-							elections.add(new Election(electionName, electionId, null));
-						}
-						else{
-							Department dep = getDepartment(department);
-							elections.add(new Election(electionName, electionId, dep));
-						}
+					String name = rs.getString("name");
+					int id = rs.getInt("id");
+					Department department = getDepartment(rs.getInt("department"));
+					String description = rs.getString("description");
+					Date startDate = new Date(rs.getTimestamp("startDate").getTime());
+					Date endDate = new Date(rs.getTimestamp("endDate").getTime());
+					int blankVotes = rs.getInt("blankVotes");
+					int nullVotes = rs.getInt("nullVotes");
+
+					if (department.id == 0) {
+						elections.add(new Election(name, id,new Department("Conselho Geral",0),description, startDate, endDate,blankVotes, nullVotes));
+					} else {
+						elections.add(new Election(name, id, department,description, startDate, endDate,blankVotes, nullVotes));
 					}
 				}
 				return elections;
@@ -1334,14 +1335,20 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			if(rs.next()){
 				rs.beforeFirst();
 				while(rs.next()) {
-					String electionName = rs.getString("name");
-					int electionId = rs.getInt("id");
-					int department = rs.getInt("department");
-					if (department == 0) {
-						elections.add(new Election(electionName, electionId, null));
+					String name = rs.getString("name");
+					int id = rs.getInt("id");
+					Department department = getDepartment(rs.getInt("department"));
+					String description = rs.getString("description");
+					Date startDate = new Date(rs.getTimestamp("startDate").getTime());
+					Date endDate = new Date(rs.getTimestamp("endDate").getTime());
+					int blankVotes = rs.getInt("blankVotes");
+					int nullVotes = rs.getInt("nullVotes");
+
+					if (department== null || department.id == 0) {
+						elections.add(new Election(name, id,new Department("Conselho Geral",0),description, startDate, endDate,blankVotes, nullVotes));
 					} else {
-						Department dep = getDepartment(department);
-						elections.add(new Election(electionName, electionId, dep));
+						
+						elections.add(new Election(name, id, department,description, startDate, endDate,blankVotes, nullVotes));
 					}
 				}
 				return elections;
@@ -1606,8 +1613,17 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			if(rs.next()){
 				String name = rs.getString("name");
 				Department department = getDepartment(rs.getInt("department"));
-				Election election = new Election(name, id, department);
-				return election;
+				String description = rs.getString("description");
+				Date startDate = new Date(rs.getTimestamp("startDate").getTime());
+				Date endDate = new Date(rs.getTimestamp("endDate").getTime());
+				int blankVotes = rs.getInt("blankVotes");
+				int nullVotes = rs.getInt("nullVotes");
+				if (department.id == 0) {
+					return new Election(name, id,new Department("Conselho Geral",0),description, startDate, endDate,blankVotes, nullVotes);
+				} else {
+					
+					return new Election(name, id, department,description, startDate, endDate,blankVotes, nullVotes);
+				}
 			}else{
 				return null;
 			}
@@ -2190,8 +2206,8 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 						it.remove(); // avoids a ConcurrentModificationException
 					}
 				}
-				String nullVote = "update election set election.blankVotes =  election.blankVotes +1 where election.id = ?";
-				PreparedStatement prepNullStatement = connection.prepareStatement(nullVote);
+				String blankVote = "update election set election.blankVotes =  election.blankVotes +1 where election.id = ?";
+				PreparedStatement prepNullStatement = connection.prepareStatement(blankVote);
 				prepNullStatement.setInt(1, election);
 				prepNullStatement.executeUpdate();
 				prepNullStatement.close();
@@ -2266,6 +2282,18 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		    		    	}
 		    		    } 
 
+			    		String getvotes = "Select 1 from vote where election = ? and user = ?";
+			    		PreparedStatement prepStatement2 = connection.prepareStatement(getvotes);
+					    prepStatement2.setInt(1, election);
+					    prepStatement2.setInt(2, userId);
+			    		ResultSet rs = prepStatement2.executeQuery();
+			    		if(rs.next()){//already voted
+				    		prepStatement2.close();
+			    			rs.close();
+			    			return false;
+			    		}
+		    		    
+		    		    
 		    		    String sql = "insert into vote(election, user, voteTable) values (?,?,?)";		
 		    		    PreparedStatement prepStatement = connection.prepareStatement(sql);		
 		    		    prepStatement.setInt(1, election);		
@@ -2275,7 +2303,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		    		    prepStatement.executeUpdate();		
 		    		    prepStatement.close();
 		    		    
-		    		    String nullVote = "update election set election.blankVotes =  election.blankVotes +1 where election.id = ?";
+		    		    String nullVote = "update election set election.nullVotes =  election.nullVotes +1 where election.id = ?";
 					    PreparedStatement prepNullStatement = connection.prepareStatement(nullVote);
 					    prepNullStatement.setInt(1, election);
 					    prepNullStatement.executeUpdate();
@@ -2304,9 +2332,9 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			return false;
 	}
 
-	public boolean vote_blank(int userid, int usertype, int userDep, int idElection) throws RemoteException {
-	    try {
-	    	String getvotes = "Select 1 from vote where election = ? and user = ?";
+	public boolean vote_blank(int userid, int usertype, int userDep, int idElection, int table) throws RemoteException {
+		try {
+	    	String getvotes = "Select * from vote where election = ? and user = ?";
     		PreparedStatement prepStatement2 = connection.prepareStatement(getvotes);
 		    prepStatement2.setInt(1, idElection);
 		    prepStatement2.setInt(2, userid);
@@ -2319,9 +2347,17 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
     		String str = "New blank vote on election " + idElection + " .";
     		sendNotification(str);
 	    	
-	    	
-		    String nullVote = "update election set election.nullVotes =  election.blankVotes +1 where election.id = ?";
-		    PreparedStatement prepNullStatement = connection.prepareStatement(nullVote);
+    		String sql = "insert into vote(election, user, voteTable) values (?,?,?)";		
+		    PreparedStatement prepStatement = connection.prepareStatement(sql);		
+		    prepStatement.setInt(1, idElection);		
+		    prepStatement.setInt(2, userid);		
+		    prepStatement.setInt(3, table);		
+		    
+		    prepStatement.executeUpdate();		
+		    prepStatement.close();
+		    
+		    String blankVote = "update election set election.blankVotes =  election.blankVotes +1 where election.id = ?";
+		    PreparedStatement prepNullStatement = connection.prepareStatement(blankVote);
 			prepNullStatement.setInt(1, idElection);
 		    prepNullStatement.executeUpdate();
 		    prepNullStatement.close();
@@ -2510,7 +2546,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			}
 		}
 	}
-	
+
 
 	public int checkUserDep(int id) throws RemoteException {
 		try {
@@ -2575,7 +2611,51 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 	}
 	
+	public ArrayList<String> getPeopleList(int listId) throws RemoteException{
+		try {
+			connection.setAutoCommit(false);
 
+			String sql = "select u.name from electionlist e, candidate c, user u where e.id =? and e.id=c.list and c.user=u.id;";
+			PreparedStatement prepStatement = connection.prepareStatement(sql);
+			prepStatement.setInt(1, listId);
+			ResultSet rs = prepStatement.executeQuery();
+
+			if(rs.next()){ //theres is at least one election
+				ArrayList<String> candidates = new ArrayList<>();
+				rs.beforeFirst();
+				while(rs.next()){
+					candidates.add(rs.getString("u.name"));
+				}
+				rs.close();
+				return candidates;
+
+			}else{
+				rs.close();
+				return null;
+				//return 0;
+
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return null;
+		
+	}
+	
+	
 	public static void main(String args[]) {
 		
 	 		System.getProperties().put("java.security.policy", "policy.all");
