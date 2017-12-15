@@ -47,14 +47,19 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     	<result>/userVote.jsp</result>
     </action>
     
-    <action name="electionVote">
-    	<result>/vote.jsp</result>
+   <action name="election">
+      <result>/electionlist.jsp</result>
     </action>
     
-    <!--action name="electionVote" class="action.ListsAction" method="execute">
-    	<result name="vote">/lists.jsp</result>
-    	<result name="invalid">/electionVote</result>
-    </action-->
+    <action name="electionlist" class="action.ListsAction" method="execute">
+      <result>/vote.jsp</result>
+    </action>
+    
+    <action name="vote" class="action.VoteAction" method="execute">
+    	<result name="success">/electionlist.jsp</result>
+    	<result name="login">/index.jsp</result>
+    	<result name="error">/error.jsp</result>
+    </action>
   </package>
 
 </struts>

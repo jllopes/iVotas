@@ -6,6 +6,8 @@ import model.SessionBean;
 
 import org.apache.struts2.interceptor.SessionAware;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class LoginAction extends ActionSupport implements SessionAware {
@@ -18,7 +20,7 @@ public class LoginAction extends ActionSupport implements SessionAware {
 	private Map<String,Object> session;
 	private String username = null, password = null;
 	private int type = 0;
-	
+	private List<Integer> option = new ArrayList<>();
 	@Override
 	public String execute() {
 		try{
@@ -42,6 +44,12 @@ public class LoginAction extends ActionSupport implements SessionAware {
 		}catch(RemoteException e){
 			return ERROR;
 		}
+	}
+	
+	public int addOption(int idList){
+		System.out.println("FUNCIONA");
+		option.add(idList);
+		return idList;
 	}
 	
 	public void setType(int type){
