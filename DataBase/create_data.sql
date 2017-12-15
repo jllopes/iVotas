@@ -11,7 +11,7 @@ insert into department(faculty, name) values (2, "Portuges");
 insert into department(faculty, name) values (2, "Ingles");
 
 
-
+insert into votetable() values ();
 
 
 insert into user(username, password, type, faculty, department, name, address, ccNumber, ccMonth, ccYear, phoneNumber) values ("pjsg","pjsg",1,1,1,"Pedro Gonçalves", "Coimbra", 123123123, 10, 1990,"+351123456789");
@@ -32,8 +32,8 @@ insert into candidate(user, list) values (1,1);
 insert into electionList(name, election, type) values ("Lista B",1,1);
 insert into candidate(user, list) values (2,2);
 
-insert into vote(election, user, voteTable) values (1,1,1);
-insert into vote(election, user, voteTable) values (1,2,1);
+insert into vote(election, user, voteTable) values (1,1,2);
+insert into vote(election, user, voteTable) values (1,2,2);
 update electionList set electionList.vote = electionList.vote +1 where electionList.id = 1;
 update electionList set electionList.vote = electionList.vote +1 where electionList.id = 1;
 
@@ -56,7 +56,7 @@ insert into candidate(user, list) values (1,5);
 insert into electionList(name, election, type) values ("Lista B",3,2);
 insert into candidate(user, list) values (5,6);
 
-insert into vote(election, user, voteTable) values (3,5,5);
+insert into vote(election, user, voteTable) values (3,5,6);
 update electionList set electionList.vote = electionList.vote +1 where electionList.id = 5;
 update electionList set electionList.vote = electionList.vote +1 where electionList.id = 6;
 insert into department(faculty, name) values (1, "novo");
@@ -73,3 +73,4 @@ select * from faculty;
 select * from user;
 select * from candidate;
 */
+
