@@ -43,20 +43,20 @@
 	    <div class="row">
 	        <div class="col-md-3">
 	            <ul class="nav nav-pills nav-stacked admin-menu">
-	                <li><a href="#" id="home" action="home">Home</a></li>
-	                <li class="active"><a href="http://www.jquery2dotnet.com" id="register" action="registerPage" class="active">Register User</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="newElections" action="newElectionPage">Create Election</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="elections" action="electionsPage">Manage Election</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="electionResults" action="electionResultsPage">Past Election Results</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="userVote" action="userVotePage">User Vote Info</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="tables" action="tablesPage">Online Tables</a></li>
+	                <li><a href="#" id="home" action="adminPage">Home</a></li>
+	                <li class="active"><a href="<s:url action="registerPage"/>" id="register" action="registerPage">Register User</a></li>
+	                <li><a href="" id="newElections" action="newElectionPage">Create Election</a></li>
+	                <li><a href="#" id="elections" action="changeElection">Change Election</a></li>
+	                <li><a href="#" id="electionResults" action="electionResultsPage">Past Election Results</a></li>
+	                <li><a href="#" id="userVote" action="userVotePage">User Vote Info</a></li>
+	                <li><a href="#" id="tables" action="tablesPage">Online Tables</a></li>
 	            </ul>
 	        </div>
 	        <div class="col-md-9 well admin-content" id="register">
 	            <div id="signupbox" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <div class="panel-title">Sign Up</div>
+                            <div class="panel-title">New User</div>
                         </div>  
                         <div class="panel-body" >
                             <form id="signupform" class="form-horizontal" role="form" action="register" method="POST">

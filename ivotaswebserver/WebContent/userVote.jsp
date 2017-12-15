@@ -17,12 +17,12 @@
 	        <div class="col-md-3">
 	            <ul class="nav nav-pills nav-stacked admin-menu">
 	                <li><a href="#" id="home" action="home">Home</a></li>
-	                <li class="active"><a href="http://www.jquery2dotnet.com" id="register" action="register" class="active">Register User</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="newElections" action="newElection">Create Election</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="elections" action="elections">Manage Election</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="electionResults" action="electionResults">Past Election Results</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="userVote" action="userVote">User Vote Info</a></li>
-	                <li><a href="http://www.jquery2dotnet.com" id="tables" action="tables">Online Tables</a></li>
+	                <li class="active"><a href="http://www.jquery2dotnet.com" id="register" action="registerPage" class="active">Register User</a></li>
+	                <li><a href="http://www.jquery2dotnet.com" id="newElections" action="newElectionPage">Create Election</a></li>
+	                <li><a href="http://www.jquery2dotnet.com" id="elections" action="electionsPage">Manage Election</a></li>
+	                <li><a href="http://www.jquery2dotnet.com" id="electionResults" action="electionResultsPage">Past Election Results</a></li>
+	                <li><a href="http://www.jquery2dotnet.com" id="userVote" action="userVotePage">User Vote Info</a></li>
+	                <li><a href="http://www.jquery2dotnet.com" id="tables" action="tablesPage">Online Tables</a></li>
 	            </ul>
 	        </div>
 	        <div class="col-md-9 well admin-content" id="register">

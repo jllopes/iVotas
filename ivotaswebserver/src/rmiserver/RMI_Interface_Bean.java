@@ -12,7 +12,7 @@ public interface RMI_Interface_Bean extends Remote{
     public void changeFaculty(String newName, int id)throws RemoteException;
     public boolean deleteDepartment(int id)throws RemoteException;
     public boolean deleteFaculty(int id)throws RemoteException;
-    public void createElection(Date startDate, Date endDate, String name, String desc, int id_department)throws RemoteException;
+    public boolean createElection(Date startDate, Date endDate, String name, String desc, int id_department)throws RemoteException;
     public void removeList(int id) throws RemoteException;
     public int getDepartmentNumber(int id)throws RemoteException;
     public int getListType(int id)throws RemoteException;
@@ -26,6 +26,7 @@ public interface RMI_Interface_Bean extends Remote{
     public void changeElectionDescription(int id, String desc) throws RemoteException;
     public ArrayList<Department> getDepartmentsFromFaculty(int faculty) throws RemoteException;
     public HashMap<String, Integer> getAllFaculties() throws RemoteException;
+    public ArrayList<Election> getAllElections() throws RemoteException;
     
     /* TCP */
     
@@ -39,4 +40,5 @@ public interface RMI_Interface_Bean extends Remote{
 	public boolean vote_blank(int userid ,int usertype, int userDep, int idElection) throws RemoteException; //false se ja existir voto
 
 	public void addTable(TCP_Interface t) throws RemoteException;
+	public ArrayList<Department> getAllDepartments();
 }

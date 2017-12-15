@@ -4,6 +4,9 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javafx.util.Pair;
@@ -81,6 +84,38 @@ public class SessionBean {
 			departmentMap.put("Select Faculty",0);
 			return departmentMap;
 		}
+	}
+	
+	public HashMap<String, Integer> getDepartments() throws RemoteException{
+		ArrayList<Department> departments = server.getAllDepartments();
+		HashMap<String, Integer> departmentMap = new HashMap<>();
+		if(departments != null) {
+			for(Department dep : departments) {
+				departmentMap.put(dep.name, dep.id);
+			}	
+		}
+		return departmentMap;
+	}
+	
+	public boolean createElection(String name, String description, String startDate, String endDate, String startTime, String endTime, int department) throws RemoteException, ParseException{
+		String start = startDate + " " + startTime;
+		String end = endDate + " " + endTime;
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		Date dateStart = dateFormat.parse(start);
+		Date dateEnd = dateFormat.parse(end);
+		return server.createElection(dateStart, dateEnd, name, description, department);
+	}
+	
+	public HashMap<String, Integer> getAllElections() throws RemoteException{
+		ArrayList<Election> elections = server.getAllElections();
+		HashMap<String, Integer> electionMap = new HashMap<>();
+		if(elections != null) {
+			for(Election election : elections) {
+				electionMap.put(election.name, election.id);
+			}	
+		}
+		System.out.println(electionMap);
+		return electionMap;
 	}
 	
 	public HashMap<Integer, String> getElections() throws RemoteException{

@@ -39,12 +39,33 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
       <result name="error">/error.jsp</result>
     </action>
     
-    <action name="register">
-    	<result>/register.jsp</result>
+    <action name="register" class="action.RegisterAction" method="execute">
+	    	<result name="success">admin.jsp</result>
+	    	<result name="error">admin.jsp</result>
     </action>
     
-    <action name="userVote">
-    	<result>/userVote.jsp</result>
+    <action name="newelection" class="action.NewElectionAction" method="execute">
+    		<result name="error">index.jsp</result>
+    </action>
+    
+    <action name="registerPage">
+    		<result>/register.jsp</result>
+    	</action>
+    	
+    	<action name="adminPage">
+    		<result>/admin.jsp</result>
+    	</action>
+    	
+    	<action name="newElectionPage">
+    		<result>/createElection.jsp</result>
+    	</action>
+    	
+    	<action name="changeElectionPage">
+    		<result>/changeElection.jsp</result>
+    </action>
+    
+    <action name="userVotePage">
+    		<result>/userVote.jsp</result>
     </action>
     
    <action name="election">
