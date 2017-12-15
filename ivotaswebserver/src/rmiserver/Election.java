@@ -11,4 +11,22 @@ public class Election implements Serializable{
         this.id = id;
         this.department = department;
     }
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+    
+    
 }

@@ -18,17 +18,14 @@
 			<p>No elections available at the moment...</p>
 		</c:otherwise>
 	</c:choose>
-
-	<c:forEach items="${sessionBean.elections}" var="value">
-		<form action="index">
-    		<c:out value="${value.key}" /> 
-    		<input type="submit" value="${value.value}"  />
-		</form>
 		
-		<s:url action="electionVote">
-			<s:param name="electionId">${value.value}</s:param>
-		</s:url>
-	</c:forEach>
+		<c:forEach items="${sessionBean.elections}" var="value">
+		   		<c:out value="${value.key}" /> 	
+				<form action="electionlist">
+					<input type='hidden' name=electionId id=electionId value="${value.key}" />
+					<input type='submit' value="${value.value}" />
+				</form>				
+		</c:forEach>	
 
 
 </body>

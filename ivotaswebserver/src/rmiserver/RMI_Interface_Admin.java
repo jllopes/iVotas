@@ -34,4 +34,7 @@ public interface RMI_Interface_Admin extends Remote{
     public ArrayList<User> getUsers() throws RemoteException;
     public void setAdmin(Admin_Interface_RMI admin)throws RemoteException;
     public List<Integer> getOnlineTables() throws RemoteException;
+	public int checkUserDep(int id) throws RemoteException;
+	public void editListType(int listId,int userType) throws RemoteException;
+	
 }

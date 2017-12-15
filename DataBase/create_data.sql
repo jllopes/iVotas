@@ -53,7 +53,7 @@ insert into voteTable( department) values(4);
 
 insert into electionList(name, election, type) values ("Lista A",3,1);
 insert into candidate(user, list) values (1,5);
-insert into electionList(name, election, type) values ("Lista B",3,2);
+insert into electionList(name, election, type) values ("Lista B",3,1);
 insert into candidate(user, list) values (5,6);
 
 insert into vote(election, user, voteTable) values (3,5,6);
@@ -73,4 +73,5 @@ select * from faculty;
 select * from user;
 select * from candidate;
 */
+
 

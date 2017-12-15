@@ -34,19 +34,32 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
 	<!-- 'login' action calls 'execute' in 'LoginAction' -->
     <action name="login" class="action.LoginAction" method="execute">
       <result name="user">/electionlist.jsp</result>
-      <result name="admin">/admin.html</result> 
+      <result name="admin">/admin.jsp</result> 
       <result name="login">/index.jsp</result>
       <result name="error">/error.jsp</result>
     </action>
     
-    <action name="electionVote">
-    	<result>/vote.jsp</result>
+    <action name="register">
+    	<result>/register.jsp</result>
     </action>
     
-    <!--action name="electionVote" class="action.ListsAction" method="execute">
-    	<result name="vote">/lists.jsp</result>
-    	<result name="invalid">/electionVote</result>
-    </action-->
+    <action name="userVote">
+    	<result>/userVote.jsp</result>
+    </action>
+    
+   <action name="election">
+      <result>/electionlist.jsp</result>
+    </action>
+    
+    <action name="electionlist" class="action.ListsAction" method="execute">
+      <result>/vote.jsp</result>
+    </action>
+    
+    <action name="vote" class="action.VoteAction" method="execute">
+    	<result name="success">/electionlist.jsp</result>
+    	<result name="login">/index.jsp</result>
+    	<result name="error">/error.jsp</result>
+    </action>
   </package>
 
 </struts>

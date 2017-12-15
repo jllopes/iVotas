@@ -92,9 +92,17 @@ public class SessionBean {
 		return server.getElections(this.userType, this.userDep);
 	}
 	
-	/*public HashMap<Integer, String> getListsElections() throws RemoteException {
+	public HashMap<Integer, String> getListsElections(int idElection) throws RemoteException {
 		return 	server.getListsElections( this.userType, this.userDep, idElection); //arranjar este parametro
-	}*/
+	}
+	
+	public boolean vote(int idElection, int vote) throws RemoteException{		
+		if(vote == 0){		
+			return  server.vote_blank(this.userId,this.userType, this.userDep, idElection);		
+		}else{		
+			return server.vote(this.userId, this.userType, this.userDep, idElection, vote,1);		
+		}		
+	}
 	
 	/*public HashMap<Integer, String> getPeopleFromList throws RemoteException {
 		

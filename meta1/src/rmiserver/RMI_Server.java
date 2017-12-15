@@ -2184,13 +2184,12 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 						prepStatement1.executeUpdate();
 						prepStatement1.close();
 
-						//something to tell theres a new vote �\_(�)_/�
+						//something to tell theres a new vote
 						return true;
 					}else{
 						it.remove(); // avoids a ConcurrentModificationException
 					}
 				}
-				System.out.println("lista nao found");
 				String nullVote = "update election set election.blankVotes =  election.blankVotes +1 where election.id = ?";
 				PreparedStatement prepNullStatement = connection.prepareStatement(nullVote);
 				prepNullStatement.setInt(1, election);
@@ -2245,9 +2244,9 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 					    		String str = "List " + list.name + " got one more vote, they now have " + list.votes + " votes.";
 					    		sendNotification(str);
 			
-							    String sql = "insert into vote(election, user, table) values (?,?,?)";
+							    String sql = "insert into vote(election, user, voteTable) values (?,?,?)";
 							    PreparedStatement prepStatement = connection.prepareStatement(sql);
-							    prepStatement.setInt(1, vote);
+							    prepStatement.setInt(1, election);
 							    prepStatement.setInt(2, userId);
 							    prepStatement.setInt(3, table);
 			
@@ -2266,8 +2265,17 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		    			        it.remove(); // avoids a ConcurrentModificationException
 		    		    	}
 		    		    } 
-		    		    System.out.println("lista nao found");
-					    String nullVote = "update election set election.blankVotes =  election.blankVotes +1 where election.id = ?";
+
+		    		    String sql = "insert into vote(election, user, voteTable) values (?,?,?)";		
+		    		    PreparedStatement prepStatement = connection.prepareStatement(sql);		
+		    		    prepStatement.setInt(1, election);		
+		    		    prepStatement.setInt(2, userId);		
+		    		    prepStatement.setInt(3, table);		
+		    		    
+		    		    prepStatement.executeUpdate();		
+		    		    prepStatement.close();
+		    		    
+		    		    String nullVote = "update election set election.blankVotes =  election.blankVotes +1 where election.id = ?";
 					    PreparedStatement prepNullStatement = connection.prepareStatement(nullVote);
 					    prepNullStatement.setInt(1, election);
 					    prepNullStatement.executeUpdate();

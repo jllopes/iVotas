@@ -11,6 +11,18 @@
 <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
 <!--           -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<script>
+window.onload = function(){ 
+
+	document.getElementById('loginform').addEventListener('keypress', function (e) {
+	    var key = e.which || e.keyCode;
+	    if (key === 13) { // 13 is enter
+	    	document.getElementById('loginform').submit()
+	    }
+	});
+}
+</script>
 </head>
 <body>
 	    <div class="container">    
