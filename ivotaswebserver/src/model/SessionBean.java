@@ -4,19 +4,20 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-import java.util.HashMap;
+import java.util.*;
 
+import javafx.util.Pair;
 import rmiserver.*;
 
 
 public class SessionBean {
-	private RMI_Interface_TCP server;
+	private RMI_Interface_Bean server;
 	private String username;
 	private String password;
 	private int userType = 0;
 	private int userDep = 0;
 	private int userId = 0;
-	
+	private int faculty = 0;
 	
 	
 	public SessionBean(){
@@ -26,7 +27,7 @@ public class SessionBean {
 			System.setSecurityManager(new SecurityManager()); 
 			*/
 			//server = (RMI_Interface_TCP) LocateRegistry.getRegistry("127.0.0.1",1099).lookup("IVotas");
-			server = (RMI_Interface_TCP) Naming.lookup("rmi://127.0.0.1:1099/IVotas");
+			server = (RMI_Interface_Bean) Naming.lookup("rmi://127.0.0.1:1099/IVotas");
 			//server = (RMI_Interface_TCP) Naming.lookup("IVotas");
 
 			System.out.println("encontrou rmi");
@@ -46,6 +47,47 @@ public class SessionBean {
 		return false;
 	}
  	
+	public void setFaculty(int faculty) {
+		this.faculty = faculty;
+		System.out.println(faculty);
+	}
+	
+	public int getFaculty() {
+		return this.faculty;
+	}
+	
+	public HashMap<Pair<String, Integer>, HashMap<String, Integer>> getFaculties() throws RemoteException{
+		HashMap<String, Integer> faculties = server.getAllFaculties();
+		System.out.println(faculties);
+		HashMap<Pair<String, Integer>, HashMap<String, Integer>> facultyInfo = new HashMap<Pair<String, Integer>, HashMap<String, Integer>>();
+		Iterator it = faculties.entrySet().iterator();
+    		while (it.hasNext()) {
+    			Map.Entry<String, Integer> f = (Map.Entry) it.next();
+    			System.out.println(f);
+    		    facultyInfo.put(new Pair<String, Integer>(f.getKey(), f.getValue()), this.getDepartmentsFaculty(f.getValue()));
+    		}
+    		System.out.println(facultyInfo);
+    		return facultyInfo;
+	}
+	
+	public HashMap<String, Integer> getDepartmentsFaculty(int faculty) throws RemoteException{
+		if(faculty != 0) {
+		ArrayList<Department> departments = server.getDepartmentsFromFaculty(faculty);
+		System.out.println(departments);
+		HashMap<String, Integer> departmentMap = new HashMap<>();
+		if(departments != null) {
+			for(Department dep : departments) {
+				departmentMap.put(dep.name, dep.id);
+			}	
+		}
+		return departmentMap;
+		} else {
+			HashMap<String, Integer> departmentMap = new HashMap<>();
+			departmentMap.put("Select Faculty",0);
+			return departmentMap;
+		}
+	}
+	
 	public HashMap<Integer, String> getElections() throws RemoteException{
 		return server.getElections(this.userType, this.userDep);
 	}

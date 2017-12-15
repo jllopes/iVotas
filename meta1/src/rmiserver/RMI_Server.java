@@ -8,7 +8,7 @@ import java.io.*;
 import java.sql.Connection;
 import java.util.*;
 import java.util.Date;
-public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP , RMI_Interface_Admin{
+public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP , RMI_Interface_Admin, RMI_Interface_Bean{
 	private int port;
 	private String ip;
 	private int databasePort;
@@ -1442,7 +1442,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 		return null;
 	}
-
+	
 	public ArrayList<Department> getDepartmentsFromFaculty(int faculty) throws RemoteException{
 		try {
 			connection.setAutoCommit(false);
@@ -1478,7 +1478,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 		return null;
 	}
-
+	
 	public ArrayList<Lista> getElectionLists(int election) throws RemoteException{
 		try {
 			connection.setAutoCommit(false);
@@ -2184,7 +2184,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 						prepStatement1.executeUpdate();
 						prepStatement1.close();
 
-						//something to tell theres a new vote ¯\_(¨)_/¯
+						//something to tell theres a new vote ï¿½\_(ï¿½)_/ï¿½
 						return true;
 					}else{
 						it.remove(); // avoids a ConcurrentModificationException
@@ -2260,7 +2260,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 							    prepStatement1.executeUpdate();
 								prepStatement1.close();
 		
-								//something to tell theres a new vote ¯\_(¨)_/¯
+								//something to tell theres a new vote ï¿½\_(ï¿½)_/ï¿½
 					    		return true;
 		    		    	}else{
 		    			        it.remove(); // avoids a ConcurrentModificationException
