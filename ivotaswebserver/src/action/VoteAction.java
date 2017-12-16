@@ -38,7 +38,6 @@ public class VoteAction extends ActionSupport implements SessionAware {
 				else{
 					a = this.getSessionBean().vote(electionId,0 ); //invalid list
 				}
-				System.out.println("ASDFASDF " + a);
 				if(a){
 					addActionMessage("Vote with success");
 					return SUCCESS;
