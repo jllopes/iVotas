@@ -8,8 +8,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class Election implements Serializable{
-    String name;
-    int id;
+    public String name;
+    public int id;
     Department department;
     String description;
     Date startDate, endDate;  //Timestamp end = new Timestamp(endDate.getTime());

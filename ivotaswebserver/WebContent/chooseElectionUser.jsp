@@ -36,15 +36,15 @@
                             <div class="panel-title">Choose User</div>
                         </div>  
                         <div class="panel-body" >
-                            <form id="signupform" class="form-horizontal" role="form" action="chooseuser" method="POST">
+                            <form id="signupform" class="form-horizontal" role="form" action="chooseelection" method="POST">
                                 <div class="form-group">
-                                		<label for="fac" class="col-sm-3 control-label">User</label>
+                                		<label for="fac" class="col-sm-3 control-label">Election</label>
 				                    <div class="col-sm-4">
-                                    <select id="userSelect" name="user" class="form-control">
-                                    <option value="" disabled selected>User</option>
-									  <c:forEach items="${sessionBean.getAllUsers()}" var="user">
-									    <option value="${user.getId()}">
-									    		${user.getUsername()}
+                                    <select id="userSelect" name="vote" class="form-control">
+                                    <option value="" disabled selected>Election</option>
+									<c:forEach items="${sessionBean.getUserVotes()}" var="vote">
+									    <option value="${vote.getUser().getId()}">
+									    		${vote.getElection().getName()}
     									    </option>
 									  </c:forEach>
 									</select>
@@ -53,7 +53,7 @@
                                 <div class="form-group">
                                     <!-- Button -->                                        
                                     <div class="col-md-offset-3 col-md-9">
-                                        <button id="btn-signup" type="submit" class="btn btn-primary" onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> &nbsp Register</button>
+                                        <button id="btn-signup" type="submit" class="btn btn-primary"onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> &nbsp Register</button>
                                     </div>
                                 </div>
                               </form>

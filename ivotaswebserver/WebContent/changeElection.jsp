@@ -36,7 +36,7 @@
                             <div class="panel-title">Change Election</div>
                         </div>  
                         <div class="panel-body" >
-                            <form id="signupform" class="form-horizontal" role="form" action="newelection" method="POST">
+                            <form id="signupform" class="form-horizontal" role="form" action="changeelection" method="POST">
                                 
                                 <div id="signupalert" style="display:none" class="alert alert-danger">
                                     <p>Error:</p>
@@ -44,7 +44,7 @@
                                 </div>
                                     
                                 <div class="form-group">
-                                		<label for="fac" class="col-sm-3 control-label">Department</label>
+                                		<label for="fac" class="col-sm-3 control-label">Election</label>
 				                    <div class="col-sm-4">
                                     <select id="electionSelect" name="election" class="form-control">
                                     <option value="" disabled selected>Election</option>
@@ -83,20 +83,6 @@
 									  	<input type="time" name="endTime">
 				                    </div>
 				                </div>
-                                <div class="form-group">
-                                		<label for="fac" class="col-sm-3 control-label">Department</label>
-				                    <div class="col-sm-4">
-                                    <select id="departmentSelect" name="department" class="form-control">
-                                    <option value="" disabled selected>Department</option>
-                                    <option value="0">General Council</option>
-									  <c:forEach items="${sessionBean.getDepartments()}" var="department">
-									    <option value="${department.key}">
-									    		${department.key}
-    									    </option>
-									  </c:forEach>
-									</select>
-									</div>
-                                </div>
                                 <div class="form-group">
                                     <!-- Button -->                                        
                                     <div class="col-md-offset-3 col-md-9">

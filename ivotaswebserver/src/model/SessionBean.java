@@ -21,6 +21,8 @@ public class SessionBean {
 	private int userDep = 0;
 	private int userId = 0;
 	private int faculty = 0;
+	private int userElection = 0;
+	private int userVote = 0;
 	
 	
 	public SessionBean(){
@@ -86,6 +88,9 @@ public class SessionBean {
 		}
 	}
 	
+	public List<Vote> getUserVotes() throws RemoteException{
+		return server.getUserVotes(this.getUserElection());
+	}
 	public HashMap<String, Integer> getDepartments() throws RemoteException{
 		ArrayList<Department> departments = server.getAllDepartments();
 		HashMap<String, Integer> departmentMap = new HashMap<>();
@@ -191,7 +196,58 @@ public class SessionBean {
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
+
+	public ArrayList<User> getAllUsers() throws RemoteException {
+		return server.getUsers();
+	}
 	
+	public void changeElection(int id, String name, String description, String startDate, String endDate, String startTime, String endTime) throws ParseException, RemoteException{
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		if(name != null) {
+			server.changeElectionName(id, name);
+		}
+		if(description != null) {
+			server.changeElectionDescription(id, description);
+		}
+		if(startDate != null && startTime != null) {
+			String start = startDate + " " + startTime;
+			Date dateStart = dateFormat.parse(start);
+			server.changeElectionStartDate(id, dateStart);
+		}
+		if(endDate != null && endTime != null) {
+			String end = endDate + " " + endTime;
+			Date dateEnd = dateFormat.parse(end);
+			server.changeElectionEndDate(id, dateEnd);
+		}
+	}
+
+	/**
+	 * @return the userElection
+	 */
+	public int getUserElection() {
+		return userElection;
+	}
+
+	/**
+	 * @param userElection the userElection to set
+	 */
+	public void setUserElection(int userElection) {
+		this.userElection = userElection;
+	}
+
+	/**
+	 * @return the userVote
+	 */
+	public int getUserVote() {
+		return userVote;
+	}
+
+	/**
+	 * @param userVote the userVote to set
+	 */
+	public void setUserVote(int userVote) {
+		this.userVote = userVote;
+	}
 	
 	
 }

@@ -40,12 +40,25 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     </action>
     
     <action name="register" class="action.RegisterAction" method="execute">
-	    	<result name="success">admin.jsp</result>
-	    	<result name="error">admin.jsp</result>
+	    	<result name="success">/admin.jsp</result>
+	    	<result name="error">/admin.jsp</result>
     </action>
     
     <action name="newelection" class="action.NewElectionAction" method="execute">
-    		<result name="error">index.jsp</result>
+    		<result name="error">/index.jsp</result>
+    </action>
+    
+    <action name="changeelection" class="action.ChangeElectionAction" method="execute">
+    		<result name="error">/index.jsp</result>
+    </action>
+    
+    <action name="chooseuser" class="action.ChooseUserAction" method="execute">
+    		<result name="success">/chooseElectionUser.jsp</result>
+    </action>
+    
+    
+    <action name="chooseelection" class="action.ChooseElectionAction" method="execute">
+    		<result name="success">/userVoteInfo.jsp</result>
     </action>
     
     <action name="registerPage">

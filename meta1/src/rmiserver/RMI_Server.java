@@ -1776,6 +1776,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	 *
 	 * @return      	List of user votes or null if there aren't any.
 	 */
+	
 	public List<Vote> getUserVotes(int id) throws RemoteException{
 		try {
 			connection.setAutoCommit(false);
@@ -1793,7 +1794,8 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 					Election election = getElection(rs.getInt("election"));
 					VotingTable table = getVotingTable(rs.getInt("voteTable"));
 					Date date = new Date(rs.getTimestamp("voteTime").getTime());
-					votes.add(new Vote(user, election, table, date));
+					int voteId = rs.getInt("id");
+					votes.add(new Vote(user, election, table, date, voteId));
 				}
 				return votes;
 			} else {
