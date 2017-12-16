@@ -23,7 +23,7 @@ public class SessionBean {
 	private int faculty = 0;
 	private int userElection = 0;
 	private int userVote = 0;
-	
+	private int pastElection = 0;
 	
 	public SessionBean(){
 		try{
@@ -91,6 +91,16 @@ public class SessionBean {
 	public List<Vote> getUserVotes() throws RemoteException{
 		return server.getUserVotes(this.getUserElection());
 	}
+	
+	public ArrayList<Election> getPastElections() throws RemoteException{
+		System.out.println(server.getPastElections());
+		return server.getPastElections();
+	}
+	
+	public HashMap<String, Integer> getElectionResults() throws RemoteException{
+		return server.getElectionResults(this.pastElection);
+	}
+	
 	public HashMap<String, Integer> getDepartments() throws RemoteException{
 		ArrayList<Department> departments = server.getAllDepartments();
 		HashMap<String, Integer> departmentMap = new HashMap<>();
@@ -248,6 +258,21 @@ public class SessionBean {
 	public void setUserVote(int userVote) {
 		this.userVote = userVote;
 	}
+
+	/**
+	 * @return the pastElection
+	 */
+	public int getPastElection() {
+		return pastElection;
+	}
+
+	/**
+	 * @param pastElection the pastElection to set
+	 */
+	public void setPastElection(int pastElection) {
+		this.pastElection = pastElection;
+	}
+	
 	
 	
 }

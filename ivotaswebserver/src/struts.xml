@@ -61,6 +61,11 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     		<result name="success">/userVoteInfo.jsp</result>
     </action>
     
+    <action name="choosepastelection" class="action.ChoosePastElectionAction" method="execute">
+    		<result name="success">/pastElection.jsp</result>
+    </action>
+    
+    
     <action name="registerPage">
     		<result>/register.jsp</result>
     	</action>
@@ -83,6 +88,10 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     
    <action name="election">
       <result>/electionlist.jsp</result>
+    </action>
+    
+    <action name="electionResultsPage">
+      <result>/choosePastElection.jsp</result>
     </action>
     
     <action name="electionlist" class="action.ListsAction" method="execute">

@@ -31,6 +31,8 @@ public interface RMI_Interface_Bean extends Remote{
     public ArrayList<String> getPeopleList(int listId) throws RemoteException;
     public ArrayList<User> getUsers() throws RemoteException;
     public List<Vote> getUserVotes(int id) throws RemoteException;
+    public ArrayList<Election> getPastElections() throws RemoteException;
+    public HashMap<String, Integer> getElectionResults(int id)throws RemoteException;
     /* TCP */
     
     public String message() throws java.rmi.RemoteException;

@@ -1212,7 +1212,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 					int blankVotes = rs.getInt("blankVotes");
 					int nullVotes = rs.getInt("nullVotes");
 
-					if (department.id == 0) {
+					if (department == null || department.id == 0) {
 						elections.add(new Election(name, id,new Department("Conselho Geral",0),description, startDate, endDate,blankVotes, nullVotes));
 					} else {
 						elections.add(new Election(name, id, department,description, startDate, endDate,blankVotes, nullVotes));
