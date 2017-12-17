@@ -132,7 +132,7 @@ public class SessionBean {
 	
 	public boolean vote(int idElection, int vote) throws RemoteException{		
 		if(vote == 0){		
-			return  server.vote_blank(this.userId,this.userType, this.userDep, idElection,1);		
+			return  server.vote(this.userId,this.userType, this.userDep, idElection,0,1);		
 		}else{		
 			return server.vote(this.userId, this.userType, this.userDep, idElection, vote,1);		
 		}		
@@ -272,7 +272,9 @@ public class SessionBean {
 	public void setPastElection(int pastElection) {
 		this.pastElection = pastElection;
 	}
-	
+	public HashMap<String, Integer> getElectionVotes(int electionId) throws RemoteException{
+		return server.getElectionVotesPerTable( electionId);
+	}
 	
 	
 }

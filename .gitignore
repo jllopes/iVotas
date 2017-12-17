@@ -4,6 +4,14 @@
 /meta1/.classpath
 /meta1/.project
 /meta1/.settings
+/ivotaswebserver/lib/
+/ivotaswebserver/src/org/*
+/ivotaswebserver/src/uc/*
+/meta1/bin/
+/ivotaswebserver/build/
 /ivotaswebserver/.classpath
 /ivotaswebserver/.project
 /ivotaswebserver/.settings
+/ivotaswebserver/build/
+
+

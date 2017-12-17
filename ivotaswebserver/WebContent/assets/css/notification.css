@@ -1,33 +1,17 @@
-.notification {
-width: 300px;
-height: 80px;
-position: absolute;
-bottom: 0;
-right: -300px;
-background: #ecf0f1;
-margin-bottom: 10px;
-font-family: 'Open Sans', sans-serif;
-font-size: 16px;
-padding: 0 15px;
--webkit-box-sizing: border-box;
--moz-box-sizing: border-box;
-box-sizing: border-box;
-line-height: 80px;
-border-left: 5px solid
+/* Not necessary for page alerts */
+@import url('http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css');
+
+button {
+    margin-bottom: 3px;
 }
-.notification-info {
-border-left-color: #3498db;
-color: #3498db
+
+
+/* REQUIRED */
+.page-alerts {
+    margin-bottom: 20px;
 }
-.notification-success {
-border-left-color: #2ecc71;
-color: #2ecc71
-}
-.notification-warning {
-border-left-color: #e67e22;
-color: #e67e22
-}
-.notification-error {
-border-left-color: #e74c3c;
-color: #e74c3c
+
+.page-alerts .page-alert {
+    border-radius: 0;
+    margin-bottom: 0;
 }

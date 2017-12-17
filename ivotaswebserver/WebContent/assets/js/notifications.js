@@ -1,44 +1,35 @@
-$('body').css("overflow-x","hidden");
-
-function displayNotification(status, content, showTime) {
-    
-    var element = $('<div class="notification">'+content+'</div>'),
-        existingCount = 0,
-        newPosition = 0;              
-    if ($('.notification')[0]) {
-        existingCount = $('.notification').length;
-    };
-    newPosition = existingCount * 90;
-    $(element).css('bottom', newPosition);
+$(function() {
+    $('.page-alert').hide();
+    //Show alert
+    $('button[data-toggle="page-alert"]').click(function(e) {
+        e.preventDefault();
+        var id = $(this).attr('data-toggle-id');
+        var alert = $('#alert-' + id);
+        var timeOut;
+        alert.appendTo('.page-alerts');
+        alert.slideDown();
         
-    switch(status) {
-            case "error":
-                $(element).addClass('notification-error');
-                break;
-            case "success":
-                $(element).addClass('notification-success');
-                break;
-            case "warning":
-                $(element).addClass('notification-warning');
-                break;
-            case "info":
-                $(element).addClass('notification-info');
-                break;
-            default:
-                $(element).addClass('notification-'+status);
-    }
-    
-    $('body').append(element);
-    
-    element.animate({
-        "right":5  
-    }, 500).animate({
-        "right":0
-    }, 200).delay(showTime).animate({
-        "right":5
-    }, 200).animate({
-        "right":-300
-    }, 500, function() {
-        $(this).remove();
+        //Is autoclosing alert
+        var delay = $(this).attr('data-delay');
+        if(delay != undefined)
+        {
+            delay = parseInt(delay);
+            clearTimeout(timeOut);
+            timeOut = window.setTimeout(function() {
+                    alert.slideUp();
+                }, delay);
+        }
     });
-}
+    
+    //Close alert
+    $('.page-alert .close').click(function(e) {
+        e.preventDefault();
+        $(this).closest('.page-alert').slideUp();
+    });
+    
+    //Clear all
+    $('.clear-page-alerts').click(function(e) {
+        e.preventDefault();
+        $('.page-alert').slideUp();
+    });
+});

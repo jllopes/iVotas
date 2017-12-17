@@ -2164,6 +2164,42 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return null;
 	}
 
+	public HashMap<String, Integer> getElectionVotesPerTable(int electionId) throws RemoteException {
+		try {
+			connection.setAutoCommit(false);
+
+			HashMap<String, Integer>  votes = new HashMap<>();
+			String sql1 = "select  voteTable, count(*) as total from vote where election = ? group by voteTable;";
+			PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
+	    	prepStatement1.setInt(1,electionId);
+			ResultSet rs = prepStatement1.executeQuery();
+			while(rs.next()) {
+				if(rs.getInt("voteTable") == 1)
+					votes.put("Online", rs.getInt("total"));
+				else
+					votes.put("Mesa " + rs.getInt("voteTable"), rs.getInt("total"));
+			}
+			return votes;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return null;
+		
+		
+	}
+	
 	public boolean earlyVote(int userId, int userType, int userDep, int election, int vote) throws RemoteException{
 		try { //if no vote or vote = 0 is veryfied on tcp
 			connection.setAutoCommit(false);

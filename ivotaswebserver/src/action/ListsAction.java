@@ -17,21 +17,7 @@ public class ListsAction extends ActionSupport implements SessionAware {
 	private int electionId;
 	//private HashMap<Integer,Lista> electionLists;
 	
-	public String execute() {
-		try{
-			if(this.getSessionBean()!= null){
-				
-				session.put("electionLists", this.electionLists = this.getSessionBean().getListsElections(electionId));
-				return SUCCESS;
-			}else{
-				System.out.println("no session bean");
-				return LOGIN;
-			}
-		}catch (RemoteException e){
-			return ERROR;
-		}	
-	}
-	
+
 	public SessionBean getSessionBean(){
 		if(!session.containsKey("sessionBean"))
 			return null;

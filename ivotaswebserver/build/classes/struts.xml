@@ -44,6 +44,11 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
 	    	<result name="error">/admin.jsp</result>
     </action>
     
+    <action name="facebook" class="action.FacebookAction" method="execute">
+	    	<result name="success">/admin.jsp</result>
+	    	<result name="error">/admin.jsp</result>
+    </action>
+    
     <action name="newelection" class="action.NewElectionAction" method="execute">
     		<result name="error">/index.jsp</result>
     </action>
@@ -52,13 +57,13 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     		<result name="error">/index.jsp</result>
     </action>
     
-    <action name="chooseuser" class="action.ChooseUserAction" method="execute">
-    		<result name="success">/chooseElectionUser.jsp</result>
+    <action name="chooseuser" class="action.ChooseUserAction">
+    		<result>/chooseElectionUser.jsp</result>
     </action>
     
     
-    <action name="chooseelection" class="action.ChooseElectionAction" method="execute">
-    		<result name="success">/userVoteInfo.jsp</result>
+    <action name="chooseelection" class="action.ChooseElectionAction">
+    		<result>/userVoteInfo.jsp</result>
     </action>
     
     <action name="choosepastelection" class="action.ChoosePastElectionAction" method="execute">
@@ -94,7 +99,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
       <result>/choosePastElection.jsp</result>
     </action>
     
-    <action name="electionlist" class="action.ListsAction" method="execute">
+    <action name="electionlist" class="action.ListsAction">
       <result>/vote.jsp</result>
     </action>
     

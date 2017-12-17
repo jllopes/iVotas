@@ -29,14 +29,23 @@ public class Election implements Serializable{
 
 	public String getPrettyStartDate(){
 		DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-		//start / curret
 		
-		double secs = Math.floor((new Date().getTime() - startDate.getTime()) / 1000);
-		if (secs < 60) return df.format(this.startDate) + " " + secs + " sec(s) ago";
-		if (secs < 3600) return df.format(this.startDate) + " " + Math.floor(secs / 60) + " min(s) ago";
-		if (secs < 86400) return df.format(this.startDate) + " " + Math.floor(secs / 3600) + " hour(s) ago";
-		if (secs < 604800) return df.format(this.startDate) + " " +  Math.floor(secs / 86400) + " day(s) ago";
-		return df.format(this.startDate);
+		if(startDate.after(new Date())){
+			double secs = Math.floor((startDate.getTime() - new Date().getTime()) / 1000);
+			if (secs < 60) return df.format(this.startDate) + " (in " + secs + " sec(s) )";
+			if (secs < 3600) return df.format(this.startDate) + " (in " + Math.floor(secs / 60) + " min(s))";
+			if (secs < 86400) return df.format(this.startDate) + " (in " + Math.floor(secs / 3600) + " hour(s))";
+			if (secs < 604800) return df.format(this.startDate) + " (in " +  Math.floor(secs / 86400) + " day(s))";
+			
+		}else { //good
+			double secs = Math.floor((new Date().getTime() - startDate.getTime()) / 1000);
+			if (secs < 60) return df.format(this.startDate) + " (" + secs + " sec(s) ago";
+			if (secs < 3600) return df.format(this.startDate) + " (" + Math.floor(secs / 60) + " min(s) ago)";
+			if (secs < 86400) return df.format(this.startDate) + " (" + Math.floor(secs / 3600) + " hour(s) ago)";
+			if (secs < 604800) return df.format(this.startDate) + " (" +  Math.floor(secs / 86400) + " day(s) ago)";
+		}
+		
+		return df.format(this.endDate);
 	}
 	
 	public String getPrettyEndDate(){
@@ -44,17 +53,17 @@ public class Election implements Serializable{
 		
 		if(endDate.after(new Date())){
 			double secs = Math.floor((endDate.getTime() - new Date().getTime()) / 1000);
-			if (secs < 60) return df.format(this.endDate) + " in " + secs + " sec(s)";
-			if (secs < 3600) return df.format(this.endDate) + " in " + Math.floor(secs / 60) + " min(s)";
-			if (secs < 86400) return df.format(this.endDate) + " in " + Math.floor(secs / 3600) + " hour(s)";
-			if (secs < 604800) return df.format(this.endDate) + " in " +  Math.floor(secs / 86400) + " day(s)";
+			if (secs < 60) return df.format(this.endDate) + " (in " + secs + " sec(s))";
+			if (secs < 3600) return df.format(this.endDate) + " (in " + Math.floor(secs / 60) + " min(s))";
+			if (secs < 86400) return df.format(this.endDate) + " (in " + Math.floor(secs / 3600) + " hour(s))";
+			if (secs < 604800) return df.format(this.endDate) + " (in " +  Math.floor(secs / 86400) + " day(s))";
 			
 		}else { //good
 			double secs = Math.floor((new Date().getTime() - endDate.getTime()) / 1000);
-			if (secs < 60) return df.format(this.endDate) + " " + secs + " sec(s) ago";
-			if (secs < 3600) return df.format(this.endDate) + " " + Math.floor(secs / 60) + " min(s) ago";
-			if (secs < 86400) return df.format(this.endDate) + " " + Math.floor(secs / 3600) + " hour(s) ago";
-			if (secs < 604800) return df.format(this.endDate) + " " +  Math.floor(secs / 86400) + " day(s) ago";
+			if (secs < 60) return df.format(this.endDate) + " (" + secs + " sec(s) ago)";
+			if (secs < 3600) return df.format(this.endDate) + " (" + Math.floor(secs / 60) + " min(s) ago)";
+			if (secs < 86400) return df.format(this.endDate) + " (" + Math.floor(secs / 3600) + " hour(s) ago)";
+			if (secs < 604800) return df.format(this.endDate) + " (" +  Math.floor(secs / 86400) + " day(s) ago)";
 		}
 		
 		return df.format(this.endDate);

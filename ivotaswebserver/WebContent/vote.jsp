@@ -26,10 +26,10 @@
 
 </head>
 <body>
-<div class="container">
-      <div class="row">
+	<div class="container" style="float:left" >
+      <div class="row"  >
 
-        <div class="col-xs-10 col-sm-10 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad" >
+        <div class="col-md-offset-2 col-lg-offset-2 col-xs-10 col-sm-10 col-md-6 col-lg-6   toppad" >
    
           <c:set var="election" value="${sessionBean.getElectionInfo(electionId)}"/>
    
@@ -51,23 +51,21 @@
                         <td>Department</td>
                         <td><c:out value = "${election.getDepartment().getName()}"/></td>
                       </tr>
-                   
-                         <tr>
-                             <tr>
+                   	  <tr>
                         <td>Start Date:</td>
                         <td><c:out value = "${election.getPrettyStartDate()}"/></td>
                       </tr>
-                        <tr>
+                      <tr>
                         <td>End Date:</td>
                         <td><c:out value = "${election.getPrettyEndDate()}"/></td>
                       </tr>
-						
+						<tr>
                       <td>Election Lists:</td>
                       <td>
 						<form action="vote" method="POST">
 							<input type='hidden' name=electionId id=electionId value="${electionId}" />
 						
-							<c:forEach items="${electionLists}" var="value">
+							<c:forEach items="${sessionBean.getListsElections(electionId)}" var="value">
 
 							        <div class="form-group">
 							        	<input type="checkbox" name="listId" value="${value.key}" id="${value.key}" autocomplete="off" />
@@ -87,15 +85,14 @@
 							        </div>
 						 	</c:forEach>	
 						
-					 	<tr>
-							<td></td>							
-							<td style="float:right">
-								<input type="submit" value="&nbsp &nbsp &nbsp Vote &nbsp &nbsp &nbsp" class="btn btn-primary"/>
-							</td>
-						</tr>
+						 	<tr>
+								<td></td>							
+								<td style="float:right">
+									<input type="submit" value="&nbsp &nbsp &nbsp Vote &nbsp &nbsp &nbsp" class="btn btn-primary"/>
+								</td>
+							</tr>
 						</form>
 						</tr>
-						
                     </tbody>
                   </table>
 
@@ -106,8 +103,45 @@
             
           </div>
         </div>
-      </div>
+
+      
+
+        <div class="col-md-offset-05 col-lg-offset-05 col-xs-10 col-sm-10 col-md-4 col-lg-4  toppad" >
+   
+          <c:set var="election" value="${sessionBean.getElectionInfo(electionId)}"/>
+   
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title"><c:out value = "Votes per Table"/></h3>
+            </div>
+            <div class="panel-body">
+              <div class="row">
+
+                <div class=" col-md-12 col-lg-12 "> 
+                  <table class="table table-user-information">
+                    <tbody>
+                  		<c:forEach items="${sessionBean.getElectionVotes(electionId)}" var="value">
+                        <tr>
+                        	<td><c:out value = "${value.key}"/></td>
+                        	<td><c:out value = "${value.value}"/></td>
+                     	</tr>
+						</c:forEach>
+                    </tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+
+            
+          </div>
+        </div>
+	 	</div>
+	
     </div>
+
+
+
 
 </body>
 </html>

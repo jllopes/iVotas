@@ -53,13 +53,23 @@ insert into voteTable( department) values(4);
 
 insert into electionList(name, election, type) values ("Lista A",3,1);
 insert into candidate(user, list) values (1,5);
-insert into electionList(name, election, type) values ("Lista B",3,1);
+insert into electionList(name, election, type) values ("Lista B",3,2);
 insert into candidate(user, list) values (5,6);
 
 insert into vote(election, user, voteTable) values (3,5,6);
 update electionList set electionList.vote = electionList.vote +1 where electionList.id = 5;
 update electionList set electionList.vote = electionList.vote +1 where electionList.id = 6;
 insert into department(faculty, name) values (1, "novo");
+
+insert into election(name,description, endDate, department) values ("Votaçao live 2 ","eleicao q deve estar a decorrer tb",date_add(current_timestamp(), interval 1 day) ,1);
+
+insert into electionList(name, election, type) values ("Lista A4",4,1);
+insert into candidate(user, list) values (1,7);
+insert into candidate(user, list) values (2,7);
+insert into electionList(name, election, type) values ("Lista B4",4,1);
+insert into candidate(user, list) values (2,8);
+
+
 
 insert into user(username, password, type, faculty, department, name, address, ccNumber, ccMonth, ccYear,phoneNumber) values ("admin","admin",4,1,1,"Admin", "Admin", 999999999, 8, 1990,"+351123456789");
 /*
@@ -73,5 +83,3 @@ select * from faculty;
 select * from user;
 select * from candidate;
 */
-
-
