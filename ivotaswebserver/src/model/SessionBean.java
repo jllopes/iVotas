@@ -93,7 +93,6 @@ public class SessionBean {
 	}
 	
 	public ArrayList<Election> getPastElections() throws RemoteException{
-		System.out.println(server.getPastElections());
 		return server.getPastElections();
 	}
 	
@@ -159,12 +158,7 @@ public class SessionBean {
 	}
 	
 	public ArrayList<String> getPeopleList(int idList) throws RemoteException {
-		System.out.println("LISTA " + idList);
-		ArrayList<String> candidates = server.getPeopleList(idList);
-		for(String s : candidates){
-			System.out.println(s);
-		}
-		return candidates;
+		return server.getPeopleList(idList);
 	}
 	
 	public String getUsername() {
