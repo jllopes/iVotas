@@ -101,6 +101,10 @@ public class SessionBean {
 		return server.getElectionResults(this.pastElection);
 	}
 	
+	public ArrayList<Lista> getListsElection(int idElection) throws RemoteException{
+		return server.getListsElection(idElection);
+	}
+	
 	public HashMap<String, Integer> getDepartments() throws RemoteException{
 		ArrayList<Department> departments = server.getAllDepartments();
 		HashMap<String, Integer> departmentMap = new HashMap<>();

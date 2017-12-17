@@ -3,7 +3,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Vote implements Serializable{
-    User user;
+    /**
+	 * 
+	 */
+	User user;
     Election election;
     VotingTable table;
     Date date;

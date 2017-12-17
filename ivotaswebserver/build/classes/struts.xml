@@ -83,6 +83,10 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     		<result>/createElection.jsp</result>
     	</action>
     	
+    	<action name="electionDetailsPage">
+    		<result>/consultElections.jsp</result>
+    	</action>
+    	
     	<action name="changeElectionPage">
     		<result>/changeElection.jsp</result>
     </action>
@@ -97,6 +101,10 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     
     <action name="electionResultsPage">
       <result>/choosePastElection.jsp</result>
+    </action>
+    
+    <action name="consultelection" class="action.ConsultElectionAction">
+      <result>/electionInfo.jsp</result>
     </action>
     
     <action name="electionlist" class="action.ListsAction">
