@@ -33,6 +33,7 @@ public interface RMI_Interface_Bean extends Remote{
 	public List<Vote> getUserVotes(int id) throws RemoteException;
 	public ArrayList<Election> getPastElections() throws RemoteException;
 	public HashMap<String, Integer> getElectionResults(int id)throws RemoteException;
+    public ArrayList<Lista> getListsElection(int idElection) throws RemoteException;
 
 	
 	public HashMap<String, Integer> getElectionVotesPerTable(int electionId) throws RemoteException;

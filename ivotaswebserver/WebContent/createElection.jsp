@@ -25,6 +25,7 @@
 	                <li class="active"><a href="#" id="newElections" action="newElectionPage">Create Election</a></li>
 	                <li><a href="#" id="elections" action="electionsPage">Manage Election</a></li>
 	                <li><a href="#" id="electionResults" action="electionResultsPage">Past Election Results</a></li>
+	                <li><a href="#" id="electionInfo" action="electionDetailsPage">Election Info</a></li>
 	                <li><a href="#" id="userVote" action="userVotePage">User Vote Info</a></li>
 	                <li><a href="#" id="tables" action="tablesPage">Online Tables</a></li>
 	            </ul>
