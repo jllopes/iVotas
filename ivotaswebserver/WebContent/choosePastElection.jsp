@@ -24,8 +24,8 @@
 	                <li><a href="#" id="register" action="registerPage" class="active">Register User</a></li>
 	                <li><a href="#" id="newElections" action="newElectionPage">Create Election</a></li>
 	                <li><a href="#" id="elections" action="electionsPage">Manage Election</a></li>
-	                <li><a href="#" id="electionResults" action="electionResultsPage">Past Election Results</a></li>
-	                <li class="active"><a href="#" id="userVote" action="userVotePage">User Vote Info</a></li>
+	                <li class="active"><a href="#" id="electionResults" action="electionResultsPage">Past Election Results</a></li>
+	                <li><a href="#" id="userVote" action="userVotePage">User Vote Info</a></li>
 	                <li><a href="#" id="tables" action="tablesPage">Online Tables</a></li>
 	            </ul>
 	        </div>
@@ -33,18 +33,18 @@
 	            <div id="signupbox" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <div class="panel-title">Choose User</div>
+                            <div class="panel-title">Choose Election</div>
                         </div>  
                         <div class="panel-body" >
-                            <form id="signupform" class="form-horizontal" role="form" action="chooseelection" method="POST">
+                            <form id="signupform" class="form-horizontal" role="form" action="choosepastelection" method="POST">
                                 <div class="form-group">
                                 		<label for="fac" class="col-sm-3 control-label">Election</label>
 				                    <div class="col-sm-4">
-                                    <select id="userSelect" name="vote" class="form-control">
+                                    <select id="userSelect" name="election" class="form-control">
                                     <option value="" disabled selected>Election</option>
-									<c:forEach items="${sessionBean.getUserVotes(user)}" var="vote">
-									    <option value="${vote.getUser().getId()}">
-									    		${vote.getElection().getName()}
+									<c:forEach items="${sessionBean.getPastElections()}" var="election">
+									    <option value="${election.getId()}">
+									    		${election.getName()}
     									    </option>
 									  </c:forEach>
 									</select>

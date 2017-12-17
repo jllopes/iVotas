@@ -88,8 +88,8 @@ public class SessionBean {
 		}
 	}
 	
-	public List<Vote> getUserVotes() throws RemoteException{
-		return server.getUserVotes(this.getUserElection());
+	public ArrayList<Vote> getUserVotes(int user) throws RemoteException{
+		return new ArrayList<Vote>(server.getUserVotes(user));
 	}
 	
 	public ArrayList<Election> getPastElections() throws RemoteException{
