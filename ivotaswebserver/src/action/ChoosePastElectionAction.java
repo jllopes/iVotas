@@ -12,20 +12,13 @@ import java.util.Map;
 public class ChoosePastElectionAction extends ActionSupport implements SessionAware {
 
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 3526857532181701532L;
-	/**
-	 * 
-	 */
 	private int election = 0;
 	private Map<String,Object> session;
 	@Override
 	public String execute() {
 		if(this.getSessionBean() != null) {
 			if(election != 0) {
-				this.getSessionBean().setPastElection(election);
+				session.put("pastElection", election);
 				return SUCCESS;
 			}
 		}
@@ -33,8 +26,10 @@ public class ChoosePastElectionAction extends ActionSupport implements SessionAw
 	}
 	
 	public SessionBean getSessionBean(){
-		if(!session.containsKey("sessionBean"))
-			this.setSessionBean(new SessionBean());
+		if(!session.containsKey("sessionBean")){
+			System.out.println("Should not reach here =");
+			return null;
+		}
 		return (SessionBean) session.get("sessionBean");
 	}
 	

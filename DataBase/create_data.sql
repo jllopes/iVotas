@@ -58,6 +58,7 @@ insert into candidate(user, list) values (5,6);
 
 insert into vote(election, user, voteTable) values (3,5,6);
 update electionList set electionList.vote = electionList.vote +1 where electionList.id = 5;
+insert into vote(election, user, voteTable) values (3,1,6);
 update electionList set electionList.vote = electionList.vote +1 where electionList.id = 6;
 insert into department(faculty, name) values (1, "novo");
 

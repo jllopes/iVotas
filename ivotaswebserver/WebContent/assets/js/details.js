@@ -25,10 +25,4 @@ $(document).ready(function() {
     });
 
 
-    $('[data-toggle="tooltip"]').tooltip();
-
-    $('button').click(function(e) {
-        e.preventDefault();
-        alert("This is a demo.\n :-)");
-    });
 });

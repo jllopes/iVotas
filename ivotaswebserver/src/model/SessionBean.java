@@ -20,10 +20,8 @@ public class SessionBean {
 	private int userType = 0;
 	private int userDep = 0;
 	private int userId = 0;
-	private int faculty = 0;
 	private int userElection = 0;
 	private int userVote = 0;
-	private int pastElection = 0;
 	
 	public SessionBean(){
 		try{
@@ -51,7 +49,7 @@ public class SessionBean {
 		}
 		return false;
 	}
- 	
+ 
 	public boolean unusedUsername(String username) throws RemoteException {
 		return !server.checkUser(username);
 	}
@@ -96,10 +94,6 @@ public class SessionBean {
 		return server.getPastElections();
 	}
 	
-	public HashMap<String, Integer> getElectionResults() throws RemoteException{
-		return server.getElectionResults(this.pastElection);
-	}
-	
 	public ArrayList<Lista> getListsElection(int idElection) throws RemoteException{
 		return server.getListsElection(idElection);
 	}
@@ -123,7 +117,6 @@ public class SessionBean {
 		Date dateEnd = dateFormat.parse(end);
 		return server.createElection(dateStart, dateEnd, name, description, department);
 	}
-	
 	
 	public HashMap<Integer, String> getElections() throws RemoteException{
 		return server.getElections(this.userType, this.userDep);
@@ -185,22 +178,18 @@ public class SessionBean {
 		this.userType = type;
 	}
 
-	
 	public int getUserDep() {
 		return userDep;
 	}
 
-	
 	public void setUserDep(int userDep) {
 		this.userDep = userDep;
 	}
-
 	
 	public int getUserId() {
 		return userId;
 	}
 	
-
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
@@ -257,22 +246,15 @@ public class SessionBean {
 		this.userVote = userVote;
 	}
 
-	/**
-	 * @return the pastElection
-	 */
-	public int getPastElection() {
-		return pastElection;
-	}
-
-	/**
-	 * @param pastElection the pastElection to set
-	 */
-	public void setPastElection(int pastElection) {
-		this.pastElection = pastElection;
-	}
 	public HashMap<String, Integer> getElectionVotes(int electionId) throws RemoteException{
 		return server.getElectionVotesPerTable( electionId);
+		//return server.getElectionResults( electionId);
+
 	}
-	
+
+	public HashMap<String, Integer> getElectionResults(int id)throws RemoteException{
+		return server.getElectionResults( id);
+	}
+
 	
 }

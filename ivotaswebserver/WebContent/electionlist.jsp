@@ -72,15 +72,14 @@
 	</div>
 
 	<s:if test="hasActionErrors()">
-	   <div class="errors">
-	   </div>
-	   	<script>
-	    displayNotification('error', 'User already voted !!', 2000);
+  <div class="error">
+	   </div>		<script>
+		    displayNotification('error', 'User already voted !!', 2000);	
 		</script> 
-
 	</s:if>
 	
 	<s:if test="hasActionMessages()">
+		<div class="success"></div>
 		<script>
 		    displayNotification('success', 'Vote submited with success !!', 2000);	
 		</script> 
