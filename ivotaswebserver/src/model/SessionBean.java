@@ -9,6 +9,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.github.scribejava.core.model.OAuthRequest;
+import com.github.scribejava.core.model.Response;
+import com.github.scribejava.core.model.Token;
+import com.github.scribejava.core.model.Verb;
+import com.github.scribejava.core.oauth.OAuthService;
+
 import javafx.util.Pair;
 import rmiserver.*;
 
@@ -17,11 +23,14 @@ public class SessionBean {
 	private RMI_Interface_Bean server;
 	private String username;
 	private String password;
+	private String facebookId;
 	private int userType = 0;
 	private int userDep = 0;
 	private int userId = 0;
-	private int userElection = 0;
-	private int userVote = 0;
+	private int faculty = 0;
+	private OAuthService service = null;
+	private Token accessToken = null;
+	
 	
 	public SessionBean(){
 		try{
@@ -40,16 +49,58 @@ public class SessionBean {
 		}
 	}
 
+	public boolean associateFacebook(String facebookId) throws RemoteException{
+		if(server.associateFacebook(username, facebookId)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean loginFacebook(String facebookId) throws RemoteException{
+		this.facebookId = facebookId;
+		if((this.username = server.loginFacebook(facebookId)) != null) {
+			HashMap<String, Integer> userInfo = server.getUserId(username);
+		    this.userDep = userInfo.get("department");
+		    this.userId = userInfo.get("id");
+		    this.userType = server.checkUserType(userId);
+		    return true;
+		}
+		return false;
+	}
+	
+	public void postToFacebook(String message) {
+		String req = "https://graph.facebook.com/" + this.facebookId + "/feed?message=" + message + "&access_token=" + this.accessToken.getToken();
+		System.out.println(req);
+		OAuthRequest request = new OAuthRequest(Verb.POST, req, service);
+		Response response = request.send();
+		System.out.println(response.getCode());
+		System.out.println(response.getBody());
+	}
+	
 	public boolean login() throws RemoteException{
 		if( (userType = server.login(this.username, this.password)) != 0){
 			HashMap<String, Integer> userInfo = server.getUserId(username);
 		    this.userDep = userInfo.get("department");
 		    this.userId = userInfo.get("id");
+		    String fb = server.getFacebookId(username);
+		    if(fb != null) {
+		    	this.facebookId = fb;
+		    }
 			return true;
 		}
 		return false;
 	}
- 
+ 	
+	public void logout() {
+		this.setFacebookId(null);
+		this.setFaculty(0);
+		this.setPassword(null);
+		this.setUserDep(0);
+		this.setUsername(null);
+		this.setUserId(0);
+	}
+	
 	public boolean unusedUsername(String username) throws RemoteException {
 		return !server.checkUser(username);
 	}
@@ -118,6 +169,7 @@ public class SessionBean {
 		return server.createElection(dateStart, dateEnd, name, description, department);
 	}
 	
+	
 	public HashMap<Integer, String> getElections() throws RemoteException{
 		return server.getElections(this.userType, this.userDep);
 	}
@@ -178,18 +230,22 @@ public class SessionBean {
 		this.userType = type;
 	}
 
+	
 	public int getUserDep() {
 		return userDep;
 	}
 
+	
 	public void setUserDep(int userDep) {
 		this.userDep = userDep;
 	}
+
 	
 	public int getUserId() {
 		return userId;
 	}
 	
+
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
@@ -217,43 +273,63 @@ public class SessionBean {
 			server.changeElectionEndDate(id, dateEnd);
 		}
 	}
-
+	
 	/**
-	 * @return the userElection
+	 * @return the facebookId
 	 */
-	public int getUserElection() {
-		return userElection;
+	public String getFacebookId() {
+		return facebookId;
 	}
 
 	/**
-	 * @param userElection the userElection to set
+	 * @param facebookId the facebookId to set
 	 */
-	public void setUserElection(int userElection) {
-		this.userElection = userElection;
+	public void setFacebookId(String facebookId) {
+		this.facebookId = facebookId;
 	}
 
 	/**
-	 * @return the userVote
+	 * @return the faculty
 	 */
-	public int getUserVote() {
-		return userVote;
+	public int getFaculty() {
+		return faculty;
 	}
 
 	/**
-	 * @param userVote the userVote to set
+	 * @param faculty the faculty to set
 	 */
-	public void setUserVote(int userVote) {
-		this.userVote = userVote;
+	public void setFaculty(int faculty) {
+		this.faculty = faculty;
 	}
 
 	public HashMap<String, Integer> getElectionVotes(int electionId) throws RemoteException{
 		return server.getElectionVotesPerTable( electionId);
-		//return server.getElectionResults( electionId);
-
 	}
 
 	public HashMap<String, Integer> getElectionResults(int id)throws RemoteException{
 		return server.getElectionResults( id);
+	}
+	
+	public OAuthService getService() {
+		return service;
+	}
+
+	public void setService(OAuthService service) {
+		this.service = service;
+	}
+	
+	/**
+	 * @return the accessToken
+	 */
+	public Token getAccessToken() {
+		return accessToken;
+	}
+
+	/**
+	 * @param accessToken the accessToken to set
+	 */
+	public void setAccessToken(Token accessToken) {
+		this.accessToken = accessToken;
 	}
 
 	

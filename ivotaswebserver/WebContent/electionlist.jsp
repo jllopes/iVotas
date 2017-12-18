@@ -19,10 +19,8 @@
 
 <title>IVotas - Elections</title>
 </head>
+<jsp:include page="logoutheader.jsp" />
 <body>
-
-
-		
 	<div class="container">
       <div class="row"  >
               <div class="col-md-offset-2 col-lg-offset-2 col-xs-10 col-sm-10 col-md-6 col-lg-6  toppad" >
@@ -39,8 +37,8 @@
                     <tbody>
                     
 						<c:choose>
-							<c:when test="${sessionBean.elections.size() > 0}">
-			                    	<c:forEach items="${sessionBean.elections}" var="value">
+							<c:when test="${sessionBean.getElections().size() > 0}">
+			                    	<c:forEach items="${sessionBean.getElections()}" var="value">
 			                   			<tr>
 			                    			<td><c:out value = "${value.value}"/></td>
 											<td>
@@ -72,14 +70,16 @@
 	</div>
 
 	<s:if test="hasActionErrors()">
-  <div class="error">
-	   </div>		<script>
-		    displayNotification('error', 'User already voted !!', 2000);	
+	   <div class="errors">
+	   </div>
+	   	<script>
+	    displayNotification('error', 'User already voted !!', 2000);
 		</script> 
+
 	</s:if>
 	
 	<s:if test="hasActionMessages()">
-		<div class="success"></div>
+	<div class="success"></div>
 		<script>
 		    displayNotification('success', 'Vote submited with success !!', 2000);	
 		</script> 

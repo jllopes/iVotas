@@ -24,6 +24,7 @@ window.onload = function(){
 }
 </script>
 </head>
+<jsp:include page="loginheader.jsp" />
 <body>
 	    <div class="container">    
         <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                    
@@ -54,7 +55,6 @@ window.onload = function(){
                                 <div class="col-sm-12 controls">
                                   <a id="btn-login" href="#" class="btn btn-success" onclick="document.getElementById('loginform').submit()">Login  </a>
                                   <a id="btn-fblogin" href="#" class="btn btn-primary">Login with Facebook</a>
-
                                 </div>
                             </div>
                         </form>     

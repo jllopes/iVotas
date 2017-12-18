@@ -1,6 +1,16 @@
 package action;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.rmi.RemoteException;
 import java.util.*;
 import org.apache.struts2.interceptor.SessionAware;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import com.github.scribejava.apis.FacebookApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -10,6 +20,8 @@ import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.model.Verifier;
 import com.github.scribejava.core.oauth.OAuthService;
 import com.opensymphony.xwork2.ActionSupport;
+
+import model.SessionBean;
 import uc.sd.apis.FacebookApi2;
 
 public class FacebookAction extends ActionSupport implements SessionAware{
@@ -17,70 +29,78 @@ public class FacebookAction extends ActionSupport implements SessionAware{
 	 * 
 	 */
 	private static final long serialVersionUID = -7014565432319532405L;
-  private static final String NETWORK_NAME = "Facebook";
-  private static final String PROTECTED_RESOURCE_URL = "https://graph.facebook.com/me";
-  private static final Token EMPTY_TOKEN = null;
-  private String apiKey = "176392666280433";
-  private String apiSecret = "e54722eb61ffc23184814505a0cc26c7";
-  private String code = null;	
-  private Map<String, Object> session;
+	private static final String NETWORK_NAME = "Facebook";
+	private static final Token EMPTY_TOKEN = null;
+	private static final String PROTECTED_RESOURCE_URL = "https://graph.facebook.com/me";
+	private String apiKey = "176392666280433";
+	private String apiSecret = "e54722eb61ffc23184814505a0cc26c7";	
+	private String code = null;
+	private Map<String, Object> session;
 
-  public String execute() {
+  public String execute() throws RemoteException {
 	// Replace these with your own api key and secret
-		 String apiKey = "176392666280433";
-		 String apiSecret = "e54722eb61ffc23184814505a0cc26c7";
-	    
-	    OAuthService service = new ServiceBuilder()
-	                                  .provider(FacebookApi2.class)
-	                                  .apiKey(apiKey)
-	                                  .apiSecret(apiSecret)
-	                                  .callback("http://localhost:8080/ivotaswebserver/facebook") // Do not change this.
-	                                  .scope("publish_actions")
-	                                  .build();
-	    Scanner in = new Scanner(System.in);
-
-	    System.out.println("=== " + NETWORK_NAME + "'s OAuth Workflow ===");
-	    System.out.println();
-
-	    // Obtain the Authorization URL
-	    System.out.println("Fetching the Authorization URL...");
-	    String authorizationUrl = service.getAuthorizationUrl(EMPTY_TOKEN);
-	    System.out.println("Got the Authorization URL!");
-	    System.out.println("Now go and authorize Scribe here:");
-	    System.out.println(authorizationUrl);
-	    System.out.println("And paste the authorization code here");
-	    System.out.print(">>");
-	    Verifier verifier = new Verifier(in.nextLine());
-	    System.out.println();
-	    
-	    // Trade the Request Token and Verfier for the Access Token
-	    System.out.println("Trading the Request Token for an Access Token...");
-	    Token accessToken = service.getAccessToken(EMPTY_TOKEN, verifier);
-	    System.out.println("Got the Access Token!");
-	    System.out.println("(if your curious it looks like this: " + accessToken + " )");
-	    System.out.println();
-
-	    // Now let's go and ask for a protected resource!
-	    System.out.println("Now we're going to access a protected resource...");
-	    OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL, service);
+	  	OAuthService service;
+	  	if(this.getSessionBean().getService() == null) {
+		  	service = new ServiceBuilder()
+		          .provider(FacebookApi2.class)
+		          .apiKey(apiKey)
+		          .apiSecret(apiSecret)
+		          .callback("http://localhost:8080/ivotaswebserver/facebook") // Do not change this.
+		          .scope("publish_actions")
+		          .build();
+		  	this.getSessionBean().setService(service);
+	  	} else {
+	  		service = this.getSessionBean().getService();
+	  	}
+		Verifier verifier = new Verifier(code);
+		Token accessToken = service.getAccessToken(EMPTY_TOKEN, verifier);
+		OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL, service);
+		this.getSessionBean().setAccessToken(accessToken);
 	    service.signRequest(accessToken, request);
 	    Response response = request.send();
-	    System.out.println("Got it! Lets see what we found...");
-	    System.out.println();
-	    System.out.println(response.getCode());
-	    System.out.println(response.getBody());
+		// Now let's go and ask for a protected resource!
+		JSONParser parser = new JSONParser();
+		String userId = null;
+		try {
+              JSONObject responseBody = (JSONObject) parser.parse(response.getBody());
+              if(responseBody.containsKey("id")) {
+                  userId = responseBody.get("id").toString();
+              }
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		if(this.getSessionBean().getUsername() == null) {
+			if(this.getSessionBean().loginFacebook(userId)) {
+				System.out.println("Login facebook funcionou");
+			} else {
+				System.out.println("Login facebook não funcionou");
+			}
+		} else {
+			if(this.getSessionBean().associateFacebook(userId)) {
+				System.out.println("Associar facebook funcionou");
+			} else {
+				System.out.println("Associar facebook não funcionou");
+			}
+		}
+		//postToFacebook(service, userId, "teste", accessToken.getToken());
+		return SUCCESS;
+  	}
+  
+	public SessionBean getSessionBean(){
+		if(!session.containsKey("sessionBean"))
+			this.setSessionBean(new SessionBean());
+		return (SessionBean) session.get("sessionBean");
+	}
+	
+	public void setSessionBean(SessionBean sessionBean){
+		this.session.put("sessionBean", sessionBean);
+	}
+	
+	@Override
+	public void setSession(Map<String, Object> session) {
+		this.session = session;
+	}
 
-	    
-	    System.out.println();
-	    System.out.println("Thats it man! Go and build something awesome with Scribe! :)");
-	    in.close();
-	    return SUCCESS;
-}
-
-@Override
-public void setSession(Map<String, Object> session) {
-	this.session = session;
-}
 
 /**
  * @return the code
@@ -95,6 +115,5 @@ public String getCode() {
 public void setCode(String code) {
 	this.code = code;
 }
-
 
 }

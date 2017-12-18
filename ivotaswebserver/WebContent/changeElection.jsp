@@ -20,14 +20,14 @@
 	    <div class="row">
 	        <div class="col-md-3">
 	            <ul class="nav nav-pills nav-stacked admin-menu">
-	                <li><a href="#" id="home" action="adminPage">Home</a></li>
-	                <li><a href="#" id="register" action="registerPage" class="active">Register User</a></li>
-	                <li><a href="#" id="newElections" action="newElectionPage">Create Election</a></li>
-	                <li class="active"><a href="#" id="elections" action="electionsPage">Manage Election</a></li>
-	                <li><a href="#" id="electionResults" action="electionResultsPage">Past Election Results</a></li>
-	                <li><a href="#" id="electionInfo" action="electionDetailsPage">Election Info</a></li>
-	                <li><a href="#" id="userVote" action="userVotePage">User Vote Info</a></li>
-	                <li><a href="#" id="tables" action="tablesPage">Online Tables</a></li>
+	                <li><a href="<s:url action="homePage"/>" id="home" action="adminPage">Home</a></li>
+	                <li><a href="<s:url action="registerPage"/>" id="register" >Register User</a></li>
+	                <li><a href="<s:url action="newElectionPage"/>" id="newElections" >Create Election</a></li>
+	                <li class="active"><a href="<s:url action="changeElectionPage"/>" id="elections" >Change Election</a></li>
+	                <li><a href="<s:url action="electionResultsPage"/>" id="electionResults" >Past Election Results</a></li>
+	                <li><a href="<s:url action="electionDetailsPage"/>" id="electionInfo">Election Info</a></li>
+	                <li><a href="<s:url action="userVotePage"/>" id="userVote">User Vote Info</a></li>
+	                <li><a href="<s:url action="tablesPage"/>"id="tables" >Online Tables</a></li>
 	            </ul>
 	        </div>
 	        <div class="col-md-9 well admin-content" id="register">

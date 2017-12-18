@@ -253,7 +253,87 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
     	   
     }
-
+  
+    public boolean associateFacebook(String username ,String facebookId) throws RemoteException{
+	    	PreparedStatement prepStatement;
+	    	ResultSet rs;
+	    	try {
+	    			connection.setAutoCommit(false);
+	    			prepStatement = connection.prepareStatement("SELECT facebookId FROM user u WHERE u.facebookId = ?");
+	    			prepStatement.setString(1, facebookId);
+	            rs = prepStatement.executeQuery();
+	            if(rs.next()) {
+	                System.out.println("Facebook account already associated with a user!");
+	                return false;
+	            } else {
+	            	try {
+	            		prepStatement = connection.prepareStatement("UPDATE user SET facebookId = ? WHERE username = ?");
+	                    prepStatement.setString(1, facebookId);
+	                    prepStatement.setString(2, username);
+	                    prepStatement.execute();
+	                    connection.commit();
+	                    return true;
+	                } catch (SQLException e) {
+	                    try {
+	                        connection.rollback();
+	                    } catch (SQLException e1) {
+	                        System.out.println("Error doing rollback!");
+	                    }
+	                    e.printStackTrace();
+	                    return false;
+	                }
+	            }
+	        } catch(SQLException e) {
+	            try {
+	                connection.rollback();
+	            } catch (SQLException e1) {
+	                System.out.println("Error doing rollback!");
+	            }
+	            e.printStackTrace();
+	            return false;
+	        }        
+	}
+    
+    public String loginFacebook(String facebookId) throws RemoteException {
+        ResultSet rs;
+        PreparedStatement statement = null;
+        try {
+        		connection.setAutoCommit(false);
+            statement = connection.prepareStatement("SELECT * FROM user WHERE facebookId = ?");
+            statement.setString(1, facebookId);
+            rs = statement.executeQuery();
+            if(!rs.next()){
+                System.out.println("Facebook account not associated!");
+                return null;
+            }
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                System.out.println("Error doing rollback!");
+            }
+            e.printStackTrace();
+            return null;
+        }
+        try {
+            statement = connection.prepareStatement("SELECT username FROM user WHERE facebookId = ?");
+            statement.setString(1, facebookId);
+            rs = statement.executeQuery();
+            if(rs.next()){
+                String username = rs.getString("username");
+                return username;
+            }
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                System.out.println("Error doing rollback!");
+            }
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
 	public boolean updateUser(int user,String name, int faculty, int department, String address, int num_id, int month_id, int year_id, String phoneNumber) throws RemoteException{
 		try {
 			connection.setAutoCommit(false);
@@ -1061,7 +1141,41 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return false;
 
 	}
+	
+	public String getFacebookId(String username) throws RemoteException{
+		try {
+			connection.setAutoCommit(false);
+			String sql1 = "select facebookId from user where username = ? limit 1";
+			PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
+			prepStatement1.setString(1,username);
+			ResultSet rs = prepStatement1.executeQuery();
+			if(rs.next()){
+				if(rs.getString("facebookId") != null) {
+					return rs.getString("facebookId");
+				}
+				return null;
+			}else{
+				return null;
+			}
 
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return null;
+
+	}
 	/**
 	 * Simple method to verify the type of a user.
 	 * The id is received and the method uses a query to get
@@ -1380,7 +1494,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	 *
 	 * @return      	ArrayList with all departments or null if there are none departments yet.
 	 */
-	public ArrayList<Department> getAllDepartments() throws RemoteException {
+	public ArrayList<Department> getAllDepartments() throws RemoteException{
 		try {
 			connection.setAutoCommit(false);
 
@@ -1865,7 +1979,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	 * @return      	Hashmap with the results of an election or null.
 	 */
 	public HashMap<String, Integer> getElectionResults(int id)throws RemoteException{
-		System.out.println("Get eleciton results");
 		try {
 			connection.setAutoCommit(false);
 
@@ -2198,7 +2311,6 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 
 	public HashMap<String, Integer> getElectionVotesPerTable(int electionId) throws RemoteException {
-		System.out.println("get election votes per table");
 		try {
 			connection.setAutoCommit(false);
 
