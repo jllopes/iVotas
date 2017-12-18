@@ -602,7 +602,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	 * @param  endDate 		Identifies the date when the election is supposed to end.
 	 * @return      		Boolean identifying if the operation was successful or not.
 	 */
-    public void createElection(Date startDate, Date endDate, String name, String desc, int department) throws RemoteException{
+    public boolean createElection(Date startDate, Date endDate, String name, String desc, int department) throws RemoteException{
 	    //date parser admin side
     	try {
 	    	connection.setAutoCommit(false);
@@ -618,7 +618,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		    prepStatement.setInt(5, department);
 		    prepStatement.executeUpdate();
 			prepStatement.close();
-			
+			return true;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -635,7 +635,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			}
 		}
     	
-    	
+    	return false;
     }
 
 	/**
@@ -1380,7 +1380,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	 *
 	 * @return      	ArrayList with all departments or null if there are none departments yet.
 	 */
-	public ArrayList<Department> getAllDepartments() throws RemoteException{
+	public ArrayList<Department> getAllDepartments() throws RemoteException {
 		try {
 			connection.setAutoCommit(false);
 
@@ -1865,6 +1865,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	 * @return      	Hashmap with the results of an election or null.
 	 */
 	public HashMap<String, Integer> getElectionResults(int id)throws RemoteException{
+		System.out.println("Get eleciton results");
 		try {
 			connection.setAutoCommit(false);
 
@@ -2197,6 +2198,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 
 	public HashMap<String, Integer> getElectionVotesPerTable(int electionId) throws RemoteException {
+		System.out.println("get election votes per table");
 		try {
 			connection.setAutoCommit(false);
 
