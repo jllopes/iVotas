@@ -93,6 +93,7 @@ public class SessionBean {
 	}
  	
 	public void logout() {
+		
 		this.setFacebookId(null);
 		this.setFaculty(0);
 		this.setPassword(null);

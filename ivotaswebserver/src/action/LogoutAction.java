@@ -24,6 +24,7 @@ public class LogoutAction extends ActionSupport implements SessionAware {
 	@Override
 	public String execute() {
 		this.getSessionBean().logout();
+		session.put("sessionBean",null);
 		return SUCCESS;
 	}
 	

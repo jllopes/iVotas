@@ -67,29 +67,15 @@
             </div>
           </div>
         </div>
-        <div class="col-md-offset-05 col-lg-offset-05 col-xs-10 col-sm-10 col-md-4 col-lg-4  toppad" >
+        </div>
+        </div>
+        
+        <div class="row">
+                	 	  <div class="col-md-offset-2 col-lg-offset-2 col-xs-10 col-sm-10 col-md-4 col-lg-4  toppad" >
           <div class="panel panel-info">
             <div class="panel-heading">
-              <h3 class="panel-title"><c:out value = "Votes per Table"/></h3>
+              <h3 class="panel-title"><c:out value = "Results"/></h3>
             </div>
-          
-           <!--  <div class="panel-body">
-              <div class="row">
-                <div class=" col-md-12 col-lg-12 "> 
-                  <table class="table table-user-information">
-                    <tbody>
-                    
-                  		<c:forEach items="${bean.getElectionVotes(election)}" var="value">
-                        <tr>
-                        	<td><c:out value = "${value.key}"/></td>
-                        	<td><c:out value = "${value.value}"/></td>
-                     	</tr>
-						</c:forEach>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div> -->
         	<div class="panel-body">
 		        <div class="row">
 		          <div class=" col-md-12 col-lg-12 "> 
@@ -108,10 +94,36 @@
 		      </div>
           </div>
         </div>
+	 	
+        
+        <div class="col-md-offset-05 col-lg-offset-05 col-xs-10 col-sm-10 col-md-4 col-lg-4  toppad" >
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title"><c:out value = "Votes per Table"/></h3>
+            </div>
+          
+           <div class="panel-body">
+           <div class="row">
+                <div class=" col-md-12 col-lg-12 "> 
+                  <table class="table table-user-information">
+                    <tbody>
+                    
+                  		<c:forEach items="${bean.getElectionVotes(election)}" var="value">
+                        <tr>
+                        	<td><c:out value = "${value.key}"/></td>
+                        	<td><c:out value = "${value.value}"/></td>
+                     	</tr>
+						</c:forEach>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 	 	</div>
-	 	
-	 	
-    </div>
-	<button onclick="window.history.back();">Go Back</button>
+
+	<button class="btn btn-primary" onclick="window.history.back();">Go Back</button>
     
 </body>

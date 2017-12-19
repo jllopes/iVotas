@@ -118,6 +118,10 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
       <result>/vote.jsp</result>
     </action>
     
+    <action name="election">
+      <result>/addTable.jsp</result>
+    </action>
+    
     <action name="vote" class="action.VoteAction" method="execute">
     	<result name="success">/electionlist.jsp</result>
     	<result name="login">/index.jsp</result>
