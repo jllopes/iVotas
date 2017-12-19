@@ -97,6 +97,10 @@ public class SessionBean {
 		System.out.println(response.getBody());
 	}
 	
+	public Vote getVote(int id) throws RemoteException{
+		return server.getVote(id);
+	}
+	
 	public boolean login() throws RemoteException{
 		if( (userType = server.login(this.username, this.password)) != 0){
 			HashMap<String, Integer> userInfo = server.getUserId(username);

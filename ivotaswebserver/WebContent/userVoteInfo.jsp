@@ -46,20 +46,18 @@
                   <table class="table table-user-information">
                     <tbody>
                       <tr>
-                        <td>Description:</td>
-                        <td><c:out value = "${electionInfo.getDescription()}"/></td>
+                        <td>Election:</td>
+                        <td><c:out value = "${sessionBean.getVote(vote).getElection().getName()}"/></td>
+                        	
                       </tr>
                       <tr>
-                        <td>Department</td>
-                        <td><c:out value = "${electionInfo.getDepartment().getName()}"/></td>
+                        <td>Vote Table:</td>
+                        <td><c:out value = "${sessionBean.getVote(vote).getTable().getDepartment().getName()}"/></td>
+                        	
                       </tr>
                    	  <tr>
-                        <td>Start Date:</td>
-                        <td><c:out value = "${electionInfo.getPrettyStartDate()}"/></td>
-                      </tr>
-                      <tr>
-                        <td>End Date:</td>
-                        <td><c:out value = "${electionInfo.getPrettyEndDate()}"/></td>
+                        <td>Vote Time:</td>
+                        <td><c:out value = "${sessionBean.getVote(vote).getDate()	}"/></td>
                       </tr>
                     </tbody>
                   </table>
@@ -69,59 +67,8 @@
           </div>
         </div>
         </div>
-        </div>
-        
-        <div class="row">
-                	 	  <div class="col-md-offset-2 col-lg-offset-2 col-xs-10 col-sm-10 col-md-4 col-lg-4  toppad" >
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title"><c:out value = "Results"/></h3>
-            </div>
-        	<div class="panel-body">
-		        <div class="row">
-		          <div class=" col-md-12 col-lg-12 "> 
-		            <table class="table table-user-information">
-		              <tbody>
-                  		<c:forEach items="${bean.getElectionResults(election)}" var="value">
-                        <tr>
-                        	<td><c:out value = "${value.key}"/></td>
-                        	<td><c:out value = "${value.value}"/></td>
-                     	</tr>
-						</c:forEach>
-		              </tbody>
-		            </table>
-		          </div>
-		        </div>
-		      </div>
-          </div>
-        </div>
-	 	
-        
-        <div class="col-md-offset-05 col-lg-offset-05 col-xs-10 col-sm-10 col-md-4 col-lg-4  toppad" >
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title"><c:out value = "Votes per Table"/></h3>
-            </div>
-          
-           <div class="panel-body">
-           <div class="row">
-                <div class=" col-md-12 col-lg-12 "> 
-                  <table class="table table-user-information">
-                    <tbody>
-                        <tr>
-                        	<td><c:out value = "${vote.election.name}"/></td>
-                        	<td><c:out value = "${value.table.department}"/></td>
-                        	<td><c:out value = "${value.date}"/></td>
-                     	</tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
-	 	</div>
 
 	<button class="btn btn-primary" onclick="window.history.back();">Go Back</button>
     

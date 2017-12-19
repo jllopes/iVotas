@@ -54,4 +54,5 @@ public interface RMI_Interface_Bean extends Remote{
 
     public void addTable(TCP_Interface t) throws RemoteException;
     public ArrayList<Department> getAllDepartments() throws RemoteException;
+	public Vote getVote(int id);
 }

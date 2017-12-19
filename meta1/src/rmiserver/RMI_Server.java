@@ -198,6 +198,41 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 	}
 
+	public Vote getVote(int id) throws RemoteException {
+		try {
+			connection.setAutoCommit(false);
+	    	String sql = "SELECT * FROM vote WHERE id = ? limit 1";
+	    	PreparedStatement prepStatement = connection.prepareStatement(sql);
+	    	prepStatement.setInt(1,id);
+	    	ResultSet rs = prepStatement.executeQuery();
+	    	if(rs.next()){
+	    		User user = getUser(rs.getInt("user"));
+			Election election = getElection(rs.getInt("election"));
+			VotingTable table = getVotingTable(rs.getInt("voteTable"));
+			Date date = new Date(rs.getTimestamp("voteTime").getTime());
+			int voteId = rs.getInt("id");
+			return new Vote(user, election, table, date, voteId);
+	    	}
+	    	rs.close();
+	    	return null;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+			return null;
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+	}
+	
 	/**
 	 * Adds the data about an user to the data base.
 	 * The data is passed as parameter and a sql query is created

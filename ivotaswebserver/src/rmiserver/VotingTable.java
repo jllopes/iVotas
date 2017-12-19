@@ -1,4 +1,5 @@
 package rmiserver;
+
 import java.io.Serializable;
 
 public class VotingTable implements Serializable{
@@ -9,4 +10,22 @@ public class VotingTable implements Serializable{
         this.department = department;
         this.id = id;
     }
+
+	public Department getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+    
+    
 }
