@@ -15,7 +15,7 @@ import com.github.scribejava.core.model.Token;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuthService;
 
-import javafx.util.Pair;
+//import javafx.util.Pair;
 import rmiserver.*;
 
 
@@ -135,7 +135,7 @@ public class SessionBean {
 		Iterator it = faculties.entrySet().iterator();
     		while (it.hasNext()) {
     			Map.Entry<String, Integer> f = (Map.Entry) it.next();
-    		    facultyInfo.put(new Pair<String, Integer>(f.getKey(), f.getValue()), this.getDepartmentsFaculty(f.getValue()));
+    		    facultyInfo.put(new Map.Entry<String, Integer>(f.getKey(), f.getValue()), this.getDepartmentsFaculty(f.getValue()));
     		}
     		return facultyInfo;
 	}

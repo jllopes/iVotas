@@ -46,7 +46,7 @@
                                     <select id="userSelect" name="vote" class="form-control">
                                     <option value="" disabled selected>Election</option>
 									<c:forEach items="${sessionBean.getUserVotes(user)}" var="vote">
-									    <option value="${vote.getUser().getId()}">
+									    <option value="${vote}">
 									    		${vote.getElection().getName()}
     									    </option>
 									  </c:forEach>
