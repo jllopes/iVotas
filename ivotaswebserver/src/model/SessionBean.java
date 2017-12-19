@@ -69,8 +69,27 @@ public class SessionBean {
 		return false;
 	}
 	
-	public void postToFacebook(String message) {
+	public void postToFacebook(String message, Token accessToken, OAuthService service) {
 		String req = "https://graph.facebook.com/" + this.facebookId + "/feed?message=" + message + "&access_token=" + this.accessToken.getToken();
+		System.out.println(req);
+		OAuthRequest request = new OAuthRequest(Verb.POST, req, service);
+		Response response = request.send();
+		System.out.println(response.getCode());
+		System.out.println(response.getBody());
+	}
+	
+	public boolean hasFacebook() {
+		if(this.facebookId != null) {
+			System.out.println("true");
+			return true;
+		}
+		System.out.println("false");
+		return false;
+	}
+	
+	public void shareToFacebook(int election, Token accessToken, OAuthService service) {
+		String url = "http://localhost:8080/ivotaswebserver/electionlist?electionId=" + election;
+		String req = "https://graph.facebook.com/" + this.facebookId + "/feed?message=" + url + "&access_token=" + accessToken.getToken();
 		System.out.println(req);
 		OAuthRequest request = new OAuthRequest(Verb.POST, req, service);
 		Response response = request.send();

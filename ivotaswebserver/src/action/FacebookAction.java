@@ -40,7 +40,7 @@ public class FacebookAction extends ActionSupport implements SessionAware{
   public String execute() throws RemoteException {
 	// Replace these with your own api key and secret
 	  	OAuthService service;
-	  	if(this.getSessionBean().getService() == null) {
+	  	if(session.get("service") == null) {
 		  	service = new ServiceBuilder()
 		          .provider(FacebookApi2.class)
 		          .apiKey(apiKey)
@@ -48,14 +48,14 @@ public class FacebookAction extends ActionSupport implements SessionAware{
 		          .callback("http://localhost:8080/ivotaswebserver/facebook") // Do not change this.
 		          .scope("publish_actions")
 		          .build();
-		  	this.getSessionBean().setService(service);
+		  	session.put("service", service);
 	  	} else {
-	  		service = this.getSessionBean().getService();
+	  		service = (OAuthService) session.get("service");
 	  	}
 		Verifier verifier = new Verifier(code);
 		Token accessToken = service.getAccessToken(EMPTY_TOKEN, verifier);
 		OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL, service);
-		this.getSessionBean().setAccessToken(accessToken);
+		session.put("accessToken",accessToken);
 	    service.signRequest(accessToken, request);
 	    Response response = request.send();
 		// Now let's go and ask for a protected resource!
@@ -63,6 +63,7 @@ public class FacebookAction extends ActionSupport implements SessionAware{
 		String userId = null;
 		try {
               JSONObject responseBody = (JSONObject) parser.parse(response.getBody());
+              System.out.println(responseBody);
               if(responseBody.containsKey("id")) {
                   userId = responseBody.get("id").toString();
               }
@@ -73,7 +74,9 @@ public class FacebookAction extends ActionSupport implements SessionAware{
 			if(this.getSessionBean().loginFacebook(userId)) {
 				System.out.println("Login facebook funcionou");
 			} else {
-				System.out.println("Login facebook não funcionou");
+				System.out.println("Conta não está associada");
+				session.put("msg", "No account associated with facebook profile");
+				return ERROR;
 			}
 		} else {
 			if(this.getSessionBean().associateFacebook(userId)) {

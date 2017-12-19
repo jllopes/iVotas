@@ -25,6 +25,7 @@
 
 
 </head>
+<jsp:include page="logoutheader.jsp" />
 <body>
 	<div class="container" style="float:left" >
       <div class="row"  >
@@ -63,10 +64,7 @@
 			
 										        <div class="form-group">
 										            <div class="btn-group">
-										                <label for="${value.getId()}" class="btn btn-default">
-										                    <span class="glyphicon glyphicon-ok"></span>
-										                    <span> </span>
-										                </label>
+										                
 										  				   	<select  class="btn btn-default active">
 											      				<option>${value.getName()}</option>
 												 			 	<c:forEach items="${sessionBean.getPeopleList(value.getId())}" var="name">
@@ -76,13 +74,6 @@
 										            </div>
 										        </div>
 									 	</c:forEach>	
-									
-									 	<tr>
-											<td></td>							
-											<td style="float:right">
-												<input type="submit" value="&nbsp &nbsp &nbsp Vote &nbsp &nbsp &nbsp" class="btn btn-primary"/>
-											</td>
-										</tr>
 									</form>
 									</tbody>
 								</table>

@@ -114,6 +114,18 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
       <result>/electionInfo.jsp</result>
     </action>
     
+    <action name="choosetype" class="action.ChooseTypeAction">
+            <result>/addListElection</result>
+    </action>
+    
+    <action name="chooseListTypePage">
+        <result>/chooseListType.jsp</result>
+    </action>
+    
+    <action name="addListPage">
+        <result>/addListElection.jsp</result>
+    </action>
+    
     <action name="electionlist" class="action.ListsAction">
       <result>/vote.jsp</result>
     </action>

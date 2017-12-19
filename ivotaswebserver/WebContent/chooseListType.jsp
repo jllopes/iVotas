@@ -14,6 +14,31 @@
 	<!--           -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="assets/js/admin.js"></script>
+	<script>
+	$(function()
+			{
+			    $(document).on('click', '.btn-add', function(e)
+			    {
+			        e.preventDefault();
+
+			        var controlForm = $('.controls form:first'),
+			            currentEntry = $(this).parents('.entry:first'),
+			            newEntry = $(currentEntry.clone()).appendTo(controlForm);
+
+			        newEntry.find('input').val('');
+			        controlForm.find('.entry:not(:last) .btn-add')
+			            .removeClass('btn-add').addClass('btn-remove')
+			            .removeClass('btn-success').addClass('btn-danger')
+			            .html('<span class="glyphicon glyphicon-minus"></span>');
+			    }).on('click', '.btn-remove', function(e)
+			    {
+					$(this).parents('.entry:first').remove();
+
+					e.preventDefault();
+					return false;
+				});
+			});
+	</script>
 </head>
 <jsp:include page="logoutheader.jsp" />
 <body>
@@ -23,12 +48,11 @@
 	            <ul class="nav nav-pills nav-stacked admin-menu">
 	                <li><a href="<s:url action="homePage"/>" id="home" action="adminPage">Home</a></li>
 	                <li><a href="<s:url action="registerPage"/>" id="register" >Register User</a></li>
-	                <li><a href="<s:url action="newElectionPage"/>" id="newElections" >Create Election</a></li>
+	                <li class="active"><a href="<s:url action="newElectionPage"/>" id="newElections" >Create Election</a></li>
 	                <li><a href="<s:url action="changeElectionPage"/>" id="elections" >Change Election</a></li>
 	                <li><a href="<s:url action="electionResultsPage"/>" id="electionResults" >Past Election Results</a></li>
 	                <li><a href="<s:url action="electionDetailsPage"/>" id="electionInfo" action="electionDetailsPage">Election Info</a></li>
-	                <li class="active"><a href="<s:url action="userVotePage"/>" id="userVote">User Vote Info</a></li>
-	                <li><a href="<s:url action="addTable"/>" id="addTable">Add Table</a></li>
+	                <li><a href="<s:url action="userVotePage"/>" id="userVote">User Vote Info</a></li>
 	                <li><a href="<s:url action="tablesPage"/>"id="tables" >Online Tables</a></li>
 	            </ul>
 	        </div>
@@ -36,29 +60,33 @@
 	            <div id="signupbox" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <div class="panel-title">Choose User</div>
+                            <div class="panel-title">New Election</div>
                         </div>  
                         <div class="panel-body" >
-                            <form id="signupform" class="form-horizontal" role="form" action="chooseelection" method="POST">
-                                <div class="form-group">
-                                		<label for="fac" class="col-sm-3 control-label">Election</label>
-				                    <div class="col-sm-4">
-                                    <select id="userSelect" name="vote" class="form-control">
-                                    <option value="" disabled selected>Election</option>
-									<c:forEach items="${sessionBean.getUserVotes(user)}" var="vote">
-									    <option value="${vote.getUser().getId()}">
-									    		${vote.getElection().getName()}
-    									    </option>
-									  </c:forEach>
-									</select>
-									</div>
+                            <form id="signupform" class="form-horizontal" role="form" action="choosetype" method="POST">
+                 
+                                <div id="signupalert" style="display:none" class="alert alert-danger">
+                                    <p>Error:</p>
+                                    <span></span>
                                 </div>
+                                    
+                                <div class="form-group">
+				                    <label for="type" class="col-sm-3 control-label">Type</label>
+				                    <div class="col-sm-4">
+				                        <select name="listType" id="Select" class="form-control">
+				                            <option>User</option>
+				                            <option>Professor</option>
+				                            <option>Employee</option>
+				                          </select>
+				                    </div>
+				                </div>
                                 <div class="form-group">
                                     <!-- Button -->                                        
                                     <div class="col-md-offset-3 col-md-9">
-                                        <button id="btn-signup" type="submit" class="btn btn-primary"onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> &nbsp Select</button>
+                                        <button id="btn-signup" type="submit" class="btn btn-primary"onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> &nbsp Register</button>
                                     </div>
                                 </div>
+                                
                               </form>
                          </div>
                     </div>
