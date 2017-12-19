@@ -28,6 +28,7 @@ create table user
     ccNumber int(9),
     ccMonth int(2),
     ccYear int(4),
+    facebookId char(128),
     phoneNumber varchar(13) not null,
     primary key (id),
     foreign key(faculty) references faculty(id),
