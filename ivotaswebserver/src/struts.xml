@@ -18,11 +18,14 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
 	<default-action-ref name="index" />
 	
 	<global-results>
+		<result name="rmi">/index.html</result>
 		<result name="error">/error.jsp</result>
 	</global-results>
 
 	<!-- all exceptions not caught by the application will lead to error.jsp -->
 	<global-exception-mappings>
+		<exception-mapping exception = "java.rmi.ConnectException" result = "rmi" />
+		<exception-mapping exception = "java.net.ConnectException" result = "rmi" />
 		<exception-mapping exception="java.lang.Exception" result="error" />
 	</global-exception-mappings>
 
@@ -67,6 +70,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     
     
     <action name="chooseelection" class="action.ChooseElectionAction">
+   		 	<result name="input">/error.jsp</result>
     		<result>/userVoteInfo.jsp</result>
     </action>
     
@@ -118,8 +122,19 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
       <result>/vote.jsp</result>
     </action>
     
-    <action name="election">
-      <result>/addTable.jsp</result>
+    <action name="manageTable">
+      <result>/manageTables.jsp</result>
+    </action>
+    
+    <action name="createtable" class="action.CreateTableAction" method="execute">
+      <result name="success">/admin.jsp</result>
+      <result name="login">/index.jsp</result>
+      <result name="error">/error.jsp</result>
+    </action>
+    
+    <action name="addtable" class="action.AddTableAction" method="execute">
+      <result name="success">/admin.jsp</result>
+      <result name="error">/error.jsp</result>
     </action>
     
     <action name="vote" class="action.VoteAction" method="execute">

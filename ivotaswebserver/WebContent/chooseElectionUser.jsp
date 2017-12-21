@@ -27,7 +27,7 @@
 	                <li><a href="<s:url action="electionResultsPage"/>" id="electionResults" >Past Election Results</a></li>
 	                <li><a href="<s:url action="electionDetailsPage"/>" id="electionInfo" action="electionDetailsPage">Election Info</a></li>
 	                <li class="active"><a href="<s:url action="userVotePage"/>" id="userVote">User Vote Info</a></li>
-	                <li><a href="<s:url action="addTable"/>" id="addTable">Add Table</a></li>
+	                <li><a href="<s:url action="manageTable"/>" id="manageTable">Manage Tables</a></li>
 	                <li><a href="<s:url action="tablesPage"/>"id="tables" >Online Tables</a></li>
 	            </ul>
 	        </div>
@@ -45,7 +45,7 @@
                                     <select id="userSelect" name="vote" class="form-control">
                                     <option value="" disabled selected>Election</option>
 									<c:forEach items="${sessionBean.getUserVotes(user)}" var="vote">
-									    <option value="${vote.getUser().getId()}">
+									    <option value="${vote.getId()}">
 									    		${vote.getElection().getName()}
     									    </option>
 									  </c:forEach>

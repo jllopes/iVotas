@@ -78,6 +78,10 @@ public class SessionBean {
 		System.out.println(response.getBody());
 	}
 	
+	public Vote getVote(int id) throws RemoteException{
+		return server.getVote(id);
+	}
+	
 	public boolean login() throws RemoteException{
 		if( (userType = server.login(this.username, this.password)) != 0){
 			HashMap<String, Integer> userInfo = server.getUserId(username);
@@ -333,5 +337,26 @@ public class SessionBean {
 		this.accessToken = accessToken;
 	}
 
+	public boolean CreateVotingTable(int depId) throws RemoteException{
+		return server.createTable(depId);
+	}
+	
+	public ArrayList<Department> getFreeDepartments() throws RemoteException{
+		return server.getFreeDepartments();
+	}
+	
+	public boolean assignTable(int tableId, int election) throws RemoteException{
+		return server.addVotingTable(tableId, election);
+	}
+	
+	public ArrayList<Election> getFutureElections() throws RemoteException{
+		return server.getFutureElections();
+	}
+	
+	public ArrayList<VotingTable> getTables() throws RemoteException{
+		return server.getTables();
+	}
+	
+	
 	
 }

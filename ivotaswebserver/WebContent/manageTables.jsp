@@ -25,39 +25,30 @@
 	                <li><a href="<s:url action="newElectionPage"/>" id="newElections" >Create Election</a></li>
 	                <li><a href="<s:url action="changeElectionPage"/>" id="elections" >Change Election</a></li>
 	                <li><a href="<s:url action="electionResultsPage"/>" id="electionResults" >Past Election Results</a></li>
-	                <li class="active"><a href="<s:url action="electionDetailsPage"/>" id="electionInfo">Election Info</a></li>
+	                <li><a href="<s:url action="electionDetailsPage"/>" id="electionInfo" action="electionDetailsPage">Election Info</a></li>
 	                <li><a href="<s:url action="userVotePage"/>" id="userVote">User Vote Info</a></li>
-	                <li><a href="<s:url action="manageTable"/>" id="manageTable">Manage Tables</a></li>
+	                <li class="active"><a href="<s:url action="manageTable"/>" id="manageTable">Manage Tables</a></li>
 	                <li><a href="<s:url action="tablesPage"/>"id="tables" >Online Tables</a></li>
 	            </ul>
 	        </div>
 	        <div class="col-md-9 well admin-content" id="register">
 	            <div id="signupbox" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
                     <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <div class="panel-title">Choose Election</div>
-                        </div>  
                         <div class="panel-body" >
-                            <form id="signupform" class="form-horizontal" role="form" action="consultelection" method="POST">
-                                <div class="form-group">
-                                		<label for="fac" class="col-sm-3 control-label">Election</label>
-				                    <div class="col-sm-4">
-                                    <select id="userSelect" name="election" class="form-control">
-                                    <option value="" disabled selected>Election</option>
-									<c:forEach items="${sessionBean.getAllElections()}" var="election">
-									    <option value="${election.getId()}">
-									    		${election.getName()}
-    									    </option>
-									  </c:forEach>
-									</select>
-									</div>
-                                </div>
-                                <div class="form-group">
-                                    <!-- Button -->                                        
-                                    <div class="col-md-offset-3 col-md-9">
-                                        <button id="btn-signup" type="submit" class="btn btn-primary"onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> &nbsp Select</button>
+                            <form id="signupform" class="form-horizontal" role="form" action="createTable.jsp">
+							    <div class="form-group">
+                                    <!-- Button -->
+                                    <div class="col-md-offset-3 col-md-9" style="margin-top:10px">
+                                        <button id="btn-signup" type="submit" class="btn btn-primary"onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> &nbsp Create Table</button>
                                     </div>
-                                </div>
+                               </div>     
+                            </form>
+                            <form id="signupform" class="form-horizontal" role="form"action="addTable.jsp" >
+							    <div class="form-group">
+  	                                    <div class="col-md-offset-3 col-md-9">
+                                        <button id="btn-signup" type="submit" class="btn btn-primary"onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> &nbsp Assign Table</button>
+                                    </div>
+                               </div>    
                               </form>
                          </div>
                     </div>

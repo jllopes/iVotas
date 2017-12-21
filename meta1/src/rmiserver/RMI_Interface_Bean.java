@@ -1,6 +1,9 @@
 package rmiserver;
 
 import java.rmi.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 public interface RMI_Interface_Bean extends Remote{
@@ -51,7 +54,15 @@ public interface RMI_Interface_Bean extends Remote{
     public boolean checkUser(String username) throws RemoteException;
     public boolean vote(int userId, int userType, int userDep, int id_election, int vote, int id_table) throws RemoteException;
     public boolean vote_blank(int userid ,int usertype, int userDep, int idElection, int table) throws RemoteException; //false se ja existir voto
-
+    public Vote getVote(int id) throws RemoteException;
+    
     public void addTable(TCP_Interface t) throws RemoteException;
     public ArrayList<Department> getAllDepartments() throws RemoteException;
+	public ArrayList<Department> getFreeDepartments() throws RemoteException;
+	public boolean createTable(int depId) throws RemoteException;
+	public boolean addVotingTable(int election, int table) throws RemoteException;
+	public ArrayList<Election> getFutureElections() throws RemoteException;
+	public ArrayList<VotingTable> getTables() throws RemoteException;
+
+
 }

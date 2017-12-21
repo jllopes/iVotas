@@ -25,67 +25,56 @@
 	                <li><a href="<s:url action="newElectionPage"/>" id="newElections" >Create Election</a></li>
 	                <li><a href="<s:url action="changeElectionPage"/>" id="elections" >Change Election</a></li>
 	                <li><a href="<s:url action="electionResultsPage"/>" id="electionResults" >Past Election Results</a></li>
-	                <li><a href="<s:url action="electionDetailsPage"/>" id="electionInfo" action="electionDetailsPage">Election Info</a></li>
+	                <li><a href="<s:url action="electionDetailsPage"/>" id="electionInfo">Election Info</a></li>
 	                <li><a href="<s:url action="userVotePage"/>" id="userVote">User Vote Info</a></li>
-	                <li class="active"><a href="<s:url action="addTable"/>" id="addTable">Add Table</a></li>
+	                <li class="active"><a href="<s:url action="manageTable"/>" id="manageTable">Manage Tables</a></li>  
 	                <li><a href="<s:url action="tablesPage"/>"id="tables" >Online Tables</a></li>
 	            </ul>
 	        </div>
-	        <div class="col-md-9 well admin-content" id="register">
+	        <div class="col-md-9 well admin-content" id="addTable">
 	            <div id="signupbox" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <div class="panel-title">New Election</div>
+                            <div class="panel-title">Assign Table</div>
                         </div>  
                         <div class="panel-body" >
-                            <form id="signupform" class="form-horizontal" role="form" action="newelection" method="POST">
-                                
+
+                                    
+						<c:choose>
+							<c:when test="${sessionBean.getTables().size() > 0 && sessionBean.getFutureElections().size() > 0}">
+							  <form id="signupform" class="form-horizontal" role="form" action="addtable" method="POST">
                                 <div id="signupalert" style="display:none" class="alert alert-danger">
                                     <p>Error:</p>
                                     <span></span>
                                 </div>
-                                    
                                 <div class="form-group">
-                                    <label for="name" class="col-md-3 control-label">Name</label>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" name="name" placeholder="Name">
-                                    </div>
-                                </div>
-                                    
-                                <div class="form-group">
-                                    <label for="description" class="col-md-3 control-label">Description</label>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" name="description" placeholder="Description">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-				                    <label for="type" class="col-sm-3 control-label">Election Start</label>
+                                		<label for="dep" class="col-sm-4 control-label">Department</label>
 				                    <div class="col-sm-4">
-				                    		<input type="date" name="startDate">
-									  	<input type="time" name="startTime">
-				                    </div>
-				                </div>
-                                <div class="form-group">
-				                    <label for="type" class="col-sm-3 control-label">Election Ending</label>
-				                    <div class="col-sm-4">
-				                    		<input type="date" name="endDate">
-									  	<input type="time" name="endTime">
-				                    </div>
-				                </div>
-                                <div class="form-group">
-                                		<label for="fac" class="col-sm-3 control-label">Department</label>
-				                    <div class="col-sm-4">
-                                    <select id="departmentSelect" name="department" class="form-control">
-                                    <option value="" disabled selected>Department</option>
-                                    <option value="0">General Council</option>
-									  <c:forEach items="${sessionBean.getDepartments()}" var="department">
-									    <option value="${department.key}">
-									    		${department.key}
-    									    </option>
+                                    <select id="tableId" name="tableId" class="form-control">
+                                    <option value="" disabled selected>Table</option>
+									  <c:forEach items="${sessionBean.getTables()}" var="table">
+									    <option value="${table.getId()}">
+									    		${table.getDepartment().getName()}
+    									    </option> 
 									  </c:forEach>
 									</select>
 									</div>
                                 </div>
+
+                                <div class="form-group">
+                                		<label for="dep" class="col-sm-4 control-label">Election</label>
+				                    <div class="col-sm-4">
+                                    <select id="electionId" name="electionId" class="form-control">
+                                    <option value="" disabled selected>Election</option>
+									  <c:forEach items="${sessionBean.getFutureElections()}" var="election">
+									    <option value="${election.getId()}">
+									    		${election.getName()}
+    									    </option> 
+									  </c:forEach>
+									</select>
+									</div>
+                                </div>
+
                                 <div class="form-group">
                                     <!-- Button -->                                        
                                     <div class="col-md-offset-3 col-md-9">
@@ -93,7 +82,16 @@
                                     </div>
                                 </div>
                                 
-                              </form>
+                                
+                                </form>
+                                
+                          </c:when>
+                          <c:otherwise>
+								<tr><td>
+									Missing tables or no current elections ...
+								</td></tr>
+							</c:otherwise>
+						</c:choose>
                          </div>
                     </div>
                 </div>

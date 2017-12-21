@@ -23,11 +23,11 @@
 	                <li><a href="<s:url action="homePage"/>" id="home" action="adminPage">Home</a></li>
 	                <li><a href="<s:url action="registerPage"/>" id="register" >Register User</a></li>
 	                <li><a href="<s:url action="newElectionPage"/>" id="newElections" >Create Election</a></li>
-	                <li class="active"><a href="<s:url action="changeElectionPage"/>" id="elections" >Change Election</a></li>
+	                <li><a href="<s:url action="changeElectionPage"/>" id="elections" >Change Election</a></li>
 	                <li><a href="<s:url action="electionResultsPage"/>" id="electionResults" >Past Election Results</a></li>
 	                <li><a href="<s:url action="electionDetailsPage"/>" id="electionInfo">Election Info</a></li>
 	                <li><a href="<s:url action="userVotePage"/>" id="userVote">User Vote Info</a></li>
-	                <li><a href="<s:url action="manageTable"/>" id="manageTable">Manage Tables</a></li>
+	                <li class="active"><a href="<s:url action="manageTable"/>" id="manageTable">Manage Tables</a></li>  
 	                <li><a href="<s:url action="tablesPage"/>"id="tables" >Online Tables</a></li>
 	            </ul>
 	        </div>
@@ -35,64 +35,47 @@
 	            <div id="signupbox" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <div class="panel-title">Change Election</div>
+                            <div class="panel-title">Create Table</div>
                         </div>  
                         <div class="panel-body" >
-                            <form id="signupform" class="form-horizontal" role="form" action="changeelection" method="POST">
-                                
+
+                                    
+						<c:choose>
+							<c:when test="${sessionBean.getFreeDepartments().size() > 0}">
+							  <form id="signupform" class="form-horizontal" role="form" action="createtable" method="POST">
                                 <div id="signupalert" style="display:none" class="alert alert-danger">
                                     <p>Error:</p>
                                     <span></span>
                                 </div>
-                                    
                                 <div class="form-group">
-                                		<label for="fac" class="col-sm-3 control-label">Election</label>
+                                		<label for="dep" class="col-sm-3 control-label">New Table</label>
 				                    <div class="col-sm-4">
-                                    <select id="electionSelect" name="election" class="form-control">
-                                    <option value="" disabled selected>Election</option>
-									  <c:forEach items="${sessionBean.getAllElections()}" var="election">
-									    <option value="${election.getId()}">
-									    		${election.getName()}
-    									    </option>
+                                    <select id="deparment" name="depId" class="form-control">
+                                    <option value="" disabled selected>Department without voting tables</option>
+									  <c:forEach items="${sessionBean.getFreeDepartments()}" var="dep">
+									    <option value="${dep.getId()}">
+									    		${dep.getName()}
+    									    </option> 
 									  </c:forEach>
 									</select>
 									</div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="name" class="col-md-3 control-label">Name</label>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" name="name" placeholder="Name">
-                                    </div>
-                                </div>
-                                    
-                                <div class="form-group">
-                                    <label for="description" class="col-md-3 control-label">Description</label>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" name="description" placeholder="Description">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-				                    <label for="type" class="col-sm-3 control-label">Election Start</label>
-				                    <div class="col-sm-4">
-				                    		<input type="date" name="startDate">
-									  	<input type="time" name="startTime">
-				                    </div>
-				                </div>
-                                <div class="form-group">
-				                    <label for="type" class="col-sm-3 control-label">Election Ending</label>
-				                    <div class="col-sm-4">
-				                    		<input type="date" name="endDate">
-									  	<input type="time" name="endTime">
-				                    </div>
-				                </div>
+
                                 <div class="form-group">
                                     <!-- Button -->                                        
                                     <div class="col-md-offset-3 col-md-9">
-                                        <button id="btn-signup" type="submit" class="btn btn-primary"onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> Save Changes</button>
+                                        <button id="btn-signup" type="submit" class="btn btn-primary"onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> &nbsp Create</button>
                                     </div>
                                 </div>
+                                </form>
                                 
-                              </form>
+                          </c:when>
+                          <c:otherwise>
+								<tr><td>
+									All departments have already a voting table...
+								</td></tr>
+							</c:otherwise>
+						</c:choose>
                          </div>
                     </div>
                 </div>

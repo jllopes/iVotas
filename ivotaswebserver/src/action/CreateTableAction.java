@@ -9,17 +9,18 @@ import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.Map;
 
-public class AddTableAction extends ActionSupport implements SessionAware {
-	private static final long serialVersionUID = 4612369273739161719L;
-	private int tableId;
-	private int electionId;
+public class CreateTableAction extends ActionSupport implements SessionAware {
+	private int depId;
 	private Map<String,Object> session;
 	@Override
 	public String execute() {
 		try{
-			System.out.println("table:" +tableId + " election: " +electionId );
-			this.getSessionBean().assignTable( tableId,  electionId);
-			return SUCCESS;
+			if(this.getSessionBean()!= null ){
+				this.getSessionBean().CreateVotingTable(depId);
+				return SUCCESS;
+			}
+			else
+				return LOGIN;
 		}catch(RemoteException e){
 			return ERROR;
 		}
@@ -27,7 +28,7 @@ public class AddTableAction extends ActionSupport implements SessionAware {
 	
 	public SessionBean getSessionBean(){
 		if(!session.containsKey("sessionBean"))
-			this.setSessionBean(new SessionBean());
+			return null;
 		return (SessionBean) session.get("sessionBean");
 	}
 	
@@ -40,22 +41,13 @@ public class AddTableAction extends ActionSupport implements SessionAware {
 		this.session = session;
 	}
 
-	public int getTableId() {
-		return tableId;
+	public int getDepId() {
+		return depId;
 	}
 
-	public void setTableId(int tableId) {
-		this.tableId = tableId;
+	public void setDepId(int depId) {
+		this.depId = depId;
 	}
 
-	public int getElectionId() {
-		return electionId;
-	}
-
-	public void setElectionId(int electionId) {
-		this.electionId = electionId;
-	}
-
-	
 	
 }
