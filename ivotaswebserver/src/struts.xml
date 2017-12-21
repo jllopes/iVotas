@@ -70,11 +70,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     
     
     <action name="chooseelection" class="action.ChooseElectionAction">
-<<<<<<< HEAD
-   		 	<result name="input">/error.jsp</result>
-=======
     		<result name="input">/error.jsp</result>
->>>>>>> refs/remotes/origin/master
     		<result>/userVoteInfo.jsp</result>
     </action>
     

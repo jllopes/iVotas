@@ -61,8 +61,7 @@
                         <td><c:out value = "${election.getPrettyEndDate()}"/></td>
                       </tr>
                       <tr>
-                      <td></td>
-                      <td>
+						<td><a id="btn-fblogin" class="btn btn-primary">Share to Facebook</a>                      <td>
                       </tr>
 						<tr>
                       <td>Election Lists:</td>

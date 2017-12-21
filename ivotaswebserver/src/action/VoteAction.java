@@ -1,7 +1,5 @@
 package action;
 
-import com.github.scribejava.core.model.Token;
-import com.github.scribejava.core.oauth.OAuthService;
 import com.opensymphony.xwork2.ActionSupport;
 
 import model.SessionBean;
@@ -43,7 +41,7 @@ public class VoteAction extends ActionSupport implements SessionAware {
 					a = this.getSessionBean().vote(electionId,0 ); //invalid list
 				}
 				if(a){
-					if(this.getSessionBean().getFacebookId() != null && session.get("service") != null && session.get("accessToken") != null) {
+					if(this.getSessionBean().getFacebookId() != null) {
 						String msg = "I just voted on election " + this.getSessionBean().getElectionInfo(electionId).getName() + " on iVotas!";
 						msg.replaceAll(" ", "%20");
 						try {
@@ -52,7 +50,7 @@ public class VoteAction extends ActionSupport implements SessionAware {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						this.getSessionBean().postToFacebook(msg, (Token)session.get("accessToken"), (OAuthService)session.get("service"));
+						this.getSessionBean().postToFacebook(msg);
 						System.out.println("postou");
 						System.out.println("posted");
 					}
@@ -108,4 +106,3 @@ public class VoteAction extends ActionSupport implements SessionAware {
 	
 
 }
-

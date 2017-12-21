@@ -39,9 +39,7 @@ public interface RMI_Interface_Bean extends Remote{
     public ArrayList<Lista> getListsElection(int idElection) throws RemoteException;
     public boolean associateFacebook(String username ,String facebookId) throws RemoteException;
     public String loginFacebook(String facebookId) throws RemoteException;
-    public String getFacebookId(String username) throws RemoteException;
-    public Vote getVote(int id) throws RemoteException;
-    
+    public String getFacebookId(String username) throws RemoteException;    
     
     public HashMap<String, Integer> getElectionVotesPerTable(int electionId) throws RemoteException;
     

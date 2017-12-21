@@ -28,11 +28,7 @@
 	                <li><a href="<s:url action="electionResultsPage"/>" id="electionResults" >Past Election Results</a></li>
 	                <li><a href="<s:url action="electionDetailsPage"/>" id="electionInfo">Election Info</a></li>
 	                <li><a href="<s:url action="userVotePage"/>" id="userVote">User Vote Info</a></li>
-<<<<<<< HEAD
 	                <li><a href="<s:url action="manageTable"/>" id="manageTable">Manage Tables</a></li>
-=======
-	                <li><a href="<s:url action="addTable"/>" id="addTable">Add Table</a></li> 
->>>>>>> refs/remotes/origin/master
 	                <li><a href="<s:url action="tablesPage"/>"id="tables" >Online Tables</a></li>
 	            </ul>
 	        </div>

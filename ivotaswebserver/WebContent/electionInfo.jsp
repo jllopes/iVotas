@@ -64,7 +64,7 @@
 			
 										        <div class="form-group">
 										            <div class="btn-group">
-										                
+
 										  				   	<select  class="btn btn-default active">
 											      				<option>${value.getName()}</option>
 												 			 	<c:forEach items="${sessionBean.getPeopleList(value.getId())}" var="name">
@@ -83,6 +83,8 @@
 				</div>
 			</div>
 		</div>
+			<button class="btn btn-primary" onclick="window.history.back();">Go Back</button>
+		
     </div>
 </body>
 </html>

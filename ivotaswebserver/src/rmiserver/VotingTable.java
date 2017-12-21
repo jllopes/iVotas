@@ -26,9 +26,5 @@ public class VotingTable implements Serializable{
 	public void setId(int id) {
 		this.id = id;
 	}
-<<<<<<< HEAD
-=======
-    
-    
->>>>>>> refs/remotes/origin/master
+
 }

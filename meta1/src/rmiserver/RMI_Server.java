@@ -1905,20 +1905,17 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 			ResultSet rs = prepStatement1.executeQuery();
 			List<Vote> votes;
 			votes = Collections.synchronizedList(new ArrayList());
-			if (rs.next()) {
-				rs.beforeFirst();
-				while (rs.next()) {
-					User user = getUser(rs.getInt("user"));
-					Election election = getElection(rs.getInt("election"));
-					VotingTable table = getVotingTable(rs.getInt("voteTable"));
-					Date date = new Date(rs.getTimestamp("voteTime").getTime());
-					int voteId = rs.getInt("id");
-					votes.add(new Vote(user, election, table, date, voteId));
-				}
-				return votes;
-			} else {
-				return null;
+
+			while (rs.next()) {
+				User user = getUser(rs.getInt("user"));
+				Election election = getElection(rs.getInt("election"));
+				VotingTable table = getVotingTable(rs.getInt("voteTable"));
+				Date date = new Date(rs.getTimestamp("voteTime").getTime());
+				int voteId = rs.getInt("id");
+				votes.add(new Vote(user, election, table, date, voteId));
 			}
+			return votes;
+
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

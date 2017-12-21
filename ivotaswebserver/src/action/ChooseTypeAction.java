@@ -8,7 +8,7 @@ import com.opensymphony.xwork2.ActionSupport;
 
 import model.SessionBean;
 
-public class ChooselistTypeAction extends ActionSupport implements SessionAware {
+public class ChooseTypeAction extends ActionSupport implements SessionAware {
 
 	/**
 	 * 

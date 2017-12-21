@@ -40,7 +40,7 @@ public class FacebookAction extends ActionSupport implements SessionAware{
   public String execute() throws RemoteException {
 	// Replace these with your own api key and secret
 	  	OAuthService service;
-	  	if(session.get("service") == null) {
+	  	if(this.getSessionBean().getService() == null) {
 		  	service = new ServiceBuilder()
 		          .provider(FacebookApi2.class)
 		          .apiKey(apiKey)
@@ -48,14 +48,14 @@ public class FacebookAction extends ActionSupport implements SessionAware{
 		          .callback("http://localhost:8080/ivotaswebserver/facebook") // Do not change this.
 		          .scope("publish_actions")
 		          .build();
-		  	session.put("service", service);
+		  	this.getSessionBean().setService(service);
 	  	} else {
-	  		service = (OAuthService) session.get("service");
+	  		service = this.getSessionBean().getService();
 	  	}
 		Verifier verifier = new Verifier(code);
 		Token accessToken = service.getAccessToken(EMPTY_TOKEN, verifier);
 		OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL, service);
-		session.put("accessToken",accessToken);
+		this.getSessionBean().setAccessToken(accessToken);
 	    service.signRequest(accessToken, request);
 	    Response response = request.send();
 		// Now let's go and ask for a protected resource!
@@ -63,7 +63,6 @@ public class FacebookAction extends ActionSupport implements SessionAware{
 		String userId = null;
 		try {
               JSONObject responseBody = (JSONObject) parser.parse(response.getBody());
-              System.out.println(responseBody);
               if(responseBody.containsKey("id")) {
                   userId = responseBody.get("id").toString();
               }
@@ -74,8 +73,7 @@ public class FacebookAction extends ActionSupport implements SessionAware{
 			if(this.getSessionBean().loginFacebook(userId)) {
 				System.out.println("Login facebook funcionou");
 			} else {
-				System.out.println("Conta não está associada");
-				session.put("msg", "No account associated with facebook profile");
+				System.out.println("Login facebook nao funcionou");
 				return ERROR;
 			}
 		} else {

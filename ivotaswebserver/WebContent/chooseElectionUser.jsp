@@ -39,6 +39,9 @@
                             <div class="panel-title">Choose User</div>
                         </div>  
                         <div class="panel-body" >
+                        	<c:choose>
+							<c:when test="${sessionBean.getUserVotes(user).size()>0}">
+                        
                             <form id="signupform" class="form-horizontal" role="form" action="chooseelection" method="POST">
                                 <div class="form-group">
                                 		<label for="fac" class="col-sm-3 control-label">Election</label>
@@ -60,6 +63,13 @@
                                     </div>
                                 </div>
                               </form>
+                          </c:when>
+                          <c:otherwise>
+								<tr><td>
+									This user havent vote yet ...
+								</td></tr>
+							</c:otherwise>
+						</c:choose>
                          </div>
                     </div>
                 </div>
