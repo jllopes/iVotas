@@ -12,7 +12,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
   <!-- devMode equals debug information and reload everything for every request -->
   <constant name="struts.devMode" value="true" />
   <constant name="struts.ui.theme" value="simple" />
-
+  <constant name="struts.action.excludePattern" value="/ws"/>
   <package name="ivotaswebserver" extends="struts-default">
 	
 	<default-action-ref name="index" />

@@ -334,6 +334,7 @@ class Connection extends Thread {
 	    this.userId = 0;
 	    this.status = false;
 	    this.block = true;
+
 	}
 	
 	private void login(LinkedHashMap<String, String> input){
