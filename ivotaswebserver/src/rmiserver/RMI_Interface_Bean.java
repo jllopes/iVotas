@@ -57,6 +57,7 @@ public interface RMI_Interface_Bean extends Remote{
     public Vote getVote(int id) throws RemoteException;
     public void addTable(TCP_Interface t) throws RemoteException;
     public ArrayList<Department> getAllDepartments() throws RemoteException;
+<<<<<<< HEAD
 	public ArrayList<Department> getFreeDepartments() throws RemoteException;
 	public boolean createTable(int depId) throws RemoteException;
 	public boolean addVotingTable(int election, int table) throws RemoteException;
@@ -64,4 +65,7 @@ public interface RMI_Interface_Bean extends Remote{
 	public ArrayList<VotingTable> getTables() throws RemoteException;
 
 
+=======
+	public Vote getVote(int id);
+>>>>>>> refs/remotes/origin/master
 }

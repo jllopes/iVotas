@@ -25,6 +25,7 @@
 
 
 </head>
+<jsp:include page="logoutheader.jsp" />
 <body>
     <c:set var="bean" value="${sessionBean}"/>
 

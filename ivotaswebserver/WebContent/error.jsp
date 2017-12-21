@@ -8,6 +8,7 @@
 <title>IVotas</title>
 </head>
 <body>
+	<p>${session.msg}</p>
 	<h4>You got an exception. Please <i>throw</i> it to someone who can handle it.</h4>
 	<p><s:property value="exceptionStack" /></p>
 </body>

@@ -38,6 +38,7 @@
                                 	}
 	</script>
 </head>
+<jsp:include page="logoutheader.jsp" />
 <body>
 	<div class="container">
 	    <div class="row">

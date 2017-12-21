@@ -25,6 +25,7 @@
 
 
 </head>
+<jsp:include page="logoutheader.jsp" />
 <body>
 	<div class="container" style="float:left" >
       <div class="row"  >
@@ -61,7 +62,7 @@
                       </tr>
                       <tr>
                       <td></td>
-                      <td><a id="btn-fblogin" class="btn btn-primary">Share to Facebook</a>
+                      <td>
                       </tr>
 						<tr>
                       <td>Election Lists:</td>
@@ -96,6 +97,12 @@
 								</td>
 							</tr>
 						</form>
+						<s:if test="sessionBean.hasFacebook()">
+							<form>
+								<input type='hidden' name=electionId id=electionId value="${electionId}" />
+								<button type="submit" class="btn btn-primary" value="${sessionBean.shareToFacebook(electionId,session.accessToken,session.service)}">Share To Facebook</button>
+							</form>
+						</s:if>
 						</tr>
                     </tbody>
                   </table>

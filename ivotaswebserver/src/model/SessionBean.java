@@ -15,7 +15,7 @@ import com.github.scribejava.core.model.Token;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuthService;
 
-import javafx.util.Pair;
+//import javafx.util.Pair;
 import rmiserver.*;
 
 
@@ -69,7 +69,7 @@ public class SessionBean {
 		return false;
 	}
 	
-	public void postToFacebook(String message) {
+	public void postToFacebook(String message, Token accessToken, OAuthService service) {
 		String req = "https://graph.facebook.com/" + this.facebookId + "/feed?message=" + message + "&access_token=" + this.accessToken.getToken();
 		System.out.println(req);
 		OAuthRequest request = new OAuthRequest(Verb.POST, req, service);
@@ -78,6 +78,28 @@ public class SessionBean {
 		System.out.println(response.getBody());
 	}
 	
+<<<<<<< HEAD
+=======
+	public boolean hasFacebook() {
+		if(this.facebookId != null) {
+			System.out.println("true");
+			return true;
+		}
+		System.out.println("false");
+		return false;
+	}
+	
+	public void shareToFacebook(int election, Token accessToken, OAuthService service) {
+		String url = "http://localhost:8080/ivotaswebserver/electionlist?electionId=" + election;
+		String req = "https://graph.facebook.com/" + this.facebookId + "/feed?message=" + url + "&access_token=" + accessToken.getToken();
+		System.out.println(req);
+		OAuthRequest request = new OAuthRequest(Verb.POST, req, service);
+		Response response = request.send();
+		System.out.println(response.getCode());
+		System.out.println(response.getBody());
+	}
+	
+>>>>>>> refs/remotes/origin/master
 	public Vote getVote(int id) throws RemoteException{
 		return server.getVote(id);
 	}
@@ -120,7 +142,7 @@ public class SessionBean {
 		Iterator it = faculties.entrySet().iterator();
     		while (it.hasNext()) {
     			Map.Entry<String, Integer> f = (Map.Entry) it.next();
-    		    facultyInfo.put(new Pair<String, Integer>(f.getKey(), f.getValue()), this.getDepartmentsFaculty(f.getValue()));
+    		    facultyInfo.put(new Map.Entry<String, Integer>(f.getKey(), f.getValue()), this.getDepartmentsFaculty(f.getValue()));
     		}
     		return facultyInfo;
 	}
