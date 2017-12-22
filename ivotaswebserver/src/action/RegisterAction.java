@@ -48,9 +48,9 @@ public class RegisterAction extends ActionSupport implements SessionAware {
 					}
 				}
 			}
-			return ERROR;
+			return LOGIN;
 		}catch(RemoteException e){
-			return ERROR;
+			return "rmi";
 		}
 	}
 	
@@ -66,7 +66,7 @@ public class RegisterAction extends ActionSupport implements SessionAware {
 	
 	public SessionBean getSessionBean(){
 		if(!session.containsKey("sessionBean"))
-			this.setSessionBean(new SessionBean());
+			return null;
 		return (SessionBean) session.get("sessionBean");
 	}
 	

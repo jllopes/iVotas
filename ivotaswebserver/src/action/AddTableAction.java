@@ -17,17 +17,19 @@ public class AddTableAction extends ActionSupport implements SessionAware {
 	@Override
 	public String execute() {
 		try{
-			System.out.println("table:" +tableId + " election: " +electionId );
-			this.getSessionBean().assignTable( tableId,  electionId);
-			return SUCCESS;
+			if(this.getSessionBean() != null){
+				this.getSessionBean().assignTable( tableId,  electionId);
+				return SUCCESS;
+			}
+			return LOGIN;
 		}catch(RemoteException e){
-			return ERROR;
+			return "rmi";
 		}
 	}
 	
 	public SessionBean getSessionBean(){
 		if(!session.containsKey("sessionBean"))
-			this.setSessionBean(new SessionBean());
+			return null;
 		return (SessionBean) session.get("sessionBean");
 	}
 	

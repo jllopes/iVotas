@@ -27,10 +27,13 @@ public class NewElectionAction extends ActionSupport implements SessionAware {
 	@Override
 	public String execute() {
 		try{
-			this.getSessionBean().createElection(name, description, startDate, endDate, startTime, endTime, department);
-			return SUCCESS;
+			if(this.getSessionBean()!= null){
+				this.getSessionBean().createElection(name, description, startDate, endDate, startTime, endTime, department);
+				return SUCCESS;
+			}
+			return LOGIN;
 		}catch(RemoteException e){
-			return ERROR;
+			return "rmi";
 		}catch(ParseException e1) {
 			return ERROR;
 		}
@@ -38,7 +41,7 @@ public class NewElectionAction extends ActionSupport implements SessionAware {
 	
 	public SessionBean getSessionBean(){
 		if(!session.containsKey("sessionBean"))
-			this.setSessionBean(new SessionBean());
+			return null;
 		return (SessionBean) session.get("sessionBean");
 	}
 	

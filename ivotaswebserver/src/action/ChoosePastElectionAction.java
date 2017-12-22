@@ -22,12 +22,11 @@ public class ChoosePastElectionAction extends ActionSupport implements SessionAw
 				return SUCCESS;
 			}
 		}
-		return ERROR;
+		return LOGIN;
 	}
 	
 	public SessionBean getSessionBean(){
 		if(!session.containsKey("sessionBean")){
-			System.out.println("Should not reach here =");
 			return null;
 		}
 		return (SessionBean) session.get("sessionBean");

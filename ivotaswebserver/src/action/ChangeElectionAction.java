@@ -27,12 +27,15 @@ public class ChangeElectionAction extends ActionSupport implements SessionAware 
 	@Override
 	public String execute() {
 		try{
-			if(this.election != 0) {
-				this.getSessionBean().changeElection(election, name, description, startDate, endDate, startTime, endTime);
+			if(this.getSessionBean()!= null){
+				if(this.election != 0) {
+					this.getSessionBean().changeElection(election, name, description, startDate, endDate, startTime, endTime);
+				}
+				return SUCCESS;
 			}
-			return SUCCESS;
+			return LOGIN;
 		}catch(RemoteException e){
-			return ERROR;
+			return "rmi";
 		}catch(ParseException e1) {
 			return ERROR;
 		}
@@ -40,7 +43,7 @@ public class ChangeElectionAction extends ActionSupport implements SessionAware 
 	
 	public SessionBean getSessionBean(){
 		if(!session.containsKey("sessionBean"))
-			this.setSessionBean(new SessionBean());
+			return null;
 		return (SessionBean) session.get("sessionBean");
 	}
 	

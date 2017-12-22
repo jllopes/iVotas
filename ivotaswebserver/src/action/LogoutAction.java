@@ -48,7 +48,7 @@ public class LogoutAction extends ActionSupport implements SessionAware {
 	
 	public SessionBean getSessionBean(){
 		if(!session.containsKey("sessionBean"))
-			this.setSessionBean(new SessionBean());
+			return null;
 		return (SessionBean) session.get("sessionBean");
 	}
 	

@@ -67,7 +67,7 @@ public class VoteAction extends ActionSupport implements SessionAware {
 		} catch(NumberFormatException e1) {
 			return ERROR;
 		}catch (RemoteException e){
-			return ERROR;
+			return "rmi";
 		}	
 	}
 

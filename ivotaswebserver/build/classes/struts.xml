@@ -18,6 +18,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
 	<default-action-ref name="index" />
 	
 	<global-results>
+		<result name="login">/index.jsp</result>
 		<result name="rmi">/index.html</result>
 		<result name="error">/error.jsp</result>
 	</global-results>
@@ -39,12 +40,13 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
       <result name="user">/electionlist.jsp</result>
       <result name="admin">/admin.jsp</result> 
       <result name="login">/index.jsp</result>
-      <result name="error">/error.jsp</result>
+      <result name="rmi">/error.jsp</result>
     </action>
     
     <action name="register" class="action.RegisterAction" method="execute">
 	    	<result name="success">/admin.jsp</result>
-	    	<result name="error">/admin.jsp</result>
+	    	<result name="login">/index.jsp</result>
+	    	<result name="rmi">/home.html</result>
     </action>
     
     <action name="facebook" class="action.FacebookAction" method="execute">
@@ -53,6 +55,9 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     </action>
     
     <action name="newelection" class="action.NewElectionAction" method="execute">
+    		<result name="login">/index.jsp</result>
+    		<result name="rmi">/home.html</result>
+    		<result name="success">/admin.jsp</result>
     		<result name="error">/index.jsp</result>
     </action>
     
@@ -62,6 +67,9 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     
     <action name="changeelection" class="action.ChangeElectionAction" method="execute">
     		<result name="error">/index.jsp</result>
+    		<result name="login">/index.jsp</result>
+    		<result name="rmi">/home.html</result>
+    		
     </action>
     
     <action name="chooseuser" class="action.ChooseUserAction">
@@ -76,6 +84,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     
     <action name="choosepastelection" class="action.ChoosePastElectionAction" method="execute">
     		<result name="success">/pastElection.jsp</result>
+    		<result name="login">/index.jsp</result>
     </action>
     
     <action name="homePage">
@@ -83,27 +92,27 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     </action>
     
     <action name="registerPage">
-    		<result>/register.jsp</result>
-    	</action>
+    	<result>/register.jsp</result>
+    </action>
     	
-    	<action name="adminPage">
-    		<result>/admin.jsp</result>
-    	</action>
+    <action name="adminPage">
+    	<result>/admin.jsp</result>
+    </action>
     	
-    	<action name="newElectionPage">
-    		<result>/createElection.jsp</result>
-    	</action>
+    <action name="newElectionPage">
+    	<result>/createElection.jsp</result>
+    </action>
     	
-    	<action name="electionDetailsPage">
-    		<result>/consultElections.jsp</result>
-    	</action>
+    <action name="electionDetailsPage">
+    	<result>/consultElections.jsp</result>
+    </action>
     	
-    	<action name="changeElectionPage">
-    		<result>/changeElection.jsp</result>
+    <action name="changeElectionPage">
+    	<result>/changeElection.jsp</result>
     </action>
     
     <action name="userVotePage">
-    		<result>/userVote.jsp</result>
+    	<result>/userVote.jsp</result>
     </action>
     
    <action name="election">
@@ -142,13 +151,15 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     
     <action name="addtable" class="action.AddTableAction" method="execute">
       <result name="success">/admin.jsp</result>
-      <result name="error">/error.jsp</result>
+      <result name="login">/index.jsp</result>
+      <result name="rmi">/home.html</result>
     </action>
     
     <action name="vote" class="action.VoteAction" method="execute">
     	<result name="success">/electionlist.jsp</result>
     	<result name="login">/index.jsp</result>
     	<result name="error">/error.jsp</result>
+    	<result name="rmi">/home.html</result>
     </action>
   </package>
 

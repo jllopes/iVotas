@@ -42,7 +42,7 @@ public class LoginAction extends ActionSupport implements SessionAware {
 			} else
 				return LOGIN;
 		}catch(RemoteException e){
-			return ERROR;
+			return "rmi";
 		}
 	}
 	
