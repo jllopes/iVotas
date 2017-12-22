@@ -70,17 +70,5 @@ insert into candidate(user, list) values (2,7);
 insert into electionList(name, election, type) values ("Lista B4",4,1);
 insert into candidate(user, list) values (2,8);
 
-
-
 insert into user(username, password, type, faculty, department, name, address, ccNumber, ccMonth, ccYear,phoneNumber) values ("admin","admin",4,1,1,"Admin", "Admin", 999999999, 8, 1990,"+351123456789");
-/*
-select * from election where startDate < current_timestamp() and endDate > current_timestamp();
-select * from electionList;
 
-select * from election;
-select * from user ;
-select * from data_user;
-select * from faculty;
-select * from user;
-select * from candidate;
-*/

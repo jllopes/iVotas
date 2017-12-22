@@ -52,10 +52,6 @@ window.onload = function(){
                                 <div style="margin-top:10px" class="form-group">
                                     <!-- Button -->
 
-                                <div class="col-sm-12 controls">
-                                  <a id="btn-login" href="#" class="btn btn-success" onclick="document.getElementById('loginform').submit()">Login  </a>
-                                  <a id="btn-fblogin" href="#" class="btn btn-primary">Login with Facebook</a>
-                                </div>
                             </div>
                         </form>     
             		</div>                     

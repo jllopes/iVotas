@@ -281,6 +281,10 @@ public class SessionBean {
 		return server.getUsers();
 	}
 	
+	public ArrayList<User> getUsersByType(int type) throws RemoteException {
+		return server.getUsersType(type);
+	}
+	
 	public void changeElection(int id, String name, String description, String startDate, String endDate, String startTime, String endTime) throws ParseException, RemoteException{
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		if(name != null) {
@@ -379,6 +383,13 @@ public class SessionBean {
 		return server.getTables();
 	}
 	
+	public int createList(String name, int electionId, int type) throws RemoteException{
+		server.createList(name, type, electionId);
+		return server.getListId(name, electionId, type);
+	}
 	
+	public void addCandidatesToList(int id, ArrayList<Integer> users) throws RemoteException{
+		server.addCandidatesToList(id, users);
+	}
 	
 }

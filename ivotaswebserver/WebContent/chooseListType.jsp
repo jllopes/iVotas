@@ -48,8 +48,9 @@
 	            <ul class="nav nav-pills nav-stacked admin-menu">
 	                <li><a href="<s:url action="homePage"/>" id="home" action="adminPage">Home</a></li>
 	                <li><a href="<s:url action="registerPage"/>" id="register" >Register User</a></li>
-	                <li class="active"><a href="<s:url action="newElectionPage"/>" id="newElections" >Create Election</a></li>
+	                <li><a href="<s:url action="newElectionPage"/>" id="newElections" >Create Election</a></li>
 	                <li><a href="<s:url action="changeElectionPage"/>" id="elections" >Change Election</a></li>
+	                <li  class="active"><a href="<s:url action="chooseListTypePage"/>"id="tables" >Create Election List</a></li>
 	                <li><a href="<s:url action="electionResultsPage"/>" id="electionResults" >Past Election Results</a></li>
 	                <li><a href="<s:url action="electionDetailsPage"/>" id="electionInfo" action="electionDetailsPage">Election Info</a></li>
 	                <li><a href="<s:url action="userVotePage"/>" id="userVote">User Vote Info</a></li>
@@ -61,30 +62,45 @@
 	            <div id="signupbox" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <div class="panel-title">New Election</div>
+                            <div class="panel-title">New Election List</div>
                         </div>  
                         <div class="panel-body" >
-                            <form id="signupform" class="form-horizontal" role="form" action="choosetype" method="POST">
+                            <form id="signupform" class="form-horizontal" role="form" action="createList" method="POST">
                  
                                 <div id="signupalert" style="display:none" class="alert alert-danger">
                                     <p>Error:</p>
                                     <span></span>
                                 </div>
-                                    
-                                <div class="form-group">
+                                    				                
+				                <div class="form-group">
 				                    <label for="type" class="col-sm-3 control-label">Type</label>
 				                    <div class="col-sm-4">
 				                        <select name="listType" id="Select" class="form-control">
-				                            <option>User</option>
-				                            <option>Professor</option>
-				                            <option>Employee</option>
+				                            <option value=1>Student</option>
+				                            <option value=2>Professor</option>
+				                            <option value=3>Employee</option>
 				                          </select>
 				                    </div>
 				                </div>
+				                
+				                <div class="form-group">
+				                    <label for="type" class="col-sm-3 control-label">Election</label>
+				                    <div class="col-sm-4">
+				                        <select name="electionId" id="Select" class="form-control">
+                                    		<option value="" disabled selected>Election</option>
+										  <c:forEach items="${sessionBean.getFutureElections()}" var="election">
+										    <option value="${election.getId()}">
+										    		${election.getName()}
+	    									    </option>
+										  </c:forEach>
+				                          </select>
+				                    </div>
+				                </div>
+				                
                                 <div class="form-group">
                                     <!-- Button -->                                        
                                     <div class="col-md-offset-3 col-md-9">
-                                        <button id="btn-signup" type="submit" class="btn btn-primary"onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> &nbsp Register</button>
+                                        <button id="btn-signup" type="submit" class="btn btn-primary"onclick="document.getElementById('signupform').submit()"><i class="icon-hand-right"></i> &nbsp Create</button>
                                     </div>
                                 </div>
                                 

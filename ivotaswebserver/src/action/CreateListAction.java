@@ -8,11 +8,19 @@ import com.opensymphony.xwork2.ActionSupport;
 
 import model.SessionBean;
 
-public class ChooseTypeAction extends ActionSupport implements SessionAware {
-
+public class CreateListAction extends ActionSupport implements SessionAware {
 	private int listType = 0;
 	private int electionId = 0;
 	private Map<String,Object> session;
+	
+	public String execute(){
+		
+		if(this.getSessionBean() != null ){
+			if(listType!= 0 && electionId != 0)
+				return SUCCESS;
+		}
+		return LOGIN;
+	}
 	
 	public SessionBean getSessionBean(){
 		if(!session.containsKey("sessionBean"))
@@ -32,16 +40,14 @@ public class ChooseTypeAction extends ActionSupport implements SessionAware {
 	/**
 	 * @return the listType
 	 */
-	public int getlistType() {
-		System.out.println("get list type" + listType);
+	public int getListType() {
 		return listType;
 	}
 
 	/**
 	 * @param listType the listType to set
 	 */
-	public void setlistType(int listType) {
-		System.out.println("set list type" + listType);
+	public void setListType(int listType) {
 		this.listType = listType;
 	}
 

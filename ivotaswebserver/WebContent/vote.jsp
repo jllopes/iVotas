@@ -60,9 +60,16 @@
                         <td>End Date:</td>
                         <td><c:out value = "${election.getPrettyEndDate()}"/></td>
                       </tr>
-                      <tr>
-						<td><a id="btn-fblogin" class="btn btn-primary">Share to Facebook</a>                      <td>
-                      </tr>
+						<s:if test="sessionBean.hasFacebook()">
+							<tr><td></td>	
+							<td style="float:right">
+							<form>
+								<input type='hidden' name=electionId id=electionId value="${electionId}" />
+								<button type="submit" class="btn btn-primary" value="${sessionBean.shareToFacebook(electionId,session.accessToken,session.service)}">Share To Facebook</button>
+							</form>
+							</td>						</tr>
+							
+						</s:if>
 						<tr>
                       <td>Election Lists:</td>
                       <td>
@@ -96,13 +103,9 @@
 								</td>
 							</tr>
 						</form>
-						<s:if test="sessionBean.hasFacebook()">
-							<form>
-								<input type='hidden' name=electionId id=electionId value="${electionId}" />
-								<button type="submit" class="btn btn-primary" value="${sessionBean.shareToFacebook(electionId,session.accessToken,session.service)}">Share To Facebook</button>
-							</form>
-						</s:if>
-						</tr>
+						</td>
+						
+
                     </tbody>
                   </table>
 

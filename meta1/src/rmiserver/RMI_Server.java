@@ -1805,6 +1805,40 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		}
 		return null;
 	}
+	
+	public int getListId(String name, int electionId, int type) throws RemoteException{
+		try {
+			connection.setAutoCommit(false);
+
+			String sql1 = "select id from electionlist where name=? and election=? and type=?;";
+			PreparedStatement prepStatement1 = connection.prepareStatement(sql1);
+			prepStatement1.setString(1,name);
+			prepStatement1.setInt(2,electionId);
+			prepStatement1.setInt(3,type);
+			ResultSet rs = prepStatement1.executeQuery();
+			if(rs.next()){
+				return rs.getInt("id");
+			} 
+			return 0;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return 0;
+	}
+	
 
 	/**
 	 * Method to get department info by its id.
@@ -2115,6 +2149,50 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 		return null;
 	}
 
+	public ArrayList<User> getUsersType(int type) throws RemoteException{
+		try {
+			connection.setAutoCommit(false);
+
+			String sql = "select * from user where type= ?;";
+			PreparedStatement prepStatement = connection.prepareStatement(sql);
+			prepStatement.setInt(1, type);
+			ResultSet rs = prepStatement.executeQuery();
+
+			if(rs.next()){ //theres is at least one election
+				ArrayList<User> users = new ArrayList<>();
+				rs.beforeFirst();
+				while(rs.next()){
+					users.add(new User(rs.getString("username"),rs.getInt("id")));
+				}
+				rs.close();
+				return users;
+
+			}else{
+				rs.close();
+				return null;
+				//return 0;
+
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				System.out.println("DB: Connection lost...");
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				System.out.println("DB: Connection lost...");
+			}
+		}
+		return null;
+	}
+
+	
 	public HashMap<Integer, String> getEarlyElections(int usertype) throws RemoteException{
 		try {
 			connection.setAutoCommit(false);

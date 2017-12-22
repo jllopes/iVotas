@@ -25,6 +25,7 @@
 	                <li><a href="<s:url action="registerPage"/>" id="register" >Register User</a></li>
 	                <li><a href="<s:url action="newElectionPage"/>" id="newElections" >Create Election</a></li>
 	                <li><a href="<s:url action="changeElectionPage"/>" id="elections" >Change Election</a></li>
+	                <li><a href="<s:url action="chooseListTypePage"/>"id="tables" >Create Election List</a></li>
 	                <li><a href="<s:url action="electionResultsPage"/>" id="electionResults" >Past Election Results</a></li>
 	                <li><a href="<s:url action="electionDetailsPage"/>" id="electionInfo">Election Info</a></li>
 	                <li class="active"><a href="<s:url action="userVotePage"/>" id="userVote">User Vote Info</a></li>

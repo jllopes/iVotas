@@ -62,5 +62,8 @@ public interface RMI_Interface_Bean extends Remote{
 	public boolean addVotingTable(int election, int table) throws RemoteException;
 	public ArrayList<Election> getFutureElections() throws RemoteException;
 	public ArrayList<VotingTable> getTables() throws RemoteException;
+	public ArrayList<User> getUsersType(int type) throws RemoteException;
+	public int getListId(String name, int electionId, int type) throws RemoteException;
+    public void addCandidatesToList(int list, ArrayList<Integer> users) throws RemoteException;
 
 }

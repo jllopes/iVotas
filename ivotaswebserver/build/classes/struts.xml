@@ -127,13 +127,20 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
       <result>/electionInfo.jsp</result>
     </action>
     
-    <action name="chooseListTypePage">
+    <action name="chooseListTypePage" class="action.ChooseTypeAction">
         <result>/chooseListType.jsp</result>
     </action>
     
-    <action name="addListPage">
-        <result>/addListElection.jsp</result>
+    <action name="createList" class="action.CreateListAction" method="execute">
+    	<result name="success">/addListElection.jsp</result>
+    	<result name="input">/addListElection.jsp</result>
     </action>
+    
+    <action name="createcandidates" class="action.CreateCandidatesAction" method="execute">
+    	<result name="success">/admin.jsp</result>
+    	<result name="input">/addListElection.jsp</result>
+    </action>
+
     
     <action name="electionlist" class="action.ListsAction">
       <result>/vote.jsp</result>
