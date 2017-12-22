@@ -3064,10 +3064,10 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_Interface_TCP
 	}
 	
 	public static void main(String args[]) {
-		
+		/*
 	 		System.getProperties().put("java.security.policy", "policy.all");
 			System.setSecurityManager(new SecurityManager()); 
-		 
+		 */
 		
 		try {
 			RMI_Server h = new RMI_Server();
