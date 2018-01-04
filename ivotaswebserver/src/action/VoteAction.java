@@ -1,5 +1,7 @@
 package action;
 
+import com.github.scribejava.core.model.Token;
+import com.github.scribejava.core.oauth.OAuthService;
 import com.opensymphony.xwork2.ActionSupport;
 
 import model.SessionBean;
@@ -50,7 +52,7 @@ public class VoteAction extends ActionSupport implements SessionAware {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						this.getSessionBean().postToFacebook(msg);
+						this.getSessionBean().postToFacebook(msg,(OAuthService)session.get("service"),(Token)session.get("accessToken"));						
 						System.out.println("postou");
 						System.out.println("posted");
 					}

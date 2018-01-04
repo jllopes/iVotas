@@ -79,7 +79,7 @@
 							<c:forEach items="${sessionBean.getListsElections(electionId)}" var="value">
 
 							        <div class="form-group">
-							        	<input type="checkbox" name="listId" value="${value.key}" id="${value.key}" autocomplete="off" />
+							        	<input type="checkbox" name="listId" value="${value.key}" id="${value.key}" />
 							            
 							            <div class="btn-group">
 							                <label for="${value.key}" class="btn btn-default">

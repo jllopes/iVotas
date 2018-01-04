@@ -70,10 +70,10 @@ public class SessionBean {
 		return false;
 	}
 	
-	public void postToFacebook(String message) {
-		String req = "https://graph.facebook.com/" + this.facebookId + "/feed?message=" + message + "&access_token=" + this.accessToken.getToken();
+	public void postToFacebook(String message, OAuthService oAuthService, Token token) {
+		String req = "https://graph.facebook.com/" + this.facebookId + "/feed?message=" + message + "&access_token=" + token.getToken();
 		System.out.println(req);
-		OAuthRequest request = new OAuthRequest(Verb.POST, req, service);
+		OAuthRequest request = new OAuthRequest(Verb.POST, req, oAuthService);
 		Response response = request.send();
 		System.out.println(response.getCode());
 		System.out.println(response.getBody());
